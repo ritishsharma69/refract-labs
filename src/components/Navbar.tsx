@@ -90,8 +90,31 @@ const Navbar = () => {
       }}
     >
       {/* Logo/Nav Glass Pill */}
-      <div ref={centerNavRef} className="nav-glass">
-        <a href="#home" className="nav-logo-btn">RefractWeb</a>
+      <div
+        ref={centerNavRef}
+        className={isMobile ? '' : 'nav-glass'}
+        style={isMobile ? {
+          background: 'rgba(30, 30, 30, 0.9)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '9999px',
+          padding: '12px 20px',
+          border: '1px solid rgba(255,255,255,0.08)',
+        } : undefined}
+      >
+        <a
+          href="#home"
+          className={isMobile ? '' : 'nav-logo-btn'}
+          style={isMobile ? {
+            color: 'white',
+            fontSize: '15px',
+            fontWeight: 600,
+            fontFamily: 'Space Grotesk, sans-serif',
+            letterSpacing: '-0.3px',
+            textDecoration: 'none',
+          } : undefined}
+        >
+          RefractWeb
+        </a>
         {!isMobile && (
           <>
             <a href="#home" className="nav-link">Home</a>

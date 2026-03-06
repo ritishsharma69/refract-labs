@@ -114,10 +114,10 @@ const Hero = () => {
         <div style={{
           display: 'flex',
           flexDirection: 'column',
-          alignItems: isMobile ? 'center' : 'flex-start',
+          alignItems: 'flex-start',
           justifyContent: 'center',
           paddingRight: isMobile ? '0' : '40px',
-          textAlign: isMobile ? 'center' : 'left',
+          textAlign: 'left',
           order: isMobile ? 2 : 1,
         }}>
             {/* Badge */}
@@ -129,7 +129,7 @@ const Hero = () => {
                 borderRadius: '50px',
                 padding: '6px 14px',
                 fontSize: isMobile ? '12px' : '13px',
-                alignSelf: isMobile ? 'center' : 'flex-start',
+                alignSelf: 'flex-start',
               }}
             >
               <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#e07030' }} />
@@ -174,13 +174,27 @@ const Hero = () => {
               className="flex items-center"
               style={{
                 marginTop: isMobile ? '28px' : '36px',
-                gap: isMobile ? '12px' : '20px',
-                flexDirection: isMobile ? 'column' : 'row',
+                gap: isMobile ? '16px' : '20px',
+                flexDirection: 'row',
+                flexWrap: 'wrap',
                 width: isMobile ? '100%' : 'auto',
+                justifyContent: isMobile ? 'flex-start' : 'flex-start',
               }}
             >
-              <button className="hero-cta-btn" style={{ width: isMobile ? '100%' : 'auto' }}>Work With Us</button>
-              <button className="group flex items-center gap-2 text-white hover:text-white/80 transition-colors" style={{ fontSize: '15px' }}>
+              <button
+                className="hero-cta-btn"
+                style={{
+                  width: 'auto',
+                  padding: isMobile ? '12px 24px' : '14px 32px',
+                  fontSize: isMobile ? '14px' : '15px',
+                }}
+              >
+                Work With Us
+              </button>
+              <button
+                className="group flex items-center gap-2 text-white hover:text-white/80 transition-colors"
+                style={{ fontSize: isMobile ? '14px' : '15px' }}
+              >
                 <span>Explore our services</span>
                 <svg className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
