@@ -6,7 +6,9 @@ const Navbar = () => {
   const centerNavRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -35,6 +37,41 @@ const Navbar = () => {
     }, navRef);
     return () => ctx.revert();
   }, [isMobile]);
+
+  // Animate mobile menu open/close
+  useEffect(() => {
+    if (mobileMenuRef.current) {
+      if (menuOpen) {
+        gsap.to(mobileMenuRef.current, {
+          opacity: 1,
+          pointerEvents: 'auto',
+          duration: 0.3,
+          ease: 'power2.out',
+        });
+        gsap.fromTo('.mobile-menu-link',
+          { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.4, stagger: 0.1, ease: 'power2.out', delay: 0.1 }
+        );
+        gsap.fromTo('.mobile-menu-cta',
+          { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out', delay: 0.4 }
+        );
+      } else {
+        gsap.to(mobileMenuRef.current, {
+          opacity: 0,
+          pointerEvents: 'none',
+          duration: 0.2,
+          ease: 'power2.in',
+        });
+      }
+    }
+  }, [menuOpen]);
+
+  const mobileLinks = [
+    { label: 'Home', href: '#home' },
+    { label: 'About', href: '#about' },
+    { label: 'Works', href: '#works' },
+  ];
 
   return (
     <nav
@@ -84,6 +121,7 @@ const Navbar = () => {
       {isMobile && (
         <button
           ref={hamburgerRef}
+          onClick={() => setMenuOpen(true)}
           style={{
             width: '44px',
             height: '44px',
@@ -101,6 +139,142 @@ const Navbar = () => {
             <path d="M1 1H19M1 7H19M1 13H19" stroke="white" strokeWidth="2" strokeLinecap="round"/>
           </svg>
         </button>
+      )}
+
+      {/* Mobile Menu Overlay */}
+      {isMobile && (
+        <div
+          ref={mobileMenuRef}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100vh',
+            background: '#0a0a0a',
+            zIndex: 200,
+            opacity: 0,
+            pointerEvents: 'none',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          {/* Top bar with logo and close button */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '16px 20px',
+            }}
+          >
+            {/* Logo pill */}
+            <div
+              style={{
+                background: 'rgba(255,255,255,0.06)',
+                backdropFilter: 'blur(20px)',
+                borderRadius: '40px',
+                padding: '12px 20px',
+                border: '1px solid rgba(255,255,255,0.08)',
+              }}
+            >
+              <span
+                style={{
+                  color: 'white',
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  fontFamily: 'Space Grotesk, sans-serif',
+                  letterSpacing: '-0.3px',
+                }}
+              >
+                RefractWeb
+              </span>
+            </div>
+
+            {/* Close button */}
+            <button
+              onClick={() => setMenuOpen(false)}
+              style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '50%',
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M2 2L14 14M14 2L2 14" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </button>
+          </div>
+
+          {/* Menu links */}
+          <div
+            style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              padding: '0 32px',
+              gap: '0',
+            }}
+          >
+            {mobileLinks.map((link, index) => (
+              <a
+                key={link.label}
+                href={link.href}
+                className="mobile-menu-link"
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  fontSize: 'clamp(40px, 10vw, 56px)',
+                  fontWeight: 500,
+                  fontFamily: 'Space Grotesk, sans-serif',
+                  color: index === 0 ? 'white' : 'rgba(255,255,255,0.5)',
+                  textDecoration: 'none',
+                  padding: '16px 0',
+                  borderBottom: index < mobileLinks.length - 1 ? '1px solid rgba(255,255,255,0.08)' : 'none',
+                  display: 'block',
+                  letterSpacing: '-1px',
+                }}
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+
+          {/* Bottom CTA button */}
+          <div
+            style={{
+              padding: '24px 32px 48px 32px',
+            }}
+          >
+            <button
+              className="mobile-menu-cta"
+              onClick={() => setMenuOpen(false)}
+              style={{
+                width: '100%',
+                padding: '18px 32px',
+                borderRadius: '50px',
+                background: 'linear-gradient(135deg, #B8622E 0%, #D4956A 50%, #B8622E 100%)',
+                border: 'none',
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: 600,
+                fontFamily: 'Space Grotesk, sans-serif',
+                cursor: 'pointer',
+                letterSpacing: '0.5px',
+              }}
+            >
+              Work With Us
+            </button>
+          </div>
+        </div>
       )}
     </nav>
   );
