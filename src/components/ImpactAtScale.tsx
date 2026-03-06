@@ -3,10 +3,23 @@ import { useState, useEffect, useRef } from 'react';
 // Bar heights for the animated chart
 const barHeights = [60, 90, 70, 110, 85, 130, 95, 145, 120, 160, 140, 175];
 
+// Mobile detection hook
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  return isMobile;
+};
+
 const ImpactAtScale = () => {
   const [card2Hovered, setCard2Hovered] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [ballPos, setBallPos] = useState({ x: 540, y: 200 });
+  const isMobile = useIsMobile();
 
   // Refs for smooth ball animation ALONG the path
   const svgRef = useRef<SVGSVGElement>(null);
@@ -119,23 +132,23 @@ const ImpactAtScale = () => {
 
   const cardBaseStyle: React.CSSProperties = {
     background: 'linear-gradient(135deg, #0f1420 0%, #141926 50%, #0d1018 100%)',
-    borderRadius: '24px',
+    borderRadius: isMobile ? '16px' : '24px',
     border: '1px solid rgba(255,255,255,0.06)',
     overflow: 'hidden',
     position: 'relative',
-    padding: '40px 40px 0 40px',
+    padding: isMobile ? '24px 24px 0 24px' : '40px 40px 0 40px',
   };
 
   return (
-    <section style={{ position: 'relative', background: 'transparent', padding: '100px 160px' }}>
+    <section style={{ position: 'relative', background: 'transparent', padding: isMobile ? '60px 24px' : '100px 160px' }}>
       {/* Background atmosphere glow */}
       <div style={{
         position: 'absolute',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: '800px',
-        height: '600px',
+        width: isMobile ? '400px' : '800px',
+        height: isMobile ? '300px' : '600px',
         background: 'radial-gradient(ellipse, rgba(140,55,15,0.2) 0%, transparent 65%)',
         pointerEvents: 'none',
         zIndex: 0,
@@ -143,10 +156,10 @@ const ImpactAtScale = () => {
 
       <div style={{ maxWidth: '1400px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
         {/* Section Header */}
-        <div style={{ textAlign: 'center', marginBottom: '64px' }}>
+        <div style={{ textAlign: 'center', marginBottom: isMobile ? '36px' : '64px' }}>
           <h2 style={{
             fontFamily: 'Space Grotesk, sans-serif',
-            fontSize: '52px',
+            fontSize: isMobile ? '32px' : '52px',
             fontWeight: 700,
             color: 'white',
             letterSpacing: '-1.5px',
@@ -154,15 +167,15 @@ const ImpactAtScale = () => {
           }}>
             Impact at scale
           </h2>
-          <p style={{ fontSize: '16px', color: '#888', marginTop: '12px' }}>
+          <p style={{ fontSize: isMobile ? '14px' : '16px', color: '#888', marginTop: '12px' }}>
             Design is subjective. Performance is not.
           </p>
           {/* CTA Row */}
-          <div style={{ marginTop: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
+          <div style={{ marginTop: isMobile ? '24px' : '32px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', justifyContent: 'center', gap: isMobile ? '12px' : '20px' }}>
             <button style={{
               background: '#c2622a',
               borderRadius: '50px',
-              padding: '13px 26px',
+              padding: isMobile ? '12px 24px' : '13px 26px',
               color: 'white',
               fontWeight: 500,
               fontSize: '14px',
@@ -180,17 +193,17 @@ const ImpactAtScale = () => {
         {/* Grid Layout */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
+          gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
           gridTemplateRows: 'auto auto',
-          gap: '16px',
+          gap: isMobile ? '12px' : '16px',
         }}>
           {/* Card 1 - $100M+ Revenue */}
-          <div style={{ ...cardBaseStyle, height: '380px' }}>
+          <div style={{ ...cardBaseStyle, height: isMobile ? '280px' : '380px' }}>
             <div style={{ position: 'relative', zIndex: 1 }}>
-              <span style={{ color: '#888', fontSize: '14px', fontWeight: 500 }}>Revenue Supported</span>
+              <span style={{ color: '#888', fontSize: isMobile ? '12px' : '14px', fontWeight: 500 }}>Revenue Supported</span>
               <h3 style={{
                 color: 'white',
-                fontSize: '56px',
+                fontSize: isMobile ? '40px' : '56px',
                 fontWeight: 800,
                 letterSpacing: '-2px',
                 marginTop: '8px',
@@ -198,7 +211,7 @@ const ImpactAtScale = () => {
               }}>
                 $100M+
               </h3>
-              <p style={{ color: '#777', fontSize: '14px', lineHeight: 1.7, marginTop: '12px', maxWidth: '280px' }}>
+              <p style={{ color: '#777', fontSize: isMobile ? '12px' : '14px', lineHeight: 1.7, marginTop: '12px', maxWidth: '280px' }}>
                 Systems backing <span style={{ color: 'white', fontWeight: 600 }}>nine-figure revenue</span>. When performance is non-negotiable, <span style={{ color: 'white', fontWeight: 600 }}>we deliver</span>.
               </p>
             </div>
@@ -208,19 +221,19 @@ const ImpactAtScale = () => {
               bottom: 0,
               left: 0,
               right: 0,
-              height: '200px',
+              height: isMobile ? '120px' : '200px',
               display: 'flex',
               alignItems: 'flex-end',
-              gap: '8px',
-              padding: '0 40px',
+              gap: isMobile ? '4px' : '8px',
+              padding: isMobile ? '0 24px' : '0 40px',
             }}>
               {barHeights.map((height, index) => (
                 <div
                   key={index}
                   style={{
                     width: 'calc((100% - 88px) / 12)',
-                    height: mounted ? `${height}px` : '0px',
-                    borderRadius: '6px 6px 0 0',
+                    height: mounted ? `${isMobile ? height * 0.6 : height}px` : '0px',
+                    borderRadius: isMobile ? '4px 4px 0 0' : '6px 6px 0 0',
                     background: 'linear-gradient(to top, rgba(194, 98, 42, 0.9) 0%, rgba(220, 130, 60, 0.7) 50%, rgba(150, 80, 180, 0.4) 100%)',
                     opacity: mounted ? 1 : 0,
                     transition: `height 0.8s ease ${index * 0.06}s, opacity 0.8s ease ${index * 0.06}s`,
@@ -234,101 +247,105 @@ const ImpactAtScale = () => {
 
           {/* Card 2 - 100+ Assets */}
           <div
-            style={{ ...cardBaseStyle, height: '380px' }}
+            style={{ ...cardBaseStyle, height: isMobile ? '280px' : '380px' }}
             onMouseEnter={() => setCard2Hovered(true)}
             onMouseLeave={() => setCard2Hovered(false)}
           >
             <div style={{ position: 'relative', zIndex: 1 }}>
-              <span style={{ color: '#888', fontSize: '14px', fontWeight: 500 }}>Assets Deployed</span>
+              <span style={{ color: '#888', fontSize: isMobile ? '12px' : '14px', fontWeight: 500 }}>Assets Deployed</span>
               <h3 style={{
                 color: 'white',
-                fontSize: '56px',
+                fontSize: isMobile ? '40px' : '56px',
                 fontWeight: 800,
                 letterSpacing: '-2px',
                 margin: '8px 0 0 0',
               }}>
                 100+
               </h3>
-              <p style={{ color: '#777', fontSize: '14px', lineHeight: 1.7, marginTop: '12px', maxWidth: '280px' }}>
+              <p style={{ color: '#777', fontSize: isMobile ? '12px' : '14px', lineHeight: 1.7, marginTop: '12px', maxWidth: '280px' }}>
                 <span style={{ color: 'white', fontWeight: 600 }}>Production-ready</span> assets for every channel. Ship campaigns and launches with <span style={{ color: 'white', fontWeight: 600 }}>confidence</span>.
               </p>
             </div>
-            {/* Floating White Card */}
-            <div style={{
-              position: 'absolute',
-              bottom: '-20px',
-              right: '-20px',
-              width: '220px',
-              background: 'white',
-              borderRadius: '12px',
-              overflow: 'hidden',
-              boxShadow: card2Hovered ? '0 40px 80px rgba(0,0,0,0.6)' : '0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.1)',
-              transform: card2Hovered ? 'rotate(0deg) scale(1.08) translateY(-10px)' : 'rotate(-3deg)',
-              transition: 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.5s ease',
-            }}>
-              {/* Top Nav */}
-              <div style={{ padding: '8px 12px', fontSize: '7px', color: '#999' }}>
-                Home About Mission Services
-              </div>
-              {/* Content */}
-              <div style={{ padding: '0 12px' }}>
-                <div style={{ color: 'black', fontSize: '18px', fontWeight: 800, lineHeight: 1.2 }}>
-                  Design That
-                </div>
-                <div style={{ color: 'black', fontSize: '18px', fontWeight: 800, lineHeight: 1.2 }}>
-                  Inspires &
-                </div>
-              </div>
-              {/* Links Row */}
-              <div style={{ padding: '6px 12px', fontSize: '8px', color: 'black' }}>
-                Contact Us ↗
-              </div>
-              {/* Pink Gradient Box */}
+            {/* Floating White Card - hidden on mobile */}
+            {!isMobile && (
               <div style={{
-                background: 'linear-gradient(135deg, #f472b6 0%, #fce7f3 70%, white 100%)',
-                height: '80px',
-                margin: 0,
-              }} />
-            </div>
+                position: 'absolute',
+                bottom: '-20px',
+                right: '-20px',
+                width: '220px',
+                background: 'white',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                boxShadow: card2Hovered ? '0 40px 80px rgba(0,0,0,0.6)' : '0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.1)',
+                transform: card2Hovered ? 'rotate(0deg) scale(1.08) translateY(-10px)' : 'rotate(-3deg)',
+                transition: 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.5s ease',
+              }}>
+                {/* Top Nav */}
+                <div style={{ padding: '8px 12px', fontSize: '7px', color: '#999' }}>
+                  Home About Mission Services
+                </div>
+                {/* Content */}
+                <div style={{ padding: '0 12px' }}>
+                  <div style={{ color: 'black', fontSize: '18px', fontWeight: 800, lineHeight: 1.2 }}>
+                    Design That
+                  </div>
+                  <div style={{ color: 'black', fontSize: '18px', fontWeight: 800, lineHeight: 1.2 }}>
+                    Inspires &
+                  </div>
+                </div>
+                {/* Links Row */}
+                <div style={{ padding: '6px 12px', fontSize: '8px', color: 'black' }}>
+                  Contact Us ↗
+                </div>
+                {/* Pink Gradient Box */}
+                <div style={{
+                  background: 'linear-gradient(135deg, #f472b6 0%, #fce7f3 70%, white 100%)',
+                  height: '80px',
+                  margin: 0,
+                }} />
+              </div>
+            )}
           </div>
 
           {/* Card 3 - $2.65B Enterprise DNA */}
           <div style={{
             ...cardBaseStyle,
-            height: '340px',
-            gridColumn: '1 / -1',
-            padding: '40px 48px',
+            height: isMobile ? 'auto' : '340px',
+            gridColumn: isMobile ? 'auto' : '1 / -1',
+            padding: isMobile ? '24px' : '40px 48px',
           }}>
             {/* Warm radial glow - center */}
             <div style={{
               position: 'absolute',
               left: '30%',
               bottom: '10%',
-              width: '500px',
-              height: '400px',
+              width: isMobile ? '250px' : '500px',
+              height: isMobile ? '200px' : '400px',
               background: 'radial-gradient(ellipse, rgba(200,100,50,0.25) 0%, rgba(150,60,20,0.15) 30%, transparent 70%)',
               pointerEvents: 'none',
               zIndex: 0,
             }} />
 
-            {/* Secondary glow - right side */}
-            <div style={{
-              position: 'absolute',
-              right: '10%',
-              bottom: '20%',
-              width: '300px',
-              height: '250px',
-              background: 'radial-gradient(ellipse, rgba(180,80,30,0.2) 0%, transparent 60%)',
-              pointerEvents: 'none',
-              zIndex: 0,
-            }} />
+            {/* Secondary glow - right side - hidden on mobile */}
+            {!isMobile && (
+              <div style={{
+                position: 'absolute',
+                right: '10%',
+                bottom: '20%',
+                width: '300px',
+                height: '250px',
+                background: 'radial-gradient(ellipse, rgba(180,80,30,0.2) 0%, transparent 60%)',
+                pointerEvents: 'none',
+                zIndex: 0,
+              }} />
+            )}
 
             {/* Left Text */}
             <div style={{ position: 'relative', zIndex: 1 }}>
-              <span style={{ color: '#9ca3af', fontSize: '14px', fontWeight: 500 }}>Enterprise DNA</span>
+              <span style={{ color: '#9ca3af', fontSize: isMobile ? '12px' : '14px', fontWeight: 500 }}>Enterprise DNA</span>
               <h3 style={{
                 color: 'white',
-                fontSize: '72px',
+                fontSize: isMobile ? '48px' : '72px',
                 fontWeight: 800,
                 letterSpacing: '-3px',
                 margin: '8px 0 0 0',
@@ -336,12 +353,13 @@ const ImpactAtScale = () => {
               }}>
                 $2.65B
               </h3>
-              <p style={{ color: '#9ca3af', fontSize: '15px', lineHeight: 1.6, marginTop: '14px', maxWidth: '320px', fontStyle: 'italic' }}>
+              <p style={{ color: '#9ca3af', fontSize: isMobile ? '13px' : '15px', lineHeight: 1.6, marginTop: '14px', maxWidth: '320px', fontStyle: 'italic' }}>
                 Applying the architectural standards of a multi-billion dollar valuation to your brand.
               </p>
             </div>
 
-            {/* Interactive Wave Chart */}
+            {/* Interactive Wave Chart - hidden on mobile */}
+            {!isMobile && (
             <div style={{
               position: 'absolute',
               right: 0,
@@ -447,6 +465,7 @@ const ImpactAtScale = () => {
                 />
               </svg>
             </div>
+            )}
           </div>
         </div>
       </div>

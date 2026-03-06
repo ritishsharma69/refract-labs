@@ -1,4 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+// Mobile detection hook
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  return isMobile;
+};
 
 const projects = [
   { id: 1, name: "PROJECT AETHER", category: "VISUAL ENGINEERING", desc: "Zero-latency WebGL rendering for immersive luxury commerce.", type: "aether" },
@@ -117,27 +129,33 @@ const PreviewRenderer = ({ type }) => {
 };
 
 const CARD_WIDTH = 500;
+const MOBILE_CARD_WIDTH = 300;
 const GAP = 24;
-const STEP = CARD_WIDTH + GAP; // 524px
+const MOBILE_GAP = 16;
 
 const SelectedWork = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const isMobile = useIsMobile();
   const totalCards = projects.length;
 
+  const cardWidth = isMobile ? MOBILE_CARD_WIDTH : CARD_WIDTH;
+  const gap = isMobile ? MOBILE_GAP : GAP;
+  const STEP = cardWidth + gap;
+
   // Calculate max index - stop when last 2 cards are visible (don't scroll to empty)
-  const maxIndex = totalCards - 2; // Show 2 cards at the end position
+  const maxIndex = isMobile ? totalCards - 1 : totalCards - 2;
 
   return (
-    <section style={{ width: '100%', padding: '120px 0 80px 0', overflow: 'hidden' }}>
+    <section style={{ width: '100%', padding: isMobile ? '60px 0 40px 0' : '120px 0 80px 0', overflow: 'hidden' }}>
       {/* Header */}
-      <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto', padding: '0 80px', marginBottom: '64px' }}>
-        <h2 style={{ fontSize: '52px', fontWeight: 700, color: 'white', letterSpacing: '-1.5px' }}>Selected work</h2>
-        <p style={{ color: '#888', fontSize: '16px', lineHeight: 1.75, marginTop: '16px' }}>
+      <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 80px', marginBottom: isMobile ? '36px' : '64px' }}>
+        <h2 style={{ fontSize: isMobile ? '32px' : '52px', fontWeight: 700, color: 'white', letterSpacing: '-1.5px' }}>Selected work</h2>
+        <p style={{ color: '#888', fontSize: isMobile ? '14px' : '16px', lineHeight: 1.75, marginTop: '16px' }}>
           Redefining the standard. We sharpen clarity, elevate design, and build digital identities that perform at the highest level.
         </p>
-        <div style={{ marginTop: '36px', display: 'flex', justifyContent: 'center', gap: '16px' }}>
-          <button style={{ background: '#c2622a', borderRadius: '50px', padding: '13px 26px', color: 'white', fontWeight: 600, border: 'none', cursor: 'pointer' }}>Work With Us</button>
-          <button style={{ background: 'transparent', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>Explore our services →</button>
+        <div style={{ marginTop: isMobile ? '24px' : '36px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'center', alignItems: 'center', gap: isMobile ? '12px' : '16px' }}>
+          <button style={{ background: '#c2622a', borderRadius: '50px', padding: isMobile ? '12px 24px' : '13px 26px', color: 'white', fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: isMobile ? '14px' : '16px' }}>Work With Us</button>
+          <button style={{ background: 'transparent', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: isMobile ? '14px' : '16px' }}>Explore our services →</button>
         </div>
       </div>
 
@@ -146,9 +164,9 @@ const SelectedWork = () => {
         {/* Cards track - centered start position with calc */}
         <div style={{
           display: 'flex',
-          gap: `${GAP}px`,
-          paddingLeft: 'calc(50vw - 520px)', // Center first card more to the right
-          paddingRight: 'calc(50vw - 260px)',
+          gap: `${gap}px`,
+          paddingLeft: isMobile ? '24px' : 'calc(50vw - 520px)',
+          paddingRight: isMobile ? '24px' : 'calc(50vw - 260px)',
           transform: `translateX(-${currentIndex * STEP}px)`,
           transition: 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
           willChange: 'transform',
@@ -157,70 +175,74 @@ const SelectedWork = () => {
             <div
               key={project.id}
               style={{
-                width: `${CARD_WIDTH}px`,
+                width: `${cardWidth}px`,
                 flexShrink: 0,
                 flexGrow: 0,
                 cursor: 'pointer',
-                borderRadius: '20px',
+                borderRadius: isMobile ? '16px' : '20px',
                 overflow: 'hidden',
                 background: '#111113',
                 border: '1px solid rgba(255,255,255,0.06)',
               }}
             >
-              <div style={{ height: '340px', overflow: 'hidden' }}>
+              <div style={{ height: isMobile ? '220px' : '340px', overflow: 'hidden' }}>
                 <PreviewRenderer type={project.type} />
               </div>
-              <div style={{ padding: '28px 28px 32px 28px', background: '#111113' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '18px', fontWeight: 800, color: 'white', letterSpacing: '1.5px', textTransform: 'uppercase' }}>{project.name}</span>
-                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#666', letterSpacing: '1.5px', textTransform: 'uppercase' }}>{project.category}</span>
+              <div style={{ padding: isMobile ? '20px' : '28px 28px 32px 28px', background: '#111113' }}>
+                <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '6px' : '0' }}>
+                  <span style={{ fontSize: isMobile ? '14px' : '18px', fontWeight: 800, color: 'white', letterSpacing: '1.5px', textTransform: 'uppercase' }}>{project.name}</span>
+                  <span style={{ fontSize: isMobile ? '9px' : '11px', fontWeight: 600, color: '#666', letterSpacing: '1.5px', textTransform: 'uppercase' }}>{project.category}</span>
                 </div>
-                <p style={{ fontSize: '14px', color: '#777', lineHeight: 1.7, marginTop: '14px' }}>{project.desc}</p>
+                <p style={{ fontSize: isMobile ? '12px' : '14px', color: '#777', lineHeight: 1.7, marginTop: isMobile ? '10px' : '14px' }}>{project.desc}</p>
               </div>
             </div>
           ))}
         </div>
-        {/* Left side smoky gradient fade - lighter */}
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          bottom: 0,
-          width: '200px',
-          background: 'linear-gradient(270deg, transparent 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.6) 85%, rgba(0,0,0,0.75) 100%)',
-          pointerEvents: 'none',
-          zIndex: 2,
-        }} />
-        {/* Right side smoky gradient fade - lighter */}
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          width: '200px',
-          background: 'linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.6) 85%, rgba(0,0,0,0.75) 100%)',
-          pointerEvents: 'none',
-          zIndex: 2,
-        }} />
+        {/* Left side smoky gradient fade - lighter (hidden on mobile) */}
+        {!isMobile && (
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            width: '200px',
+            background: 'linear-gradient(270deg, transparent 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.6) 85%, rgba(0,0,0,0.75) 100%)',
+            pointerEvents: 'none',
+            zIndex: 2,
+          }} />
+        )}
+        {/* Right side smoky gradient fade - lighter (hidden on mobile) */}
+        {!isMobile && (
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            width: '200px',
+            background: 'linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.6) 85%, rgba(0,0,0,0.75) 100%)',
+            pointerEvents: 'none',
+            zIndex: 2,
+          }} />
+        )}
       </div>
 
       {/* Bottom controls */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '48px 80px 0 80px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: isMobile ? '24px 24px 0 24px' : '48px 80px 0 80px' }}>
         {/* Progress bar - full width spanning left to right */}
-        <div style={{ flex: 1, height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden', marginRight: '40px' }}>
+        <div style={{ flex: 1, height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden', marginRight: isMobile ? '20px' : '40px' }}>
           <div style={{ height: '100%', width: `${((currentIndex + 1) / (maxIndex + 1)) * 100}%`, background: 'linear-gradient(90deg, #c2622a 0%, #e07a3a 100%)', borderRadius: '2px', transition: 'width 0.5s ease' }} />
         </div>
         {/* Arrows */}
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div style={{ display: 'flex', gap: isMobile ? '8px' : '12px' }}>
           <button
             onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
             disabled={currentIndex === 0}
-            style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: '18px', cursor: currentIndex === 0 ? 'not-allowed' : 'pointer', opacity: currentIndex === 0 ? 0.3 : 1, transition: 'background 0.2s' }}
+            style={{ width: isMobile ? '40px' : '48px', height: isMobile ? '40px' : '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: isMobile ? '16px' : '18px', cursor: currentIndex === 0 ? 'not-allowed' : 'pointer', opacity: currentIndex === 0 ? 0.3 : 1, transition: 'background 0.2s' }}
           >‹</button>
           <button
             onClick={() => setCurrentIndex(Math.min(maxIndex, currentIndex + 1))}
             disabled={currentIndex === maxIndex}
-            style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: '18px', cursor: currentIndex === maxIndex ? 'not-allowed' : 'pointer', opacity: currentIndex === maxIndex ? 0.3 : 1, transition: 'background 0.2s' }}
+            style={{ width: isMobile ? '40px' : '48px', height: isMobile ? '40px' : '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: isMobile ? '16px' : '18px', cursor: currentIndex === maxIndex ? 'not-allowed' : 'pointer', opacity: currentIndex === maxIndex ? 0.3 : 1, transition: 'background 0.2s' }}
           >›</button>
         </div>
       </div>

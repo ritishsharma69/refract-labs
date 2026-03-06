@@ -1,5 +1,17 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
+// Mobile detection hook
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  return isMobile;
+};
+
 // 12 icons with their corner glow colors (warm copper/purple palette)
 const allIcons = [
   { name: 'Vercel', color: '#fff', glow1: 'rgba(147, 51, 234, 0.6)', glow2: 'rgba(219, 39, 119, 0.6)' },
@@ -115,6 +127,7 @@ const BuildEnvironment = () => {
   const gridRef = useRef(null);
   const rafRef = useRef(null);
   const trailRef = useRef([]);
+  const isMobile = useIsMobile();
 
   // Smooth cursor position (lerped for buttery feel)
   const cursorPos = useRef({ x: 0, y: 0 });
@@ -195,7 +208,7 @@ const BuildEnvironment = () => {
   }, []);
 
   return (
-    <section style={{ width: '100%', padding: '60px 120px' }}>
+    <section style={{ width: '100%', padding: isMobile ? '40px 20px' : '60px 120px' }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
         {/* Main Card - Reduced height by ~25% */}
         <div
@@ -204,29 +217,34 @@ const BuildEnvironment = () => {
           onMouseLeave={handleCardMouseLeave}
           style={{
             background: 'linear-gradient(135deg, #0a0e17 0%, #0f1521 40%, #0a0d14 100%)',
-            borderRadius: '24px',
+            borderRadius: isMobile ? '16px' : '24px',
             border: '1px solid rgba(255,255,255,0.06)',
-            padding: '48px 56px', // Reduced padding
-            display: 'grid',
-            gridTemplateColumns: '1fr 1.2fr', // Slightly more space for icons
+            padding: isMobile ? '32px 24px' : '48px 56px',
+            display: isMobile ? 'flex' : 'grid',
+            flexDirection: isMobile ? 'column' : undefined,
+            gridTemplateColumns: isMobile ? undefined : '1fr 1.2fr',
             alignItems: 'center',
-            gap: '40px',
-            minHeight: '380px', // Reduced from 440px
-            maxHeight: '480px', // Cap max height
+            gap: isMobile ? '32px' : '40px',
+            minHeight: isMobile ? 'auto' : '380px',
+            maxHeight: isMobile ? 'none' : '480px',
             position: 'relative',
             overflow: 'hidden',
             transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-            willChange: 'transform', // GPU acceleration hint
+            willChange: 'transform',
           }}
         >
           {/* Background Glows - Ambient lighting */}
           <div style={{
             position: 'absolute', inset: 0, pointerEvents: 'none',
-            background: 'radial-gradient(ellipse 450px 350px at 15% 65%, rgba(180,80,30,0.22) 0%, transparent 55%)',
+            background: isMobile
+              ? 'radial-gradient(ellipse 250px 200px at 20% 30%, rgba(180,80,30,0.22) 0%, transparent 55%)'
+              : 'radial-gradient(ellipse 450px 350px at 15% 65%, rgba(180,80,30,0.22) 0%, transparent 55%)',
           }} />
           <div style={{
             position: 'absolute', inset: 0, pointerEvents: 'none',
-            background: 'radial-gradient(ellipse 380px 300px at 85% 45%, rgba(100,50,140,0.18) 0%, transparent 55%)',
+            background: isMobile
+              ? 'radial-gradient(ellipse 200px 180px at 80% 70%, rgba(100,50,140,0.18) 0%, transparent 55%)'
+              : 'radial-gradient(ellipse 380px 300px at 85% 45%, rgba(100,50,140,0.18) 0%, transparent 55%)',
           }} />
 
           {/* Mouse Follow Glow Effect - Main circular glow */}
@@ -316,12 +334,14 @@ const BuildEnvironment = () => {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            paddingRight: '40px',
+            paddingRight: isMobile ? '0' : '40px',
             position: 'relative',
             zIndex: 5,
+            textAlign: isMobile ? 'center' : 'left',
+            alignItems: isMobile ? 'center' : 'flex-start',
           }}>
             <h2 style={{
-              fontSize: '40px', // Slightly smaller
+              fontSize: isMobile ? '28px' : '40px',
               fontWeight: 700,
               color: 'white',
               letterSpacing: '-1.2px',
@@ -332,9 +352,9 @@ const BuildEnvironment = () => {
             </h2>
             <p style={{
               color: 'rgba(156,163,175,0.9)',
-              fontSize: '14px',
+              fontSize: isMobile ? '13px' : '14px',
               lineHeight: 1.7,
-              marginTop: '16px',
+              marginTop: isMobile ? '12px' : '16px',
               maxWidth: '320px',
             }}>
               A proven stack for speed and scale. We leverage these tools to ensure reliability and uncompromising polish.
@@ -342,14 +362,14 @@ const BuildEnvironment = () => {
             <button style={{
               background: 'linear-gradient(135deg, #c2622a 0%, #d4713a 100%)',
               borderRadius: '50px',
-              padding: '12px 24px',
+              padding: isMobile ? '10px 20px' : '12px 24px',
               color: 'white',
               fontSize: '14px',
               fontWeight: 600,
               border: 'none',
               cursor: 'pointer',
               width: 'fit-content',
-              marginTop: '28px',
+              marginTop: isMobile ? '20px' : '28px',
               transition: 'transform 0.2s ease, box-shadow 0.2s ease',
               boxShadow: '0 4px 20px rgba(194,98,42,0.3)',
             }}>
@@ -363,10 +383,11 @@ const BuildEnvironment = () => {
             style={{
               position: 'relative',
               display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              gridTemplateRows: 'repeat(3, 1fr)',
-              gap: '8px',
+              gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(4, 1fr)',
+              gridTemplateRows: isMobile ? 'repeat(4, 1fr)' : 'repeat(3, 1fr)',
+              gap: isMobile ? '6px' : '8px',
               zIndex: 5,
+              width: '100%',
             }}
           >
             {/* Icon Cells - 12 icons with corner glows */}
@@ -375,13 +396,13 @@ const BuildEnvironment = () => {
                 key={icon.name}
                 role="img"
                 aria-label={icon.name}
-                onMouseEnter={() => setHoveredCell(index)}
-                onMouseLeave={() => setHoveredCell(null)}
+                onMouseEnter={() => !isMobile && setHoveredCell(index)}
+                onMouseLeave={() => !isMobile && setHoveredCell(null)}
                 style={{
                   position: 'relative',
                   width: '100%',
-                  height: '80px', // Reduced from 100px
-                  borderRadius: '10px',
+                  height: isMobile ? '60px' : '80px',
+                  borderRadius: isMobile ? '8px' : '10px',
                   backgroundColor: 'rgb(14, 14, 18)',
                   backgroundImage: 'radial-gradient(rgba(30, 30, 35, 0.8) 1px, transparent 1px)',
                   backgroundSize: '8px 8px',
@@ -390,7 +411,7 @@ const BuildEnvironment = () => {
                   justifyContent: 'center',
                   cursor: 'pointer',
                   overflow: 'hidden',
-                  transform: hoveredCell === index ? 'scale(1.03)' : 'scale(1)',
+                  transform: !isMobile && hoveredCell === index ? 'scale(1.03)' : 'scale(1)',
                   transition: 'transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94)',
                   willChange: 'transform',
                 }}

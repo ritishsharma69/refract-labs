@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -9,6 +9,14 @@ const Footer = () => {
   const brandRef = useRef<HTMLDivElement>(null);
   const linksRowRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -64,27 +72,29 @@ const Footer = () => {
         background: '#080808',
         position: 'relative',
         overflow: 'hidden',
-        paddingTop: '80px',
+        paddingTop: isMobile ? '48px' : '80px',
       }}
     >
-      {/* Giant R watermark behind everything */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '80px',
-          left: '-20px',
-          fontSize: 'clamp(400px, 45vw, 600px)',
-          fontWeight: 900,
-          color: 'rgba(255,255,255,0.025)',
-          lineHeight: 1,
-          pointerEvents: 'none',
-          zIndex: 0,
-          userSelect: 'none',
-          fontFamily: 'Space Grotesk, sans-serif',
-        }}
-      >
-        R
-      </div>
+      {/* Giant R watermark behind everything - hidden on mobile */}
+      {!isMobile && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '80px',
+            left: '-20px',
+            fontSize: 'clamp(400px, 45vw, 600px)',
+            fontWeight: 900,
+            color: 'rgba(255,255,255,0.025)',
+            lineHeight: 1,
+            pointerEvents: 'none',
+            zIndex: 0,
+            userSelect: 'none',
+            fontFamily: 'Space Grotesk, sans-serif',
+          }}
+        >
+          R
+        </div>
+      )}
 
       {/* Giant REFRACTWEB text */}
       <div
@@ -94,25 +104,26 @@ const Footer = () => {
           position: 'relative',
           zIndex: 1,
           width: '100%',
-          textAlign: 'left',
-          paddingLeft: '100px',
-          paddingRight: '40px',
+          textAlign: isMobile ? 'center' : 'left',
+          paddingLeft: isMobile ? '24px' : '100px',
+          paddingRight: isMobile ? '24px' : '40px',
         }}
       >
-        {/* Stroke layer (bottom) */}
+        {/* Stroke layer (bottom) - simplified for mobile */}
         <div
           style={{
-            fontSize: 'clamp(80px, 12vw, 160px)',
+            fontSize: isMobile ? 'clamp(32px, 10vw, 48px)' : 'clamp(80px, 12vw, 160px)',
             fontWeight: 900,
             letterSpacing: '-2px',
             lineHeight: 1,
             textTransform: 'uppercase',
             fontFamily: 'Space Grotesk, sans-serif',
-            WebkitTextStroke: '3px #8B3A0F',
+            WebkitTextStroke: isMobile ? '2px #8B3A0F' : '3px #8B3A0F',
             WebkitTextFillColor: 'transparent',
             position: 'absolute',
             top: 0,
-            left: '100px',
+            left: isMobile ? '50%' : '100px',
+            transform: isMobile ? 'translateX(-50%)' : 'none',
           }}
         >
           REFRACTWEB
@@ -120,7 +131,7 @@ const Footer = () => {
         {/* Gradient fill layer (top) */}
         <div
           style={{
-            fontSize: 'clamp(80px, 12vw, 160px)',
+            fontSize: isMobile ? 'clamp(32px, 10vw, 48px)' : 'clamp(80px, 12vw, 160px)',
             fontWeight: 900,
             letterSpacing: '-2px',
             lineHeight: 1,
@@ -145,14 +156,16 @@ const Footer = () => {
           position: 'relative',
           zIndex: 1,
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          padding: '48px 160px 56px 160px',
+          flexDirection: isMobile ? 'column' : 'row',
+          justifyContent: isMobile ? 'center' : 'space-between',
+          alignItems: isMobile ? 'center' : 'flex-start',
+          gap: isMobile ? '32px' : '0',
+          padding: isMobile ? '32px 24px 40px 24px' : '48px 160px 56px 160px',
           marginTop: '8px',
         }}
       >
         {/* Left column - WEBSITE */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0, alignItems: isMobile ? 'center' : 'flex-start' }}>
           <span
             className="footer-nav-item"
             style={{
@@ -172,7 +185,7 @@ const Footer = () => {
               href="#"
               className="footer-nav-item footer-link"
               style={{
-                fontSize: '15px',
+                fontSize: isMobile ? '14px' : '15px',
                 fontWeight: 600,
                 color: 'white',
                 textTransform: 'uppercase',
@@ -182,6 +195,7 @@ const Footer = () => {
                 display: 'block',
                 transition: 'color 0.2s ease',
                 cursor: 'pointer',
+                textAlign: isMobile ? 'center' : 'left',
               }}
             >
               {link}
@@ -190,7 +204,7 @@ const Footer = () => {
         </div>
 
         {/* Right column - LEGAL */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 0, alignItems: 'flex-end' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0, alignItems: isMobile ? 'center' : 'flex-end' }}>
           <span
             className="footer-nav-item"
             style={{
@@ -210,7 +224,7 @@ const Footer = () => {
               href="#"
               className="footer-nav-item footer-link"
               style={{
-                fontSize: '15px',
+                fontSize: isMobile ? '14px' : '15px',
                 fontWeight: 600,
                 color: 'white',
                 textTransform: 'uppercase',
@@ -220,7 +234,7 @@ const Footer = () => {
                 display: 'block',
                 transition: 'color 0.2s ease',
                 cursor: 'pointer',
-                textAlign: 'right',
+                textAlign: isMobile ? 'center' : 'right',
               }}
             >
               {link}
@@ -232,8 +246,8 @@ const Footer = () => {
       {/* Divider line */}
       <div
         style={{
-          width: 'calc(100% - 320px)',
-          margin: '0 160px',
+          width: isMobile ? 'calc(100% - 48px)' : 'calc(100% - 320px)',
+          margin: isMobile ? '0 24px' : '0 160px',
           height: '1px',
           background: 'rgba(255,255,255,0.08)',
         }}
@@ -245,9 +259,11 @@ const Footer = () => {
         className="footer-bottom"
         style={{
           display: 'flex',
-          justifyContent: 'space-between',
+          flexDirection: isMobile ? 'column' : 'row',
+          justifyContent: isMobile ? 'center' : 'space-between',
           alignItems: 'center',
-          padding: '24px 160px',
+          gap: isMobile ? '16px' : '0',
+          padding: isMobile ? '24px' : '24px 160px',
           position: 'relative',
           zIndex: 1,
         }}
@@ -255,14 +271,16 @@ const Footer = () => {
         {/* Copyright */}
         <span
           style={{
-            fontSize: '11px',
+            fontSize: isMobile ? '9px' : '11px',
             fontWeight: 500,
             color: 'rgba(255,255,255,0.3)',
             letterSpacing: '0.8px',
             textTransform: 'uppercase',
+            textAlign: isMobile ? 'center' : 'left',
+            order: isMobile ? 1 : 0,
           }}
         >
-          COPYRIGHT © 2026 PULSE PARTNERS AI LLC DBA REFRACTWEB. ALL RIGHTS RESERVED
+          {isMobile ? '© 2026 REFRACTWEB. ALL RIGHTS RESERVED' : 'COPYRIGHT © 2026 PULSE PARTNERS AI LLC DBA REFRACTWEB. ALL RIGHTS RESERVED'}
         </span>
 
         {/* Social icons */}

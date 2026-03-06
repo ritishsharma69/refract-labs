@@ -9,6 +9,14 @@ const Hero = () => {
   const buttonsRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const [imageError, setImageError] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -62,7 +70,7 @@ const Hero = () => {
       id="home"
       style={{
         width: '100%',
-        height: 'calc(100vh - 80px)', // Leave room for LogoMarquee (80px)
+        minHeight: isMobile ? 'auto' : 'calc(100vh - 80px)',
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
@@ -78,38 +86,50 @@ const Hero = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'radial-gradient(ellipse 1000px 800px at 35% 52%, rgba(165,72,18,0.60) 0%, rgba(100,40,8,0.30) 30%, transparent 65%)',
+          background: isMobile
+            ? 'radial-gradient(ellipse 400px 400px at 50% 30%, rgba(165,72,18,0.50) 0%, rgba(100,40,8,0.25) 30%, transparent 65%)'
+            : 'radial-gradient(ellipse 1000px 800px at 35% 52%, rgba(165,72,18,0.60) 0%, rgba(100,40,8,0.30) 30%, transparent 65%)',
           pointerEvents: 'none',
         }}
       />
 
-      {/* Content container - centered, max-width 1300px */}
+      {/* Content container */}
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
+          display: isMobile ? 'flex' : 'grid',
+          flexDirection: 'column',
+          gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
           alignItems: 'center',
           flex: 1,
           width: '100%',
           maxWidth: '1300px',
           marginLeft: 'auto',
           marginRight: 'auto',
-          padding: '80px 45px 45px 110px',
+          padding: isMobile ? '100px 24px 40px 24px' : '80px 45px 45px 110px',
           boxSizing: 'border-box',
           position: 'relative',
         }}
       >
         {/* Left Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', paddingRight: '40px' }}>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: isMobile ? 'center' : 'flex-start',
+          justifyContent: 'center',
+          paddingRight: isMobile ? '0' : '40px',
+          textAlign: isMobile ? 'center' : 'left',
+          order: isMobile ? 2 : 1,
+        }}>
             {/* Badge */}
             <div
               ref={badgeRef}
-              className="inline-flex items-center gap-2.5 self-start"
+              className="inline-flex items-center gap-2.5"
               style={{
                 background: 'rgba(255,255,255,0.08)',
                 borderRadius: '50px',
                 padding: '6px 14px',
-                fontSize: '13px',
+                fontSize: isMobile ? '12px' : '13px',
+                alignSelf: isMobile ? 'center' : 'flex-start',
               }}
             >
               <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#e07030' }} />
@@ -121,7 +141,7 @@ const Hero = () => {
               ref={headingRef}
               style={{
                 fontFamily: 'Space Grotesk, sans-serif',
-                fontSize: '68px',
+                fontSize: isMobile ? '36px' : '68px',
                 fontWeight: 800,
                 color: 'white',
                 lineHeight: 1.1,
@@ -137,9 +157,9 @@ const Hero = () => {
             <p
               ref={descRef}
               style={{
-                fontSize: '16px',
+                fontSize: isMobile ? '14px' : '16px',
                 color: '#999',
-                maxWidth: '400px',
+                maxWidth: isMobile ? '100%' : '400px',
                 marginTop: '20px',
                 lineHeight: 1.7,
               }}
@@ -149,8 +169,17 @@ const Hero = () => {
             </p>
 
             {/* CTAs */}
-            <div ref={buttonsRef} className="flex items-center" style={{ marginTop: '36px', gap: '20px' }}>
-              <button className="hero-cta-btn">Work With Us</button>
+            <div
+              ref={buttonsRef}
+              className="flex items-center"
+              style={{
+                marginTop: isMobile ? '28px' : '36px',
+                gap: isMobile ? '12px' : '20px',
+                flexDirection: isMobile ? 'column' : 'row',
+                width: isMobile ? '100%' : 'auto',
+              }}
+            >
+              <button className="hero-cta-btn" style={{ width: isMobile ? '100%' : 'auto' }}>Work With Us</button>
               <button className="group flex items-center gap-2 text-white hover:text-white/80 transition-colors" style={{ fontSize: '15px' }}>
                 <span>Explore our services</span>
                 <svg className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,11 +190,18 @@ const Hero = () => {
           </div>
 
         {/* Right Column - 3D Visual */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingRight: '60px' }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingRight: isMobile ? '0' : '60px',
+          order: isMobile ? 1 : 2,
+          marginBottom: isMobile ? '24px' : '0',
+        }}>
           <div
             ref={imageRef}
             style={{
-              width: '500px',
+              width: isMobile ? '280px' : '500px',
               height: 'auto',
               display: 'block',
             }}

@@ -13,6 +13,18 @@ interface TestimonialsProps {
   testimonials?: Testimonial[];
 }
 
+// Mobile detection hook
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  return isMobile;
+};
+
 const defaultTestimonials: Testimonial[] = [
   {
     id: '1',
@@ -49,6 +61,7 @@ const Testimonials = ({ testimonials = defaultTestimonials }: TestimonialsProps)
   const [displayedIndex, setDisplayedIndex] = useState(0);
   const quoteRef = useRef<HTMLParagraphElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   // GSAP transition on index change
   useEffect(() => {
@@ -107,7 +120,7 @@ const Testimonials = ({ testimonials = defaultTestimonials }: TestimonialsProps)
 
   return (
     <section style={{
-      minHeight: '100vh',
+      minHeight: isMobile ? 'auto' : '100vh',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -115,7 +128,7 @@ const Testimonials = ({ testimonials = defaultTestimonials }: TestimonialsProps)
       background: '#080808',
       position: 'relative',
       overflow: 'hidden',
-      padding: '80px 48px',
+      padding: isMobile ? '60px 24px' : '80px 48px',
     }}>
       {/* Subtle background glow */}
       <div style={{
@@ -123,78 +136,82 @@ const Testimonials = ({ testimonials = defaultTestimonials }: TestimonialsProps)
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: '700px',
-        height: '500px',
+        width: isMobile ? '350px' : '700px',
+        height: isMobile ? '300px' : '500px',
         background: 'radial-gradient(ellipse, rgba(194,98,42,0.07) 0%, transparent 65%)',
         pointerEvents: 'none',
         zIndex: 0,
       }} />
 
-      {/* Left arrow */}
-      <button
-        onClick={goToPrev}
-        disabled={currentIndex === 0}
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '48px',
-          transform: 'translateY(-50%)',
-          width: '44px',
-          height: '44px',
-          borderRadius: '50%',
-          background: 'rgba(255,255,255,0.07)',
-          border: '1px solid rgba(255,255,255,0.1)',
-          color: 'white',
-          fontSize: '22px',
-          cursor: currentIndex === 0 ? 'not-allowed' : 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          transition: 'all 0.2s ease',
-          opacity: currentIndex === 0 ? 0.25 : 1,
-          pointerEvents: currentIndex === 0 ? 'none' : 'auto',
-          zIndex: 1,
-        }}
-      >
-        ←
-      </button>
+      {/* Left arrow - hidden on mobile */}
+      {!isMobile && (
+        <button
+          onClick={goToPrev}
+          disabled={currentIndex === 0}
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '48px',
+            transform: 'translateY(-50%)',
+            width: '44px',
+            height: '44px',
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,0.07)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            color: 'white',
+            fontSize: '22px',
+            cursor: currentIndex === 0 ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s ease',
+            opacity: currentIndex === 0 ? 0.25 : 1,
+            pointerEvents: currentIndex === 0 ? 'none' : 'auto',
+            zIndex: 1,
+          }}
+        >
+          ←
+        </button>
+      )}
 
-      {/* Right arrow */}
-      <button
-        onClick={goToNext}
-        disabled={currentIndex === testimonials.length - 1}
-        style={{
-          position: 'absolute',
-          top: '50%',
-          right: '48px',
-          transform: 'translateY(-50%)',
-          width: '44px',
-          height: '44px',
-          borderRadius: '50%',
-          background: 'rgba(255,255,255,0.07)',
-          border: '1px solid rgba(255,255,255,0.1)',
-          color: 'white',
-          fontSize: '22px',
-          cursor: currentIndex === testimonials.length - 1 ? 'not-allowed' : 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          transition: 'all 0.2s ease',
-          opacity: currentIndex === testimonials.length - 1 ? 0.25 : 1,
-          pointerEvents: currentIndex === testimonials.length - 1 ? 'none' : 'auto',
-          zIndex: 1,
-        }}
-      >
-        →
-      </button>
+      {/* Right arrow - hidden on mobile */}
+      {!isMobile && (
+        <button
+          onClick={goToNext}
+          disabled={currentIndex === testimonials.length - 1}
+          style={{
+            position: 'absolute',
+            top: '50%',
+            right: '48px',
+            transform: 'translateY(-50%)',
+            width: '44px',
+            height: '44px',
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,0.07)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            color: 'white',
+            fontSize: '22px',
+            cursor: currentIndex === testimonials.length - 1 ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s ease',
+            opacity: currentIndex === testimonials.length - 1 ? 0.25 : 1,
+            pointerEvents: currentIndex === testimonials.length - 1 ? 'none' : 'auto',
+            zIndex: 1,
+          }}
+        >
+          →
+        </button>
+      )}
 
       {/* Quote text */}
       <p
         ref={quoteRef}
         style={{
-          maxWidth: '900px',
+          maxWidth: isMobile ? '100%' : '900px',
           textAlign: 'center',
-          fontSize: 'clamp(22px, 3vw, 36px)',
+          fontSize: isMobile ? '18px' : 'clamp(22px, 3vw, 36px)',
           fontWeight: 500,
           color: 'white',
           lineHeight: 1.65,

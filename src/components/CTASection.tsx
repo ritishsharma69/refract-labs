@@ -8,6 +8,14 @@ const CTASection = () => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const chipRef = useRef<HTMLDivElement>(null);
   const [imageError, setImageError] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -57,14 +65,14 @@ const CTASection = () => {
     <section
       ref={sectionRef}
       style={{
-        minHeight: '100vh',
+        minHeight: isMobile ? 'auto' : '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         background: '#080808',
         position: 'relative',
         overflow: 'hidden',
-        padding: '80px 48px',
+        padding: isMobile ? '60px 24px' : '80px 48px',
       }}
     >
       {/* Diagonal light beam - warm orange/white streak from top-right to center-left */}
@@ -74,7 +82,7 @@ const CTASection = () => {
           top: '-20%',
           right: '-10%',
           width: '140%',
-          height: '250px',
+          height: isMobile ? '150px' : '250px',
           background: 'linear-gradient(135deg, transparent 0%, rgba(255,200,150,0.03) 20%, rgba(255,180,120,0.08) 40%, rgba(255,140,80,0.12) 50%, rgba(200,100,40,0.06) 65%, transparent 80%)',
           transform: 'rotate(-25deg)',
           filter: 'blur(60px)',
@@ -89,7 +97,7 @@ const CTASection = () => {
           top: '10%',
           right: '5%',
           width: '100%',
-          height: '120px',
+          height: isMobile ? '80px' : '120px',
           background: 'linear-gradient(135deg, transparent 10%, rgba(255,255,255,0.04) 40%, rgba(255,220,180,0.07) 55%, transparent 75%)',
           transform: 'rotate(-25deg)',
           filter: 'blur(40px)',
@@ -103,9 +111,10 @@ const CTASection = () => {
         style={{
           position: 'absolute',
           top: '40%',
-          left: '30%',
-          width: '600px',
-          height: '400px',
+          left: isMobile ? '50%' : '30%',
+          transform: isMobile ? 'translateX(-50%)' : 'none',
+          width: isMobile ? '300px' : '600px',
+          height: isMobile ? '200px' : '400px',
           background: 'radial-gradient(ellipse, rgba(194,98,42,0.1) 0%, transparent 60%)',
           pointerEvents: 'none',
           zIndex: 0,
@@ -115,18 +124,19 @@ const CTASection = () => {
       {/* Content container */}
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
+          display: isMobile ? 'flex' : 'grid',
+          flexDirection: 'column',
+          gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
           alignItems: 'center',
           maxWidth: '1200px',
           width: '100%',
-          gap: '60px',
+          gap: isMobile ? '32px' : '60px',
           position: 'relative',
           zIndex: 1,
         }}
       >
         {/* Left column - Text & CTA */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: isMobile ? 'center' : 'flex-start', textAlign: isMobile ? 'center' : 'left' }}>
           <h2
             ref={headingRef}
             style={{
@@ -165,21 +175,22 @@ const CTASection = () => {
           </button>
         </div>
 
-        {/* Right column - 3D chip visual */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
+        {/* Right column - 3D chip visual - hidden on mobile */}
+        {!isMobile && (
           <div
-            ref={chipRef}
             style={{
-              width: '100%',
-              maxWidth: '420px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
+            <div
+              ref={chipRef}
+              style={{
+                width: '100%',
+                maxWidth: '420px',
+              }}
+            >
             {!imageError && (
               <img
                 src="/hero-3d.png"
@@ -234,6 +245,7 @@ const CTASection = () => {
             )}
           </div>
         </div>
+        )}
       </div>
     </section>
   );
