@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@theme {
+  --font-inter: "Inter", system-ui, sans-serif;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #080808;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-inter);
+  color: #ffffff;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #c2622a; border-radius: 4px; }
+
+/* ========== LIQUID GLASS NAVBAR ========== */
+.nav-glass {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 9999px;
+  background: rgba(30, 20, 15, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+    0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.nav-logo-btn {
+  padding: 10px 24px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  background: #c2622a;
+  border: none;
+  box-shadow: 0 2px 8px rgba(194, 98, 42, 0.35);
+  transition: all 0.3s ease;
+}
+.nav-logo-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 16px rgba(194, 98, 42, 0.45);
+}
+
+.nav-link {
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
+}
+.nav-link:hover { color: white; }
+
+.cta-btn {
+  padding: 12px 24px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  background: #c2622a;
+  border: none;
+  box-shadow: 0 2px 12px rgba(194, 98, 42, 0.3);
+  transition: all 0.3s ease;
+}
+.cta-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 20px rgba(194, 98, 42, 0.4);
+}
+
+/* Hero CTA Button */
+.hero-cta-btn {
+  padding: 14px 28px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  background: #c2622a;
+  border: none;
+  box-shadow: 0 4px 20px rgba(194, 98, 42, 0.35);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.hero-cta-btn:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 30px rgba(194, 98, 42, 0.5);
+}
+
+/* Pulse Animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
