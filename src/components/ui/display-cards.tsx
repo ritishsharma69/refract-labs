@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Globe, Smartphone, Share2, Target, Megaphone } from "lucide-react";
+import { Globe, Smartphone, Share2, Target } from "lucide-react";
 
 interface DisplayCardProps {
   className?: string;

@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
 
 const Navbar = () => {
+  const location = useLocation();
   const navRef = useRef<HTMLElement>(null);
   const centerNavRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -68,9 +70,9 @@ const Navbar = () => {
   }, [menuOpen]);
 
   const mobileLinks = [
-    { label: 'Home', href: '#home' },
-    { label: 'About', href: '#about' },
-    { label: 'Works', href: '#works' },
+    { label: 'Home', href: '/' },
+    { label: 'About', href: '/about' },
+    { label: 'Works', href: '/works' },
   ];
 
   return (
@@ -101,8 +103,8 @@ const Navbar = () => {
           border: '1px solid rgba(255,255,255,0.08)',
         } : undefined}
       >
-        <a
-          href="#home"
+        <Link
+          to="/"
           className={isMobile ? '' : 'nav-logo-btn'}
           style={isMobile ? {
             color: 'white',
@@ -114,12 +116,12 @@ const Navbar = () => {
           } : undefined}
         >
           RefractWeb
-        </a>
+        </Link>
         {!isMobile && (
           <>
-            <a href="#home" className="nav-link">Home</a>
-            <a href="#about" className="nav-link">About</a>
-            <a href="#works" className="nav-link">Works</a>
+            <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>Home</Link>
+            <Link to="/about" className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}>About</Link>
+            <Link to="/works" className={`nav-link ${location.pathname === '/works' ? 'active' : ''}`}>Works</Link>
           </>
         )}
       </div>
@@ -249,16 +251,16 @@ const Navbar = () => {
             }}
           >
             {mobileLinks.map((link, index) => (
-              <a
+              <Link
                 key={link.label}
-                href={link.href}
+                to={link.href}
                 className="mobile-menu-link"
                 onClick={() => setMenuOpen(false)}
                 style={{
                   fontSize: 'clamp(40px, 10vw, 56px)',
                   fontWeight: 500,
                   fontFamily: 'Space Grotesk, sans-serif',
-                  color: index === 0 ? 'white' : 'rgba(255,255,255,0.5)',
+                  color: location.pathname === link.href ? 'white' : 'rgba(255,255,255,0.5)',
                   textDecoration: 'none',
                   padding: '16px 0',
                   borderBottom: index < mobileLinks.length - 1 ? '1px solid rgba(255,255,255,0.08)' : 'none',
@@ -267,7 +269,7 @@ const Navbar = () => {
                 }}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </div>
 
