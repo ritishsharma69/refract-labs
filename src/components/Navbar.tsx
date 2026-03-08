@@ -128,18 +128,20 @@ const Navbar = () => {
 
       {/* Desktop: Work With Us Button */}
       {!isMobile && (
-        <button
-          ref={buttonRef}
-          className="cta-btn"
-          style={{
-            position: 'absolute',
-            right: '40px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-          }}
-        >
-          Work With Us
-        </button>
+        <Link to="/contact">
+          <button
+            ref={buttonRef}
+            className="cta-btn"
+            style={{
+              position: 'absolute',
+              right: '40px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+            }}
+          >
+            Work With Us
+          </button>
+        </Link>
       )}
 
       {/* Mobile: Hamburger Menu */}
@@ -279,25 +281,26 @@ const Navbar = () => {
               padding: '24px 32px 48px 32px',
             }}
           >
-            <button
-              className="mobile-menu-cta"
-              onClick={() => setMenuOpen(false)}
-              style={{
-                width: '100%',
-                padding: '18px 32px',
-                borderRadius: '50px',
-                background: 'linear-gradient(135deg, #B8622E 0%, #D4956A 50%, #B8622E 100%)',
-                border: 'none',
-                color: 'white',
-                fontSize: '16px',
-                fontWeight: 600,
-                fontFamily: 'Space Grotesk, sans-serif',
-                cursor: 'pointer',
-                letterSpacing: '0.5px',
-              }}
-            >
-              Work With Us
-            </button>
+            <Link to="/contact" onClick={() => setMenuOpen(false)}>
+              <button
+                className="mobile-menu-cta"
+                style={{
+                  width: '100%',
+                  padding: '18px 32px',
+                  borderRadius: '50px',
+                  background: 'linear-gradient(135deg, #B8622E 0%, #D4956A 50%, #B8622E 100%)',
+                  border: 'none',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: 600,
+                  fontFamily: 'Space Grotesk, sans-serif',
+                  cursor: 'pointer',
+                  letterSpacing: '0.5px',
+                }}
+              >
+                Work With Us
+              </button>
+            </Link>
           </div>
         </div>
       )}

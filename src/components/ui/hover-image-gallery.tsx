@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface HoverImageGalleryProps {
   images?: string[];
@@ -20,8 +20,18 @@ export function HoverImageGallery({ images = defaultImages }: HoverImageGalleryP
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const touchStartX = useRef(0);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isMobile) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -34,16 +44,36 @@ export function HoverImageGallery({ images = defaultImages }: HoverImageGalleryP
     setCurrentImageIndex(clampedIndex);
   };
 
-  const handleMouseEnter = () => setIsHovering(true);
-  const handleMouseLeave = () => setIsHovering(false);
+  const handleMouseEnter = () => !isMobile && setIsHovering(true);
+  const handleMouseLeave = () => !isMobile && setIsHovering(false);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX.current - touchEndX;
+    const threshold = 50;
+
+    if (Math.abs(diff) > threshold) {
+      if (diff > 0 && currentImageIndex < images.length - 1) {
+        setCurrentImageIndex(prev => prev + 1);
+      } else if (diff < 0 && currentImageIndex > 0) {
+        setCurrentImageIndex(prev => prev - 1);
+      }
+    }
+  };
 
   return (
     <div className="relative group">
       <div
-        className="relative w-full max-w-[450px] aspect-square overflow-hidden rounded-2xl shadow-2xl cursor-none border border-white/10"
+        className={`relative w-full ${isMobile ? 'max-w-[320px]' : 'max-w-[450px]'} aspect-square overflow-hidden rounded-2xl shadow-2xl ${isMobile ? 'cursor-pointer' : 'cursor-none'} border border-white/10`}
         onMouseMove={handleMouseMove}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         {/* Background glow effect */}
         <div className="absolute -inset-4 bg-gradient-to-r from-orange-500/20 via-amber-500/20 to-orange-500/20 blur-2xl opacity-50 -z-10" />
@@ -55,13 +85,10 @@ export function HoverImageGallery({ images = defaultImages }: HoverImageGalleryP
           className="w-full h-full object-cover transition-all duration-150 ease-out"
         />
 
-        {/* Image counter overlay */}
-        <div className="absolute bottom-4 left-4 bg-black/50 backdrop-blur-md rounded-full px-3 py-1.5 text-white text-sm font-medium">
-          {currentImageIndex + 1} / {images.length}
-        </div>
 
-        {/* Glassmorphic Tooltip with Chevrons */}
-        {isHovering && (
+
+        {/* Glassmorphic Tooltip with Chevrons - Desktop only */}
+        {isHovering && !isMobile && (
           <div
             className="absolute pointer-events-none z-20 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-75"
             style={{
@@ -104,13 +131,14 @@ export function HoverImageGallery({ images = defaultImages }: HoverImageGalleryP
           </div>
         )}
 
-        {/* Progress indicator at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/30">
-          <div 
-            className="h-full bg-gradient-to-r from-orange-500 to-amber-500 transition-all duration-150"
-            style={{ width: `${((currentImageIndex + 1) / images.length) * 100}%` }}
-          />
-        </div>
+        {/* Mobile swipe hint */}
+        {isMobile && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-0 animate-pulse">
+            <span className="text-white/50 text-xs">Swipe to explore</span>
+          </div>
+        )}
+
+
       </div>
     </div>
   );

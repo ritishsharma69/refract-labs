@@ -173,23 +173,23 @@ const CTASection = () => {
         <div
           ref={cardsRef}
           style={{
-            display: isMobile ? 'none' : 'flex',
+            display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            minHeight: '400px',
+            minHeight: isMobile ? '300px' : '400px',
           }}
         >
           <ScratchToReveal
-            width={350}
-            height={350}
+            width={isMobile ? 280 : 350}
+            height={isMobile ? 280 : 350}
             minScratchPercentage={60}
             className="rounded-2xl overflow-hidden"
             gradientColors={["#e07030", "#c25622", "#8B4513"]}
           >
             <div
               style={{
-                width: 350,
-                height: 350,
+                width: isMobile ? 280 : 350,
+                height: isMobile ? 280 : 350,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -201,7 +201,7 @@ const CTASection = () => {
             >
               <span style={{
                 fontFamily: 'Space Grotesk, sans-serif',
-                fontSize: '48px',
+                fontSize: isMobile ? '36px' : '48px',
                 fontWeight: 800,
                 color: '#e07030',
                 letterSpacing: '-2px',
@@ -210,18 +210,18 @@ const CTASection = () => {
               </span>
               <span style={{
                 fontFamily: 'Space Grotesk, sans-serif',
-                fontSize: '20px',
+                fontSize: isMobile ? '16px' : '20px',
                 fontWeight: 600,
                 color: 'white',
-                letterSpacing: '8px',
+                letterSpacing: isMobile ? '6px' : '8px',
                 marginTop: '4px',
               }}>
                 LABS
               </span>
               <p style={{
-                fontSize: '12px',
+                fontSize: isMobile ? '11px' : '12px',
                 color: 'rgba(255,255,255,0.5)',
-                marginTop: '20px',
+                marginTop: isMobile ? '14px' : '20px',
                 textAlign: 'center',
                 maxWidth: '200px',
               }}>

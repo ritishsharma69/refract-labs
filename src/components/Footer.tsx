@@ -61,8 +61,17 @@ const Footer = () => {
     return () => ctx.revert();
   }, []);
 
-  const websiteLinks = ['HOME', 'SERVICES', 'ABOUT', 'WORK WITH US'];
-  const legalLinks = ['TERMS OF SERVICE', 'PRIVACY POLICY', 'COOKIE POLICY'];
+  const websiteLinks = [
+    { label: 'HOME', href: '/' },
+    { label: 'SERVICES', href: '/#services' },
+    { label: 'ABOUT', href: '/about' },
+    { label: 'WORK WITH US', href: '/contact' },
+  ];
+  const legalLinks = [
+    { label: 'TERMS OF SERVICE', href: '#' },
+    { label: 'PRIVACY POLICY', href: '/privacy-policy' },
+    { label: 'COOKIE POLICY', href: '#' },
+  ];
 
   return (
     <footer
@@ -177,8 +186,8 @@ const Footer = () => {
           </span>
           {websiteLinks.map((link) => (
             <a
-              key={link}
-              href="#"
+              key={link.label}
+              href={link.href}
               className="footer-nav-item footer-link"
               style={{
                 fontSize: isMobile ? '13px' : '15px',
@@ -194,7 +203,7 @@ const Footer = () => {
                 textAlign: 'left',
               }}
             >
-              {link}
+              {link.label}
             </a>
           ))}
         </div>
@@ -216,8 +225,8 @@ const Footer = () => {
           </span>
           {legalLinks.map((link) => (
             <a
-              key={link}
-              href="#"
+              key={link.label}
+              href={link.href}
               className="footer-nav-item footer-link"
               style={{
                 fontSize: isMobile ? '13px' : '15px',
@@ -233,7 +242,7 @@ const Footer = () => {
                 textAlign: 'right',
               }}
             >
-              {link}
+              {link.label}
             </a>
           ))}
         </div>

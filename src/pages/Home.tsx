@@ -1,3 +1,6 @@
+import { useEffect } from 'react';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import gsap from 'gsap';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import LogoMarquee from '../components/LogoMarquee';
@@ -10,8 +13,19 @@ import CTASection from '../components/CTASection';
 import Footer from '../components/Footer';
 import useSmoothScroll from '../hooks/useSmoothScroll';
 
+gsap.registerPlugin(ScrollTrigger);
+
 const Home = () => {
   useSmoothScroll();
+
+  // Refresh ScrollTrigger after component mounts to ensure proper calculations
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 100);
+
+    return () => clearTimeout(timeout);
+  }, []);
 
   return (
     <div style={{ width: '100%', minHeight: '100vh' }}>

@@ -2,32 +2,26 @@ import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Navbar from '../components/Navbar';
-import TeamCards, { type TeamMemberData } from '../components/ui/team-cards';
+import { Carousel, TestimonialCard, type iTestimonial } from '../components/ui/retro-testimonial';
 import CTASection from '../components/CTASection';
 import Footer from '../components/Footer';
 import useSmoothScroll from '../hooks/useSmoothScroll';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Default team data
-const TEAM_MEMBERS: TeamMemberData[] = [
+// Team data for testimonial carousel
+const TEAM_MEMBERS: iTestimonial[] = [
   {
-    id: '1',
     name: 'Adam Guarino',
-    role: 'Co-Founder and COO',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=800&fit=crop&crop=face',
-    description: 'Adam orchestrates creative strategy and production for high-growth organizations and enterprise partners. He bridges the gap between ambitious visual concepts and operational reality, driving projects from direction to delivery. Trusted to execute in high-stakes environments, he brings the structure required to turn digital initiatives into commercial impact.',
-    email: 'adam@refractweb.com',
-    social: { linkedin: '#' },
+    designation: 'Co-Founder and COO',
+    profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=800&fit=crop&crop=face',
+    description: 'Adam orchestrates creative strategy and production for high-growth organizations and enterprise partners. He bridges the gap between ambitious visual concepts and operational reality, driving projects from direction to delivery.',
   },
   {
-    id: '2',
     name: 'Jake Young',
-    role: 'Co-Founder and CEO',
-    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=800&fit=crop&crop=face',
-    description: 'Jake operates across major creative markets including San Diego and London, contributing to work built for global visibility and commercial impact. He works alongside creative and marketing teams to move projects from direction to delivery, supporting brand and campaign platforms where precision, judgment, and reliability matter.',
-    email: 'jake@refractweb.com',
-    social: { linkedin: '#' },
+    designation: 'Co-Founder and CEO',
+    profileImage: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=800&fit=crop&crop=face',
+    description: 'Jake operates across major creative markets including San Diego and London, contributing to work built for global visibility and commercial impact. Trusted to deliver in high-stakes environments.',
   },
 ];
 
@@ -122,13 +116,13 @@ const About = () => {
         const cards = cardsRef.current?.querySelectorAll('.service-card');
 
         if (!isMobileView && cards && cards.length > 0) {
-          cards.forEach((card) => {
+          cards.forEach((card, idx) => {
             gsap.set(card, { opacity: 1 });
             ScrollTrigger.create({
               trigger: card,
               start: 'top 20%',
               end: 'bottom 20%',
-              pin: true,
+              pin: idx < cards.length - 1, // Don't pin the last card
               pinSpacing: false,
               onUpdate: (self) => {
                 const progress = self.progress;
@@ -154,10 +148,13 @@ const About = () => {
             );
           });
         }
+
+        // Refresh ScrollTrigger after all animations are set up
+        ScrollTrigger.refresh();
       });
 
       return () => ctx.revert();
-    }, 50);
+    }, 100);
 
     return () => clearTimeout(timeout);
   }, []);
@@ -210,9 +207,39 @@ const About = () => {
         </div>
       </div>
 
-      {/* Team Cards Section */}
-      <div style={{ padding: isMobile ? '20px 0' : '40px 0' }}>
-        <TeamCards members={TEAM_MEMBERS} />
+      {/* Team Section - Testimonial Carousel */}
+      <div style={{ padding: isMobile ? '20px 16px' : '40px 80px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <h2 style={{
+            fontFamily: 'Space Grotesk, sans-serif',
+            fontSize: isMobile ? '28px' : '42px',
+            fontWeight: 700,
+            color: 'white',
+            marginBottom: '16px',
+          }}>
+            Meet The Team
+          </h2>
+          <p style={{
+            fontSize: isMobile ? '14px' : '16px',
+            color: '#888',
+            maxWidth: '500px',
+            margin: '0 auto',
+            lineHeight: 1.7,
+          }}>
+            The people behind RefractWeb
+          </p>
+        </div>
+        <Carousel
+          items={TEAM_MEMBERS.map((member, index) => (
+            <TestimonialCard
+              key={member.name}
+              testimonial={member}
+              index={index}
+              layout
+              onCardClose={() => {}}
+            />
+          ))}
+        />
       </div>
 
       {/* Quote Section */}

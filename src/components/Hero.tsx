@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { HoverImageGallery } from './ui/hover-image-gallery';
+import { SplineScene } from './ui/splite';
+import { Spotlight } from './ui/spotlight';
 
 const Hero = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -203,33 +204,41 @@ const Hero = () => {
             </div>
           </div>
 
-        {/* Mobile - Hide cards for cleaner mobile view */}
-
-        {/* Desktop - 3D Service Carousel on right */}
-        {!isMobile && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            order: 2,
-            flex: 1,
-            minWidth: '500px',
-          }}>
-            <div
-              ref={imageRef}
-              style={{
-                width: '100%',
-                maxWidth: '600px',
-                minHeight: '400px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <HoverImageGallery />
-            </div>
+        {/* Right Column - 3D Robot Spline Scene */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          order: isMobile ? 2 : 2,
+          flex: 1,
+          minWidth: isMobile ? 'auto' : '600px',
+          marginTop: isMobile ? '32px' : '0',
+          width: isMobile ? '100%' : 'auto',
+          position: 'relative',
+        }}>
+          {/* Spotlight effect */}
+          <Spotlight
+            className="-top-40 left-0 md:left-20 md:-top-20"
+            fill="#e07030"
+          />
+          <div
+            ref={imageRef}
+            style={{
+              width: '100%',
+              maxWidth: isMobile ? '400px' : '900px',
+              minHeight: isMobile ? '450px' : '700px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
+            }}
+          >
+            <SplineScene
+              scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+              className="w-full h-full"
+            />
           </div>
-        )}
+        </div>
       </div>
     </section>
   );
