@@ -1,10 +1,69 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import Navbar from '../components/Navbar';
-import DisplayCards from '../components/ui/display-cards';
+import RadialOrbitalTimeline from '../components/ui/radial-orbital-timeline';
 import LogoMarquee from '../components/LogoMarquee';
 import Footer from '../components/Footer';
 import useSmoothScroll from '../hooks/useSmoothScroll';
+import { Calendar, Code, FileText, User, Clock } from 'lucide-react';
+
+const timelineData = [
+  {
+    id: 1,
+    title: "Discovery",
+    date: "Week 1",
+    content: "Deep dive into your brand, audience, and business goals.",
+    category: "Planning",
+    icon: Calendar,
+    relatedIds: [2],
+    status: "completed" as const,
+    energy: 100,
+  },
+  {
+    id: 2,
+    title: "Strategy",
+    date: "Week 2",
+    content: "Craft a comprehensive roadmap and technical architecture.",
+    category: "Design",
+    icon: FileText,
+    relatedIds: [1, 3],
+    status: "completed" as const,
+    energy: 90,
+  },
+  {
+    id: 3,
+    title: "Build",
+    date: "Week 3-6",
+    content: "Transform vision into reality with precision development.",
+    category: "Development",
+    icon: Code,
+    relatedIds: [2, 4],
+    status: "in-progress" as const,
+    energy: 60,
+  },
+  {
+    id: 4,
+    title: "Refine",
+    date: "Week 7",
+    content: "Polish every detail and ensure flawless performance.",
+    category: "Testing",
+    icon: User,
+    relatedIds: [3, 5],
+    status: "pending" as const,
+    energy: 30,
+  },
+  {
+    id: 5,
+    title: "Launch",
+    date: "Week 8",
+    content: "Go live and watch your digital identity take flight.",
+    category: "Release",
+    icon: Clock,
+    relatedIds: [4],
+    status: "pending" as const,
+    energy: 10,
+  },
+];
 
 const Contact = () => {
   useSmoothScroll();
@@ -97,21 +156,16 @@ const Contact = () => {
           </div>
         </div>
 
-        {/* Right - Display Cards */}
+        {/* Right - Radial Orbital Timeline */}
         <div style={{
           flex: 1,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          minHeight: isMobile ? '280px' : '500px',
-          overflow: 'hidden',
+          minHeight: isMobile ? '400px' : '500px',
+          overflow: 'visible',
         }}>
-          <div style={{
-            transform: isMobile ? 'scale(0.65)' : 'scale(1)',
-            transformOrigin: 'center center',
-          }}>
-            <DisplayCards />
-          </div>
+          <RadialOrbitalTimeline timelineData={timelineData} />
         </div>
       </div>
 

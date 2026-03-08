@@ -1,7 +1,66 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
-import { ScratchToReveal } from './ui/scratch-to-reveal';
+import RadialOrbitalTimeline from './ui/radial-orbital-timeline';
+import { Calendar, Code, FileText, User, Clock } from 'lucide-react';
+
+const timelineData = [
+  {
+    id: 1,
+    title: "Discovery",
+    date: "Week 1",
+    content: "Deep dive into your brand, audience, and business goals.",
+    category: "Planning",
+    icon: Calendar,
+    relatedIds: [2],
+    status: "completed" as const,
+    energy: 100,
+  },
+  {
+    id: 2,
+    title: "Strategy",
+    date: "Week 2",
+    content: "Craft a comprehensive roadmap and technical architecture.",
+    category: "Design",
+    icon: FileText,
+    relatedIds: [1, 3],
+    status: "completed" as const,
+    energy: 90,
+  },
+  {
+    id: 3,
+    title: "Build",
+    date: "Week 3-6",
+    content: "Transform vision into reality with precision development.",
+    category: "Development",
+    icon: Code,
+    relatedIds: [2, 4],
+    status: "in-progress" as const,
+    energy: 60,
+  },
+  {
+    id: 4,
+    title: "Refine",
+    date: "Week 7",
+    content: "Polish every detail and ensure flawless performance.",
+    category: "Testing",
+    icon: User,
+    relatedIds: [3, 5],
+    status: "pending" as const,
+    energy: 30,
+  },
+  {
+    id: 5,
+    title: "Launch",
+    date: "Week 8",
+    content: "Go live and watch your digital identity take flight.",
+    category: "Release",
+    icon: Clock,
+    relatedIds: [4],
+    status: "pending" as const,
+    energy: 10,
+  },
+];
 
 const CTASection = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -169,66 +228,17 @@ const CTASection = () => {
           </Link>
         </div>
 
-        {/* Right column - Scratch to Reveal */}
+        {/* Right column - Radial Orbital Timeline */}
         <div
           ref={cardsRef}
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            minHeight: isMobile ? '300px' : '400px',
+            minHeight: isMobile ? '400px' : '500px',
           }}
         >
-          <ScratchToReveal
-            width={isMobile ? 280 : 350}
-            height={isMobile ? 280 : 350}
-            minScratchPercentage={60}
-            className="rounded-2xl overflow-hidden"
-            gradientColors={["#e07030", "#c25622", "#8B4513"]}
-          >
-            <div
-              style={{
-                width: isMobile ? 280 : 350,
-                height: isMobile ? 280 : 350,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)',
-                borderRadius: '16px',
-                border: '1px solid rgba(255,255,255,0.1)',
-              }}
-            >
-              <span style={{
-                fontFamily: 'Space Grotesk, sans-serif',
-                fontSize: isMobile ? '36px' : '48px',
-                fontWeight: 800,
-                color: '#e07030',
-                letterSpacing: '-2px',
-              }}>
-                REFRACT
-              </span>
-              <span style={{
-                fontFamily: 'Space Grotesk, sans-serif',
-                fontSize: isMobile ? '16px' : '20px',
-                fontWeight: 600,
-                color: 'white',
-                letterSpacing: isMobile ? '6px' : '8px',
-                marginTop: '4px',
-              }}>
-                LABS
-              </span>
-              <p style={{
-                fontSize: isMobile ? '11px' : '12px',
-                color: 'rgba(255,255,255,0.5)',
-                marginTop: isMobile ? '14px' : '20px',
-                textAlign: 'center',
-                maxWidth: '200px',
-              }}>
-                Scratch to reveal your identity
-              </p>
-            </div>
-          </ScratchToReveal>
+          <RadialOrbitalTimeline timelineData={timelineData} />
         </div>
       </div>
     </section>

@@ -211,21 +211,20 @@ const Hero = () => {
           justifyContent: 'center',
           order: isMobile ? 2 : 2,
           flex: 1,
-          minWidth: isMobile ? 'auto' : '600px',
-          marginTop: isMobile ? '32px' : '0',
           width: isMobile ? '100%' : 'auto',
+          marginTop: isMobile ? '32px' : '0',
           position: 'relative',
         }}>
           {/* Spotlight effect */}
           <Spotlight
-            className="-top-40 left-0 md:left-20 md:-top-20"
+            className="-top-40 left-0 md:left-10 md:-top-20"
             fill="#e07030"
           />
           <div
             ref={imageRef}
             style={{
               width: '100%',
-              maxWidth: isMobile ? '400px' : '900px',
+              maxWidth: isMobile ? '400px' : '800px',
               minHeight: isMobile ? '450px' : '700px',
               display: 'flex',
               alignItems: 'center',
