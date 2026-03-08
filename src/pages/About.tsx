@@ -2,28 +2,32 @@ import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Navbar from '../components/Navbar';
-import TeamShowcase, { type TeamMember } from '../components/ui/team-showcase';
+import TeamCards, { type TeamMemberData } from '../components/ui/team-cards';
 import CTASection from '../components/CTASection';
 import Footer from '../components/Footer';
 import useSmoothScroll from '../hooks/useSmoothScroll';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Sample team data - this would come from backend
-const TEAM_MEMBERS: TeamMember[] = [
+// Default team data
+const TEAM_MEMBERS: TeamMemberData[] = [
   {
     id: '1',
     name: 'Adam Guarino',
     role: 'Co-Founder and COO',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face',
-    social: { linkedin: '#', twitter: '#' },
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=800&fit=crop&crop=face',
+    description: 'Adam orchestrates creative strategy and production for high-growth organizations and enterprise partners. He bridges the gap between ambitious visual concepts and operational reality, driving projects from direction to delivery. Trusted to execute in high-stakes environments, he brings the structure required to turn digital initiatives into commercial impact.',
+    email: 'adam@refractweb.com',
+    social: { linkedin: '#' },
   },
   {
     id: '2',
     name: 'Jake Young',
     role: 'Co-Founder and CEO',
-    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face',
-    social: { linkedin: '#', twitter: '#' },
+    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=800&fit=crop&crop=face',
+    description: 'Jake operates across major creative markets including San Diego and London, contributing to work built for global visibility and commercial impact. He works alongside creative and marketing teams to move projects from direction to delivery, supporting brand and campaign platforms where precision, judgment, and reliability matter.',
+    email: 'jake@refractweb.com',
+    social: { linkedin: '#' },
   },
 ];
 
@@ -67,69 +71,95 @@ const About = () => {
   }, []);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Hero animation
-      const heroH1 = heroRef.current?.querySelector('h1');
-      const heroP = heroRef.current?.querySelector('p');
+    // Small delay to ensure DOM is fully ready
+    const timeout = setTimeout(() => {
+      const ctx = gsap.context(() => {
+        // Hero animation
+        const heroH1 = heroRef.current?.querySelector('h1');
+        const heroP = heroRef.current?.querySelector('p');
 
-      if (heroH1) {
-        gsap.fromTo(heroH1,
-          { y: 60, opacity: 0 },
-          { y: 0, opacity: 1, duration: 1, ease: 'power3.out', delay: 0.3 }
-        );
-      }
-      if (heroP) {
-        gsap.fromTo(heroP,
-          { y: 40, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out', delay: 0.5 }
-        );
-      }
+        if (heroH1) {
+          gsap.set(heroH1, { opacity: 1 });
+          gsap.fromTo(heroH1,
+            { y: 60, opacity: 0 },
+            { y: 0, opacity: 1, duration: 1, ease: 'power3.out', delay: 0.1 }
+          );
+        }
+        if (heroP) {
+          gsap.set(heroP, { opacity: 1 });
+          gsap.fromTo(heroP,
+            { y: 40, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out', delay: 0.3 }
+          );
+        }
 
-      // Quote animation
-      if (quoteRef.current) {
-        gsap.fromTo(quoteRef.current,
-          { y: 60, opacity: 0 },
-          {
-            y: 0, opacity: 1, duration: 1, ease: 'power3.out',
-            scrollTrigger: { trigger: quoteRef.current, start: 'top 80%' }
-          }
-        );
-      }
+        // Quote animation - ensure visibility
+        if (quoteRef.current) {
+          gsap.set(quoteRef.current, { opacity: 1 });
+          gsap.fromTo(quoteRef.current,
+            { y: 60, opacity: 0 },
+            {
+              y: 0, opacity: 1, duration: 1, ease: 'power3.out',
+              scrollTrigger: { trigger: quoteRef.current, start: 'top 85%' }
+            }
+          );
+        }
 
-      // Capabilities animation
-      if (capabilitiesRef.current) {
-        gsap.fromTo(capabilitiesRef.current,
-          { y: 40, opacity: 0 },
-          {
-            y: 0, opacity: 1, duration: 0.8, ease: 'power3.out',
-            scrollTrigger: { trigger: capabilitiesRef.current, start: 'top 80%' }
-          }
-        );
-      }
+        // Capabilities animation - ensure visibility
+        if (capabilitiesRef.current) {
+          gsap.set(capabilitiesRef.current, { opacity: 1 });
+          gsap.fromTo(capabilitiesRef.current,
+            { y: 40, opacity: 0 },
+            {
+              y: 0, opacity: 1, duration: 0.8, ease: 'power3.out',
+              scrollTrigger: { trigger: capabilitiesRef.current, start: 'top 85%' }
+            }
+          );
+        }
 
-      // Service cards stacking animation
-      const cards = cardsRef.current?.querySelectorAll('.service-card');
-      cards?.forEach((card) => {
-        ScrollTrigger.create({
-          trigger: card,
-          start: 'top 20%',
-          end: 'bottom 20%',
-          pin: true,
-          pinSpacing: false,
-          onUpdate: (self) => {
-            const progress = self.progress;
-            gsap.to(card, {
-              scale: 1 - (progress * 0.05),
-              filter: `blur(${progress * 3}px)`,
-              opacity: 1 - (progress * 0.3),
-              duration: 0.1,
+        // Service cards stacking animation - only on desktop
+        const isMobileView = window.innerWidth < 768;
+        const cards = cardsRef.current?.querySelectorAll('.service-card');
+
+        if (!isMobileView && cards && cards.length > 0) {
+          cards.forEach((card) => {
+            gsap.set(card, { opacity: 1 });
+            ScrollTrigger.create({
+              trigger: card,
+              start: 'top 20%',
+              end: 'bottom 20%',
+              pin: true,
+              pinSpacing: false,
+              onUpdate: (self) => {
+                const progress = self.progress;
+                gsap.to(card, {
+                  scale: 1 - (progress * 0.05),
+                  filter: `blur(${progress * 3}px)`,
+                  opacity: 1 - (progress * 0.3),
+                  duration: 0.1,
+                });
+              }
             });
-          }
-        });
+          });
+        } else if (cards && cards.length > 0) {
+          // Mobile: simple fade-in animation
+          cards.forEach((card) => {
+            gsap.set(card, { opacity: 1 });
+            gsap.fromTo(card,
+              { y: 40, opacity: 0 },
+              {
+                y: 0, opacity: 1, duration: 0.6, ease: 'power3.out',
+                scrollTrigger: { trigger: card, start: 'top 90%' }
+              }
+            );
+          });
+        }
       });
-    });
 
-    return () => ctx.revert();
+      return () => ctx.revert();
+    }, 50);
+
+    return () => clearTimeout(timeout);
   }, []);
 
   return (
@@ -180,9 +210,9 @@ const About = () => {
         </div>
       </div>
 
-      {/* Team Showcase Section */}
-      <div style={{ padding: isMobile ? '40px 0' : '60px 0' }}>
-        <TeamShowcase members={TEAM_MEMBERS} />
+      {/* Team Cards Section */}
+      <div style={{ padding: isMobile ? '20px 0' : '40px 0' }}>
+        <TeamCards members={TEAM_MEMBERS} />
       </div>
 
       {/* Quote Section */}
@@ -248,7 +278,7 @@ const About = () => {
       <div
         ref={cardsRef}
         style={{
-          padding: isMobile ? '40px 24px 200px' : '60px 80px 400px',
+          padding: isMobile ? '40px 16px 60px' : '60px 80px 400px',
         }}
       >
         {SERVICES.map((service, index) => (

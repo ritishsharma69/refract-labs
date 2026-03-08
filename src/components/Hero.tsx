@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import DisplayCards from './ui/display-cards';
+import { HoverImageGallery } from './ui/hover-image-gallery';
 
 const Hero = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -118,7 +118,7 @@ const Hero = () => {
           justifyContent: 'center',
           paddingRight: isMobile ? '0' : '40px',
           textAlign: 'left',
-          order: isMobile ? 2 : 1,
+          order: 1,
         }}>
             {/* Badge */}
             <div
@@ -203,28 +203,33 @@ const Hero = () => {
             </div>
           </div>
 
-        {/* Right Column - Service Cards */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          paddingRight: isMobile ? '0' : '60px',
-          order: isMobile ? 1 : 2,
-          marginBottom: isMobile ? '24px' : '0',
-        }}>
-          <div
-            ref={imageRef}
-            style={{
-              width: isMobile ? '320px' : '500px',
-              minHeight: isMobile ? '320px' : '400px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <DisplayCards />
+        {/* Mobile - Hide cards for cleaner mobile view */}
+
+        {/* Desktop - 3D Service Carousel on right */}
+        {!isMobile && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            order: 2,
+            flex: 1,
+            minWidth: '500px',
+          }}>
+            <div
+              ref={imageRef}
+              style={{
+                width: '100%',
+                maxWidth: '600px',
+                minHeight: '400px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <HoverImageGallery />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );

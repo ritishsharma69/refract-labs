@@ -8,15 +8,29 @@ import useSmoothScroll from '../hooks/useSmoothScroll';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Sample work items - this would come from backend
-const WORK_ITEMS = [
-  { id: 1, title: 'Color Pallet', type: 'Branding', image: '/work-1.png' },
-  { id: 2, title: 'Design That Inspires', type: 'Web Design', image: '/work-2.png' },
-  { id: 3, title: 'Nublink', type: 'Identity', image: '/work-3.png' },
-  { id: 4, title: 'AI Platform', type: 'Software', image: '/work-4.png' },
-  { id: 5, title: 'Typography System', type: 'Branding', image: '/work-5.png' },
-  { id: 6, title: 'E-commerce', type: 'Web Development', image: '/work-6.png' },
+interface WorkItem {
+  id: string | number;
+  title: string;
+  type: string;
+  image: string;
+}
+
+// Default work items
+const DEFAULT_WORK_ITEMS: WorkItem[] = [
+  { id: '1', title: 'Color Pallet', type: 'Branding', image: '/work-1.png' },
+  { id: '2', title: 'Design That Inspires', type: 'Web Design', image: '/work-2.png' },
+  { id: '3', title: 'Nublink', type: 'Identity', image: '/work-3.png' },
+  { id: '4', title: 'AI Platform', type: 'Software', image: '/work-4.png' },
+  { id: '5', title: 'Typography System', type: 'Branding', image: '/work-5.png' },
+  { id: '6', title: 'E-commerce', type: 'Web Development', image: '/work-6.png' },
 ];
+
+// Get works from localStorage or use defaults
+const getWorkItems = (): WorkItem[] => {
+  const stored = localStorage.getItem('workItems');
+  if (stored) return JSON.parse(stored);
+  return DEFAULT_WORK_ITEMS;
+};
 
 const Works = () => {
   useSmoothScroll();
@@ -24,11 +38,14 @@ const Works = () => {
   const marqueeRef1 = useRef<HTMLDivElement>(null);
   const marqueeRef2 = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [workItems, setWorkItems] = useState<WorkItem[]>([]);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
+    // Load work items from localStorage
+    setWorkItems(getWorkItems());
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -55,29 +72,36 @@ const Works = () => {
       const marquee1 = marqueeRef1.current;
       const marquee2 = marqueeRef2.current;
 
-      if (marquee1) {
-        const width = marquee1.scrollWidth / 2;
-        gsap.to(marquee1, {
-          x: -width,
-          duration: 30,
-          ease: 'none',
-          repeat: -1,
-        });
-      }
+      // Wait for DOM to be ready with content
+      setTimeout(() => {
+        if (marquee1) {
+          const width = marquee1.scrollWidth / 2;
+          gsap.set(marquee1, { x: 0 });
+          gsap.to(marquee1, {
+            x: -width,
+            duration: 25,
+            ease: 'none',
+            repeat: -1,
+          });
+        }
 
-      if (marquee2) {
-        const width = marquee2.scrollWidth / 2;
-        gsap.fromTo(marquee2,
-          { x: -width },
-          { x: 0, duration: 30, ease: 'none', repeat: -1 }
-        );
-      }
+        if (marquee2) {
+          const width = marquee2.scrollWidth / 2;
+          gsap.set(marquee2, { x: -width });
+          gsap.to(marquee2, {
+            x: 0,
+            duration: 25,
+            ease: 'none',
+            repeat: -1,
+          });
+        }
+      }, 100);
     });
 
     return () => ctx.revert();
-  }, []);
+  }, [workItems]);
 
-  const renderWorkCard = (item: typeof WORK_ITEMS[0], index: number) => (
+  const renderWorkCard = (item: WorkItem, index: number) => (
     <div
       key={`${item.id}-${index}`}
       style={{
@@ -103,7 +127,7 @@ const Works = () => {
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: `linear-gradient(135deg, hsl(${(item.id * 60) % 360}, 70%, 20%) 0%, hsl(${(item.id * 60 + 30) % 360}, 60%, 15%) 100%)`,
+          background: `linear-gradient(135deg, hsl(${(Number(item.id) * 60) % 360}, 70%, 20%) 0%, hsl(${(Number(item.id) * 60 + 30) % 360}, 60%, 15%) 100%)`,
         }}>
           {/* Mock UI elements */}
           <div style={{
@@ -224,7 +248,7 @@ const Works = () => {
           }}
         >
           {/* Duplicate items for seamless loop */}
-          {[...WORK_ITEMS, ...WORK_ITEMS].map((item, index) => renderWorkCard(item, index))}
+          {[...workItems, ...workItems].map((item, index) => renderWorkCard(item, index))}
         </div>
       </div>
 
@@ -241,7 +265,7 @@ const Works = () => {
           }}
         >
           {/* Duplicate items for seamless loop */}
-          {[...WORK_ITEMS.slice().reverse(), ...WORK_ITEMS.slice().reverse()].map((item, index) => renderWorkCard(item, index))}
+          {[...workItems.slice().reverse(), ...workItems.slice().reverse()].map((item, index) => renderWorkCard(item, index))}
         </div>
       </div>
 
