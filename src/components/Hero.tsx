@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
+import DisplayCards from './ui/display-cards';
 
 const Hero = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -8,7 +9,6 @@ const Hero = () => {
   const descRef = useRef<HTMLParagraphElement>(null);
   const buttonsRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
-  const [imageError, setImageError] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -203,7 +203,7 @@ const Hero = () => {
             </div>
           </div>
 
-        {/* Right Column - 3D Visual */}
+        {/* Right Column - Service Cards */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -215,63 +215,14 @@ const Hero = () => {
           <div
             ref={imageRef}
             style={{
-              width: isMobile ? '280px' : '500px',
-              height: 'auto',
-              display: 'block',
+              width: isMobile ? '320px' : '500px',
+              minHeight: isMobile ? '320px' : '400px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            {!imageError && (
-              <img
-                src="/hero-3d.png"
-                alt="3D CPU Chip"
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  filter: 'drop-shadow(0 40px 80px rgba(0,0,0,0.6))',
-                }}
-                onError={() => setImageError(true)}
-              />
-            )}
-            {imageError && (
-              <div style={{ aspectRatio: '1/1', position: 'relative' }}>
-                <svg viewBox="0 0 400 400" style={{ width: '100%', height: '100%', filter: 'drop-shadow(0 40px 80px rgba(0,0,0,0.6))' }}>
-                  <defs>
-                    <linearGradient id="cpuGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#3a3a3a" />
-                      <stop offset="50%" stopColor="#2a2a2a" />
-                      <stop offset="100%" stopColor="#1a1a1a" />
-                    </linearGradient>
-                    <linearGradient id="chipGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#4a4a4a" />
-                      <stop offset="50%" stopColor="#333" />
-                      <stop offset="100%" stopColor="#222" />
-                    </linearGradient>
-                    <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#c2622a" />
-                      <stop offset="100%" stopColor="#a15432" />
-                    </linearGradient>
-                  </defs>
-                  <rect x="60" y="60" width="280" height="280" rx="12" fill="url(#cpuGrad)" stroke="#444" strokeWidth="2"/>
-                  <rect x="100" y="100" width="200" height="200" rx="8" fill="url(#chipGrad)" stroke="#555" strokeWidth="1"/>
-                  <rect x="140" y="140" width="120" height="120" rx="4" fill="url(#glowGrad)" opacity="0.8"/>
-                  <text x="200" y="210" textAnchor="middle" fill="white" fontSize="40" fontWeight="bold" fontFamily="Space Grotesk, sans-serif">R</text>
-                  {[160, 180, 200, 220, 240].map((pos, i) => (
-                    <g key={i}>
-                      <line x1={pos} y1="145" x2={pos} y2="255" stroke="#222" strokeWidth="1" opacity="0.5"/>
-                      <line x1="145" y1={pos} x2="255" y2={pos} stroke="#222" strokeWidth="1" opacity="0.5"/>
-                    </g>
-                  ))}
-                  {[80, 110, 140, 170, 200, 230, 260, 290, 320].map((pos, i) => (
-                    <g key={`p-${i}`}>
-                      <rect x={pos - 4} y="40" width="8" height="20" rx="1" fill="#996644"/>
-                      <rect x={pos - 4} y="340" width="8" height="20" rx="1" fill="#996644"/>
-                      <rect x="40" y={pos - 4} width="20" height="8" rx="1" fill="#996644"/>
-                      <rect x="340" y={pos - 4} width="20" height="8" rx="1" fill="#996644"/>
-                    </g>
-                  ))}
-                </svg>
-              </div>
-            )}
+            <DisplayCards />
           </div>
         </div>
       </div>
