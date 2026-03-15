@@ -7,7 +7,7 @@ import CTASection from '../components/CTASection';
 import Footer from '../components/Footer';
 import NeuralBackground from '../components/ui/flow-field-background';
 import useSmoothScroll from '../hooks/useSmoothScroll';
-import { getWorkItems, subscribeToContentUpdates, type WorkItem } from '../lib/content-store';
+import { fetchWorkItems, subscribeToContentUpdates, type WorkItem } from '../lib/content-store';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -23,8 +23,9 @@ const Works = () => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    setWorkItems(getWorkItems());
-    const unsubscribe = subscribeToContentUpdates(() => setWorkItems(getWorkItems()));
+    const load = () => fetchWorkItems().then(setWorkItems).catch(() => {});
+    load();
+    const unsubscribe = subscribeToContentUpdates(load);
     return () => {
       window.removeEventListener('resize', checkMobile);
       unsubscribe();

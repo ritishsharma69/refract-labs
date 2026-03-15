@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import CTASection from '../components/CTASection';
 import useSmoothScroll from '../hooks/useSmoothScroll';
-import { getTestimonialItems, subscribeToContentUpdates, type TestimonialItem } from '../lib/content-store';
+import { fetchTestimonialItems, subscribeToContentUpdates, type TestimonialItem } from '../lib/content-store';
 
 const cardBase: React.CSSProperties = {
   border: '1px solid rgba(255,255,255,0.08)',
@@ -17,14 +17,15 @@ const cardBase: React.CSSProperties = {
 
 const TestimonialsPage = () => {
   useSmoothScroll();
-  const [items, setItems] = useState<TestimonialItem[]>(getTestimonialItems);
+  const [items, setItems] = useState<TestimonialItem[]>([]);
   const [activeVideo, setActiveVideo] = useState<TestimonialItem | null>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const sync = () => setItems(getTestimonialItems());
-    const unsubscribe = subscribeToContentUpdates(sync);
+    const load = () => fetchTestimonialItems().then(setItems).catch(() => {});
+    load();
+    const unsubscribe = subscribeToContentUpdates(load);
     return unsubscribe;
   }, []);
 

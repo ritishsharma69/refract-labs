@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getHomeFeaturedWorks, subscribeToContentUpdates } from '../lib/content-store';
+import { fetchWorkItems, subscribeToContentUpdates } from '../lib/content-store';
 
 // Mobile detection hook
 const useIsMobile = () => {
@@ -141,33 +141,29 @@ const ImagePreview = ({ image, title }) => (
   </div>
 );
 
+const mapWorks = (works) =>
+  works.filter((w) => w.featuredOnHome).slice(0, 4).map((w) => ({
+    id: w.id,
+    name: w.title.toUpperCase(),
+    category: w.type.toUpperCase(),
+    desc: w.description || '',
+    image: w.image,
+  }));
+
 const SelectedWork = () => {
-  const [projects, setProjects] = useState(() =>
-    getHomeFeaturedWorks().map((w) => ({
-      id: w.id,
-      name: w.title.toUpperCase(),
-      category: w.type.toUpperCase(),
-      desc: w.description || '',
-      image: w.image,
-    }))
-  );
+  const [projects, setProjects] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const isMobile = useIsMobile();
   const totalCards = projects.length;
 
   useEffect(() => {
-    const sync = () => {
-      const next = getHomeFeaturedWorks().map((w) => ({
-        id: w.id,
-        name: w.title.toUpperCase(),
-        category: w.type.toUpperCase(),
-        desc: w.description || '',
-        image: w.image,
-      }));
+    const load = () => fetchWorkItems().then((items) => {
+      const next = mapWorks(items);
       setProjects(next);
       setCurrentIndex((prev) => Math.min(prev, Math.max(0, next.length - 1)));
-    };
-    const unsubscribe = subscribeToContentUpdates(sync);
+    }).catch(() => {});
+    load();
+    const unsubscribe = subscribeToContentUpdates(load);
     return unsubscribe;
   }, []);
 

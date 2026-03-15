@@ -1,64 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Github,
   Twitter,
-  Youtube,
   Linkedin,
+  Instagram,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { fetchTeamMembers, type TeamMember } from "@/lib/content-store";
 
-interface Testimonial {
+interface DisplayMember {
   name: string;
   title: string;
   description: string;
   imageUrl: string;
-  githubUrl?: string;
   twitterUrl?: string;
-  youtubeUrl?: string;
   linkedinUrl?: string;
+  instagramUrl?: string;
 }
 
-const testimonials: Testimonial[] = [
+const mapTeamToDisplay = (members: TeamMember[]): DisplayMember[] =>
+  members.map((m) => ({
+    name: m.name,
+    title: m.role,
+    description: m.description,
+    imageUrl: m.image,
+    twitterUrl: m.social?.twitter || undefined,
+    linkedinUrl: m.social?.linkedin || undefined,
+    instagramUrl: m.social?.instagram || undefined,
+  }));
+
+const fallbackMembers: DisplayMember[] = [
   {
-    name: "Michael Chen",
-    title: "Senior Software Engineer, Cloud Infrastructure",
-    description:
-      "Working with this team completely changed our infrastructure game. The support and expertise were incredible. They delivered beyond our expectations and helped us scale to millions of users.",
-    imageUrl:
-      "https://plus.unsplash.com/premium_photo-1689977807477-a579eda91fa2?q=80&w=600&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    githubUrl: "#",
-    twitterUrl: "#",
-    youtubeUrl: "#",
+    name: "Adam Guarino",
+    title: "Co-Founder and COO",
+    description: "Adam orchestrates creative strategy and production for high-growth organizations.",
+    imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=800&fit=crop&crop=face",
     linkedinUrl: "#",
+    twitterUrl: "#",
   },
   {
-    name: "Jessica Roberts",
-    title: "Lead Data Scientist, InsightX",
-    description:
-      "The data analytics platform they built gave our team the confidence and tools needed for true data-driven decisions. Their dashboarding capabilities went above and beyond our expectations.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=600&q=80",
-    githubUrl: "#",
-    twitterUrl: "#",
-    youtubeUrl: "#",
+    name: "Jake Young",
+    title: "Co-Founder and CEO",
+    description: "Jake operates across major creative markets including San Diego and London.",
+    imageUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=800&fit=crop&crop=face",
     linkedinUrl: "#",
-  },
-  {
-    name: "William Carter",
-    title: "VP Product, NovaLabs",
-    description:
-      "NovaLabs helped our products find the perfect market fit. Their engineering team exceeded every delivery milestone and provided exceptional technical leadership.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=600&q=80",
-    githubUrl: "#",
     twitterUrl: "#",
-    youtubeUrl: "#",
-    linkedinUrl: "#",
   },
 ];
 
@@ -67,23 +57,33 @@ export interface TestimonialCarouselProps {
 }
 
 export function TestimonialCarousel({ className }: TestimonialCarouselProps) {
+  const [members, setMembers] = useState<DisplayMember[]>(fallbackMembers);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  useEffect(() => {
+    fetchTeamMembers()
+      .then((data) => {
+        if (data.length > 0) setMembers(mapTeamToDisplay(data));
+      })
+      .catch(() => {});
+  }, []);
+
   const handleNext = () =>
-    setCurrentIndex((index) => (index + 1) % testimonials.length);
+    setCurrentIndex((index) => (index + 1) % members.length);
   const handlePrevious = () =>
     setCurrentIndex(
-      (index) => (index - 1 + testimonials.length) % testimonials.length
+      (index) => (index - 1 + members.length) % members.length
     );
 
-  const currentTestimonial = testimonials[currentIndex];
+  const currentTestimonial = members[currentIndex];
+
+  if (!currentTestimonial) return null;
 
   const socialIcons = [
-    { icon: Github, url: currentTestimonial.githubUrl, label: "GitHub" },
     { icon: Twitter, url: currentTestimonial.twitterUrl, label: "Twitter" },
-    { icon: Youtube, url: currentTestimonial.youtubeUrl, label: "YouTube" },
     { icon: Linkedin, url: currentTestimonial.linkedinUrl, label: "LinkedIn" },
-  ];
+    { icon: Instagram, url: currentTestimonial.instagramUrl, label: "Instagram" },
+  ].filter((s) => s.url);
 
   return (
     <div className={cn("w-full max-w-6xl mx-auto px-4", className)}>
@@ -230,7 +230,7 @@ export function TestimonialCarousel({ className }: TestimonialCarouselProps) {
           <ChevronLeft className='w-5 h-5 text-gray-50' />
         </button>
         <div className='flex gap-2'>
-          {testimonials.map((_, testimonialIndex) => (
+          {members.map((_, testimonialIndex) => (
             <button
               key={testimonialIndex}
               onClick={() => setCurrentIndex(testimonialIndex)}

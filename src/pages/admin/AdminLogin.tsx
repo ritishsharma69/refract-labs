@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { loginAdmin } from '../../lib/content-store';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -13,15 +14,14 @@ const AdminLogin = () => {
     setError('');
     setLoading(true);
 
-    // Simple auth check - in production use proper backend auth
-    if (email === 'admin@refractlabs.com' && password === 'admin123') {
-      localStorage.setItem('adminAuth', 'true');
-      localStorage.setItem('adminEmail', email);
+    try {
+      await loginAdmin(email, password);
       navigate('/admin/dashboard');
-    } else {
-      setError('Invalid credentials');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Invalid credentials');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

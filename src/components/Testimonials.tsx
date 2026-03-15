@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { getHomeFeaturedTestimonials, subscribeToContentUpdates, type TestimonialItem } from '../lib/content-store';
+import { fetchTestimonialItems, subscribeToContentUpdates, type TestimonialItem } from '../lib/content-store';
 
 interface Testimonial {
   id: string;
@@ -32,11 +32,14 @@ const mapToLocal = (items: TestimonialItem[]): Testimonial[] =>
   }));
 
 const Testimonials = () => {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>(() => mapToLocal(getHomeFeaturedTestimonials()));
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
 
   useEffect(() => {
-    const sync = () => setTestimonials(mapToLocal(getHomeFeaturedTestimonials()));
-    const unsubscribe = subscribeToContentUpdates(sync);
+    const load = () => fetchTestimonialItems()
+      .then((items) => setTestimonials(mapToLocal(items.filter((t) => t.featuredOnHome).slice(0, 4))))
+      .catch(() => {});
+    load();
+    const unsubscribe = subscribeToContentUpdates(load);
     return unsubscribe;
   }, []);
 

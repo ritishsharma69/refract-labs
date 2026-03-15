@@ -1,46 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FiPlus, FiEdit2, FiTrash2, FiX, FiUpload } from 'react-icons/fi';
-
-interface TeamMember {
-  id: string;
-  name: string;
-  role: string;
-  image: string;
-  description: string;
-  social: {
-    twitter?: string;
-    linkedin?: string;
-    instagram?: string;
-    behance?: string;
-  };
-}
-
-// Load from localStorage or use defaults
-const getStoredTeam = (): TeamMember[] => {
-  const stored = localStorage.getItem('teamMembers');
-  if (stored) return JSON.parse(stored);
-  return [
-    {
-      id: '1',
-      name: 'Adam Guarino',
-      role: 'Co-Founder and COO',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=800&fit=crop&crop=face',
-      description: 'Adam orchestrates creative strategy and production for high-growth organizations.',
-      social: { linkedin: '#', twitter: '#' },
-    },
-    {
-      id: '2',
-      name: 'Jake Young',
-      role: 'Co-Founder and CEO',
-      image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=800&fit=crop&crop=face',
-      description: 'Jake operates across major creative markets including San Diego and London.',
-      social: { linkedin: '#', twitter: '#' },
-    },
-  ];
-};
+import { fetchTeamMembers, createTeamMember, updateTeamMember, deleteTeamMember as apiDeleteMember, emitContentUpdate, type TeamMember } from '../../lib/content-store';
 
 const TeamManagement = () => {
-  const [team, setTeam] = useState<TeamMember[]>(getStoredTeam);
+  const [team, setTeam] = useState<TeamMember[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
   const [formData, setFormData] = useState<Partial<TeamMember>>({
@@ -48,10 +11,11 @@ const TeamManagement = () => {
     social: { twitter: '', linkedin: '', instagram: '', behance: '' }
   });
 
-  const saveTeam = (newTeam: TeamMember[]) => {
-    setTeam(newTeam);
-    localStorage.setItem('teamMembers', JSON.stringify(newTeam));
+  const loadTeam = async () => {
+    try { setTeam(await fetchTeamMembers()); } catch { /* ignore */ }
   };
+
+  useEffect(() => { loadTeam(); }, []);
 
   const openAddModal = () => {
     setEditingMember(null);
@@ -68,24 +32,35 @@ const TeamManagement = () => {
     setIsModalOpen(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingMember) {
-      const updated = team.map(m => m.id === editingMember.id ? { ...m, ...formData } : m);
-      saveTeam(updated);
-    } else {
-      const newMember: TeamMember = {
-        ...formData as TeamMember,
-        id: Date.now().toString(),
-      };
-      saveTeam([...team, newMember]);
-    }
+    const payload = {
+      name: formData.name || '',
+      role: formData.role || '',
+      image: formData.image || '',
+      description: formData.description || '',
+      social: formData.social || {},
+    };
+
+    try {
+      if (editingMember) {
+        await updateTeamMember(editingMember.id, payload);
+      } else {
+        await createTeamMember(payload as Omit<TeamMember, 'id'>);
+      }
+      await loadTeam();
+      emitContentUpdate();
+    } catch { /* ignore */ }
     setIsModalOpen(false);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this team member?')) {
-      saveTeam(team.filter(m => m.id !== id));
+      try {
+        await apiDeleteMember(id);
+        await loadTeam();
+        emitContentUpdate();
+      } catch { /* ignore */ }
     }
   };
 

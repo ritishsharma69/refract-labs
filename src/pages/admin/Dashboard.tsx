@@ -2,10 +2,9 @@ import { useEffect, useState } from 'react';
 import { FiUsers, FiBriefcase, FiHome, FiMessageSquare } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import {
-  getHomeFeaturedTestimonials,
-  getHomeFeaturedWorks,
-  getTestimonialItems,
-  getWorkItems,
+  fetchTeamMembers,
+  fetchWorkItems,
+  fetchTestimonialItems,
   subscribeToContentUpdates,
 } from '../../lib/content-store';
 
@@ -16,35 +15,33 @@ const Dashboard = () => {
     { label: 'Home Works', value: '0', icon: FiHome, color: 'green', link: '/admin/works' },
     { label: 'Testimonials', value: '0', icon: FiMessageSquare, color: 'purple', link: '/admin/testimonials' },
   ]);
+  const [homeWorks, setHomeWorks] = useState(0);
+  const [homeTestimonials, setHomeTestimonials] = useState(0);
 
   useEffect(() => {
-    const readTeamMembers = () => {
+    const syncStats = async () => {
       try {
-        const stored = localStorage.getItem('teamMembers');
-        return stored ? JSON.parse(stored).length : 2;
-      } catch {
-        return 2;
-      }
-    };
-
-    const syncStats = () => {
-      setStats([
-        { label: 'Team Members', value: String(readTeamMembers()), icon: FiUsers, color: 'orange', link: '/admin/team' },
-        { label: 'All Works', value: String(getWorkItems().length), icon: FiBriefcase, color: 'blue', link: '/admin/works' },
-        { label: 'Home Works', value: String(getHomeFeaturedWorks().length), icon: FiHome, color: 'green', link: '/admin/works' },
-        { label: 'Testimonials', value: String(getTestimonialItems().length), icon: FiMessageSquare, color: 'purple', link: '/admin/testimonials' },
-      ]);
+        const [teamData, worksData, testimonialsData] = await Promise.all([
+          fetchTeamMembers(),
+          fetchWorkItems(),
+          fetchTestimonialItems(),
+        ]);
+        const homeFeaturedWorks = worksData.filter((w) => w.featuredOnHome).slice(0, 4);
+        const homeFeaturedTestimonials = testimonialsData.filter((t) => t.featuredOnHome).slice(0, 4);
+        setStats([
+          { label: 'Team Members', value: String(teamData.length), icon: FiUsers, color: 'orange', link: '/admin/team' },
+          { label: 'All Works', value: String(worksData.length), icon: FiBriefcase, color: 'blue', link: '/admin/works' },
+          { label: 'Home Works', value: String(homeFeaturedWorks.length), icon: FiHome, color: 'green', link: '/admin/works' },
+          { label: 'Testimonials', value: String(testimonialsData.length), icon: FiMessageSquare, color: 'purple', link: '/admin/testimonials' },
+        ]);
+        setHomeWorks(homeFeaturedWorks.length);
+        setHomeTestimonials(homeFeaturedTestimonials.length);
+      } catch { /* ignore */ }
     };
 
     syncStats();
-
     const unsubscribe = subscribeToContentUpdates(syncStats);
-    window.addEventListener('storage', syncStats);
-
-    return () => {
-      unsubscribe();
-      window.removeEventListener('storage', syncStats);
-    };
+    return () => { unsubscribe(); };
   }, []);
 
   const colorClasses = {
@@ -53,9 +50,6 @@ const Dashboard = () => {
     green: 'bg-emerald-500/12 text-emerald-300 border-emerald-500/20',
     purple: 'bg-purple-500/12 text-purple-300 border-purple-500/20',
   };
-
-  const homeWorks = getHomeFeaturedWorks().length;
-  const homeTestimonials = getHomeFeaturedTestimonials().length;
 
   return (
     <div className="space-y-6">
