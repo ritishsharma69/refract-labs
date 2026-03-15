@@ -217,7 +217,7 @@ const CTASection = () => {
             Start a conversation with our team today.
           </p>
 
-          <Link to="/contact">
+          <Link to="/contact" onClick={() => window.scrollTo(0, 0)}>
             <button
               ref={buttonRef}
               className="hero-cta-btn"

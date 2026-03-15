@@ -68,9 +68,9 @@ const Footer = () => {
     { label: 'WORK WITH US', href: '/contact' },
   ];
   const legalLinks = [
-    { label: 'TERMS OF SERVICE', href: '#' },
+    { label: 'TERMS OF SERVICE', href: '/terms-of-service' },
     { label: 'PRIVACY POLICY', href: '/privacy-policy' },
-    { label: 'COOKIE POLICY', href: '#' },
+    { label: 'COOKIE POLICY', href: '/cookie-policy' },
   ];
 
   return (
@@ -132,7 +132,7 @@ const Footer = () => {
             left: isMobile ? '24px' : '100px',
           }}
         >
-          REFRACTWEB
+          REFRACT LABS
         </div>
         {/* Gradient fill layer (top) */}
         <div
@@ -150,7 +150,7 @@ const Footer = () => {
             position: 'relative',
           }}
         >
-          REFRACTWEB
+          REFRACT LABS
         </div>
       </div>
 
@@ -286,7 +286,7 @@ const Footer = () => {
             maxWidth: isMobile ? '280px' : 'none',
           }}
         >
-          COPYRIGHT © 2026 PULSE PARTNERS AI LLC DBA REFRACTWEB. ALL RIGHTS RESERVED
+          COPYRIGHT © 2026 PULSE PARTNERS AI LLC DBA REFRACT LABS. ALL RIGHTS RESERVED
         </span>
 
         {/* Social icons */}

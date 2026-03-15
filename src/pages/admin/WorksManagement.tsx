@@ -1,44 +1,31 @@
 import { useState } from 'react';
-import { FiPlus, FiEdit2, FiTrash2, FiX, FiUpload } from 'react-icons/fi';
+import type { ChangeEvent, FormEvent } from 'react';
+import { FiArrowDown, FiArrowUp, FiEdit2, FiPlus, FiTrash2, FiUpload, FiX } from 'react-icons/fi';
+import { getWorkItems, saveWorkItems, type WorkItem } from '../../lib/content-store';
 
-interface WorkItem {
-  id: string;
-  title: string;
-  type: string;
-  image: string;
-  description?: string;
-  link?: string;
-}
-
-const getStoredWorks = (): WorkItem[] => {
-  const stored = localStorage.getItem('workItems');
-  if (stored) return JSON.parse(stored);
-  return [
-    { id: '1', title: 'Color Pallet', type: 'Branding', image: '/work-1.png' },
-    { id: '2', title: 'Design That Inspires', type: 'Web Design', image: '/work-2.png' },
-    { id: '3', title: 'Nublink', type: 'Identity', image: '/work-3.png' },
-    { id: '4', title: 'AI Platform', type: 'Software', image: '/work-4.png' },
-    { id: '5', title: 'Typography System', type: 'Branding', image: '/work-5.png' },
-    { id: '6', title: 'E-commerce', type: 'Web Development', image: '/work-6.png' },
-  ];
-};
+const defaultFormData = (): Partial<WorkItem> => ({
+  title: '',
+  type: '',
+  image: '',
+  description: '',
+  link: '',
+  featuredOnHome: false,
+});
 
 const WorksManagement = () => {
-  const [works, setWorks] = useState<WorkItem[]>(getStoredWorks);
+  const [works, setWorks] = useState<WorkItem[]>(getWorkItems);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingWork, setEditingWork] = useState<WorkItem | null>(null);
-  const [formData, setFormData] = useState<Partial<WorkItem>>({
-    title: '', type: '', image: '', description: '', link: ''
-  });
+  const [formData, setFormData] = useState<Partial<WorkItem>>(defaultFormData);
 
   const saveWorks = (newWorks: WorkItem[]) => {
     setWorks(newWorks);
-    localStorage.setItem('workItems', JSON.stringify(newWorks));
+    saveWorkItems(newWorks);
   };
 
   const openAddModal = () => {
     setEditingWork(null);
-    setFormData({ title: '', type: '', image: '', description: '', link: '' });
+    setFormData(defaultFormData());
     setIsModalOpen(true);
   };
 
@@ -48,28 +35,35 @@ const WorksManagement = () => {
     setIsModalOpen(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+    const nextWork: WorkItem = {
+      id: editingWork?.id || Date.now().toString(),
+      title: formData.title || '',
+      type: formData.type || '',
+      image: formData.image || '',
+      description: formData.description || '',
+      link: formData.link || '',
+      featuredOnHome: Boolean(formData.featuredOnHome),
+    };
+
     if (editingWork) {
-      const updated = works.map(w => w.id === editingWork.id ? { ...w, ...formData } : w);
+      const updated = works.map((work) => (work.id === editingWork.id ? nextWork : work));
       saveWorks(updated);
     } else {
-      const newWork: WorkItem = {
-        ...formData as WorkItem,
-        id: Date.now().toString(),
-      };
-      saveWorks([...works, newWork]);
+      saveWorks([...works, nextWork]);
     }
+
     setIsModalOpen(false);
   };
 
   const handleDelete = (id: string) => {
     if (confirm('Are you sure you want to delete this work?')) {
-      saveWorks(works.filter(w => w.id !== id));
+      saveWorks(works.filter((work) => work.id !== id));
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -80,56 +74,135 @@ const WorksManagement = () => {
     }
   };
 
+  const moveWork = (index: number, direction: -1 | 1) => {
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= works.length) return;
+
+    const nextWorks = [...works];
+    [nextWorks[index], nextWorks[targetIndex]] = [nextWorks[targetIndex], nextWorks[index]];
+    saveWorks(nextWorks);
+  };
+
+  const toggleFeatured = (id: string) => {
+    saveWorks(works.map((work) => (work.id === id ? { ...work, featuredOnHome: !work.featuredOnHome } : work)));
+  };
+
   const workTypes = ['Branding', 'Web Design', 'Web Development', 'Identity', 'Software', '3D Animation', 'UI/UX'];
+  const featuredCount = works.filter((work) => work.featuredOnHome).length;
+  const categoryCount = new Set(works.map((work) => work.type).filter(Boolean)).size;
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-white font-['Space_Grotesk']">Works Management</h1>
-          <p className="text-gray-500 mt-1">Manage your portfolio works</p>
+    <div className="space-y-6">
+      <section className="admin-surface rounded-[30px] p-6 sm:p-8">
+        <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+          <div className="max-w-3xl">
+            <span className="admin-chip">Portfolio</span>
+            <h1 className="mt-5 text-3xl font-bold text-white font-['Space_Grotesk'] sm:text-4xl">Works Management</h1>
+            <p className="mt-3 text-sm leading-7 text-gray-400 sm:text-base">
+              Manage the full works page and pick which projects deserve home-page visibility.
+            </p>
+            <p className="mt-3 text-sm text-orange-300/90">Home page uses the first 4 items marked “Show on Home”.</p>
+          </div>
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            {[
+              { label: 'All works', value: works.length },
+              { label: 'Home picks', value: featuredCount },
+              { label: 'Categories', value: categoryCount },
+            ].map((item) => (
+              <div key={item.label} className="admin-surface-soft rounded-[22px] px-5 py-4 text-sm text-gray-400">
+                <div className="text-2xl font-semibold text-white">{item.value}</div>
+                <div className="mt-1 text-xs uppercase tracking-[0.2em] text-gray-500">{item.label}</div>
+              </div>
+            ))}
+            <button
+              onClick={openAddModal}
+              className="admin-primary-btn flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold"
+            >
+              <FiPlus size={18} />
+              <span>Add Work</span>
+            </button>
+          </div>
         </div>
-        <button
-          onClick={openAddModal}
-          className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
-        >
-          <FiPlus size={18} />
-          <span>Add Work</span>
-        </button>
-      </div>
+      </section>
 
       {/* Works Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {works.map((work) => (
-          <div key={work.id} className="bg-[#111] rounded-xl border border-white/5 overflow-hidden group">
-            <div className="aspect-video bg-[#0a0a0a] relative">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 2xl:grid-cols-3">
+        {works.map((work, index) => (
+          <div key={work.id} className="group overflow-hidden rounded-[28px] border border-white/8 bg-[#101010]/92 shadow-[0_20px_55px_rgba(0,0,0,0.22)]">
+            <div className="relative aspect-video bg-[#0a0a0a]">
               {work.image ? (
-                <img src={work.image} alt={work.title} className="w-full h-full object-cover" />
+                <img src={work.image} alt={work.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-500/20 to-purple-500/20">
+                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-orange-500/20 to-purple-500/20">
                   <span className="text-2xl font-bold text-white/20">{work.title[0]}</span>
                 </div>
               )}
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                <div className="flex gap-2">
+              <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+                <span className="rounded-full border border-white/10 bg-black/45 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white">
+                  {work.type}
+                </span>
+                {work.featuredOnHome && (
+                  <span className="rounded-full border border-orange-500/30 bg-orange-500/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-orange-300">
+                    Show on Home
+                  </span>
+                )}
+              </div>
+              <div className="absolute right-4 top-4 flex gap-2">
+                <button onClick={() => moveWork(index, -1)} className="admin-icon-btn rounded-xl bg-black/35 p-2.5 text-gray-300 hover:text-white">
+                  <FiArrowUp size={14} />
+                </button>
+                <button onClick={() => moveWork(index, 1)} className="admin-icon-btn rounded-xl bg-black/35 p-2.5 text-gray-300 hover:text-white">
+                  <FiArrowDown size={14} />
+                </button>
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-200 group-hover:bg-black/50 group-hover:opacity-100">
+                <div className="flex gap-2 px-4">
                   <button
                     onClick={() => openEditModal(work)}
-                    className="p-3 bg-white/10 rounded-lg text-white hover:bg-white/20 transition-colors"
+                    className="admin-icon-btn rounded-2xl p-3 text-white"
                   >
                     <FiEdit2 size={18} />
                   </button>
                   <button
                     onClick={() => handleDelete(work.id)}
-                    className="p-3 bg-red-500/20 rounded-lg text-red-400 hover:bg-red-500/30 transition-colors"
+                    className="rounded-2xl border border-red-500/18 bg-red-500/18 p-3 text-red-300 transition-colors hover:bg-red-500/28"
                   >
                     <FiTrash2 size={18} />
                   </button>
                 </div>
               </div>
             </div>
-            <div className="p-4">
-              <span className="text-xs text-orange-400 uppercase tracking-wider">{work.type}</span>
-              <h3 className="text-white font-semibold mt-1">{work.title}</h3>
+            <div className="space-y-4 p-5">
+              <div>
+                <h3 className="mt-1 text-lg font-semibold text-white">{work.title}</h3>
+                {work.description && <p className="mt-3 line-clamp-3 text-sm leading-7 text-gray-400">{work.description}</p>}
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => toggleFeatured(work.id)}
+                  className={`rounded-xl px-3.5 py-2.5 text-xs font-medium transition-colors ${work.featuredOnHome ? 'bg-orange-500 text-white' : 'border border-white/8 bg-white/[0.04] text-gray-300 hover:bg-white/[0.08]'}`}
+                >
+                  {work.featuredOnHome ? 'Remove from Home' : 'Show on Home'}
+                </button>
+                <button
+                  onClick={() => openEditModal(work)}
+                  className="admin-secondary-btn rounded-xl px-3.5 py-2.5 text-xs font-medium"
+                >
+                  Edit
+                </button>
+                {work.link && (
+                  <a
+                    href={work.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-xl border border-white/8 bg-transparent px-3.5 py-2.5 text-xs font-medium text-gray-300 transition-colors hover:bg-white/[0.05] hover:text-white"
+                  >
+                    Visit Link
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         ))}
@@ -137,9 +210,9 @@ const WorksManagement = () => {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#111] rounded-2xl border border-white/10 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-white/5">
+        <div className="admin-modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="admin-modal-panel max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[30px]">
+            <div className="flex items-center justify-between border-b border-white/6 p-6 sm:p-7">
               <h2 className="text-lg font-semibold text-white">
                 {editingWork ? 'Edit Work' : 'Add Work'}
               </h2>
@@ -148,15 +221,15 @@ const WorksManagement = () => {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6 p-6 sm:p-7">
               {/* Image Upload */}
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Cover Image</label>
-                <div className="flex items-center gap-4">
+              <div className="rounded-[24px] border border-white/8 bg-white/[0.03] p-4 sm:p-5">
+                <label className="mb-3 block text-sm text-gray-400">Cover Image</label>
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                   {formData.image && (
-                    <img src={formData.image} alt="" className="w-20 h-14 rounded-lg object-cover" />
+                    <img src={formData.image} alt="" className="h-20 w-28 rounded-2xl object-cover" />
                   )}
-                  <label className="flex items-center gap-2 px-4 py-2 bg-[#1a1a1a] border border-white/10 rounded-lg cursor-pointer hover:bg-[#222] transition-colors">
+                  <label className="admin-secondary-btn flex cursor-pointer items-center gap-2 rounded-2xl px-4 py-3 text-sm">
                     <FiUpload size={16} className="text-gray-400" />
                     <span className="text-sm text-gray-400">Upload Image</span>
                     <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
@@ -166,64 +239,75 @@ const WorksManagement = () => {
                   type="text"
                   value={formData.image || ''}
                   onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  className="w-full mt-2 bg-[#1a1a1a] border border-white/10 rounded-lg px-4 py-2 text-white text-sm"
+                  className="admin-input mt-3 px-4 py-3 text-sm"
                   placeholder="Or paste image URL"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Title</label>
-                <input
-                  type="text"
-                  value={formData.title || ''}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-4 py-3 text-white"
-                  required
-                />
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm text-gray-400">Title</label>
+                  <input
+                    type="text"
+                    value={formData.title || ''}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    className="admin-input px-4 py-3 text-sm"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm text-gray-400">Type</label>
+                  <select
+                    value={formData.type || ''}
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    className="admin-select px-4 py-3 text-sm"
+                    required
+                  >
+                    <option value="">Select type</option>
+                    {workTypes.map((type) => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Type</label>
-                <select
-                  value={formData.type || ''}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-4 py-3 text-white"
-                  required
-                >
-                  <option value="">Select type</option>
-                  {workTypes.map(type => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Description (Optional)</label>
+                <label className="mb-2 block text-sm text-gray-400">Description (Optional)</label>
                 <textarea
                   value={formData.description || ''}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-4 py-3 text-white min-h-[80px]"
+                  className="admin-textarea min-h-[120px] px-4 py-3 text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Project Link (Optional)</label>
+                <label className="mb-2 block text-sm text-gray-400">Project Link (Optional)</label>
                 <input
                   type="text"
                   value={formData.link || ''}
                   onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                  className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg px-4 py-3 text-white"
+                  className="admin-input px-4 py-3 text-sm"
                   placeholder="https://..."
                 />
               </div>
 
-              <div className="pt-4 flex gap-3">
+              <label className="flex items-center gap-3 rounded-[20px] border border-white/8 bg-white/[0.03] px-4 py-3 text-sm text-gray-300">
+                <input
+                  type="checkbox"
+                  checked={Boolean(formData.featuredOnHome)}
+                  onChange={(e) => setFormData({ ...formData, featuredOnHome: e.target.checked })}
+                />
+                Show on Home selected works section
+              </label>
+
+              <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-3 border border-white/10 text-gray-400 rounded-lg hover:bg-white/5 transition-colors">
+                  className="admin-secondary-btn flex-1 rounded-2xl px-4 py-3 text-sm font-medium text-gray-300">
                   Cancel
                 </button>
                 <button type="submit"
-                  className="flex-1 px-4 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+                  className="admin-primary-btn flex-1 rounded-2xl px-4 py-3 text-sm font-semibold">
                   {editingWork ? 'Save Changes' : 'Add Work'}
                 </button>
               </div>

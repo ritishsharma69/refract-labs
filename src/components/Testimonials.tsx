@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
+import { getHomeFeaturedTestimonials, subscribeToContentUpdates, type TestimonialItem } from '../lib/content-store';
 
 interface Testimonial {
   id: string;
@@ -7,10 +8,6 @@ interface Testimonial {
   name: string;
   company: string;
   avatarUrl?: string;
-}
-
-interface TestimonialsProps {
-  testimonials?: Testimonial[];
 }
 
 // Mobile detection hook
@@ -25,38 +22,35 @@ const useIsMobile = () => {
   return isMobile;
 };
 
-const defaultTestimonials: Testimonial[] = [
-  {
-    id: '1',
-    quote: '"I reached out with a vision, and Refract executed it perfectly. They were on time at every step, and their attention to detail was exactly what we were looking for. They took our ideas and turned them into a result that elevated the brand."',
-    name: 'Tanner Balisky',
-    company: 'BAD BIRDIE',
-    avatarUrl: undefined,
-  },
-  {
-    id: '2',
-    quote: '"Working with RefractWeb was a game-changer for our product launch. The quality of execution was beyond what we expected. They understood our brand identity immediately."',
-    name: 'Sarah Mitchell',
-    company: 'APEX STUDIO',
-    avatarUrl: undefined,
-  },
-  {
-    id: '3',
-    quote: '"From concept to final delivery, the process was seamless. RefractWeb brought a level of craft and precision we had never experienced before."',
-    name: 'James Ortega',
-    company: 'NOVA LABS',
-    avatarUrl: undefined,
-  },
-  {
-    id: '4',
-    quote: '"The team at RefractWeb engineers digital experiences, not just websites. Every interaction feels intentional. We received more compliments in one month than the past three years."',
-    name: 'Priya Sharma',
-    company: 'LUMINARY CO',
-    avatarUrl: undefined,
-  },
-];
+const mapToLocal = (items: TestimonialItem[]): Testimonial[] =>
+  items.map((t) => ({
+    id: t.id,
+    quote: t.quote,
+    name: t.name,
+    company: t.company.toUpperCase(),
+    avatarUrl: t.avatarUrl || undefined,
+  }));
 
-const Testimonials = ({ testimonials = defaultTestimonials }: TestimonialsProps) => {
+const Testimonials = () => {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(() => mapToLocal(getHomeFeaturedTestimonials()));
+
+  useEffect(() => {
+    const sync = () => setTestimonials(mapToLocal(getHomeFeaturedTestimonials()));
+    const unsubscribe = subscribeToContentUpdates(sync);
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    if (testimonials.length === 0) {
+      setCurrentIndex(0);
+      setDisplayedIndex(0);
+      return;
+    }
+
+    setCurrentIndex((prev) => Math.min(prev, testimonials.length - 1));
+    setDisplayedIndex((prev) => Math.min(prev, testimonials.length - 1));
+  }, [testimonials.length]);
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [displayedIndex, setDisplayedIndex] = useState(0);
   const quoteRef = useRef<HTMLParagraphElement>(null);
@@ -100,6 +94,8 @@ const Testimonials = ({ testimonials = defaultTestimonials }: TestimonialsProps)
 
   // Auto advance every 6 seconds
   useEffect(() => {
+    if (testimonials.length <= 1) return;
+
     const timer = setInterval(() => {
       setCurrentIndex(prev =>
         prev >= testimonials.length - 1 ? 0 : prev + 1
@@ -113,10 +109,56 @@ const Testimonials = ({ testimonials = defaultTestimonials }: TestimonialsProps)
   };
 
   const goToNext = () => {
+    if (testimonials.length === 0) return;
     setCurrentIndex(prev => Math.min(testimonials.length - 1, prev + 1));
   };
 
   const currentTestimonial = testimonials[displayedIndex];
+
+  if (!currentTestimonial) {
+    return (
+      <section style={{
+        minHeight: isMobile ? 'auto' : '70vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#080808',
+        position: 'relative',
+        overflow: 'hidden',
+        padding: isMobile ? '60px 24px' : '80px 48px',
+      }}>
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: isMobile ? '350px' : '700px',
+          height: isMobile ? '300px' : '500px',
+          background: 'radial-gradient(ellipse, rgba(194,98,42,0.07) 0%, transparent 65%)',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }} />
+        <div style={{
+          position: 'relative',
+          zIndex: 1,
+          maxWidth: '720px',
+          textAlign: 'center',
+          border: '1px solid rgba(255,255,255,0.08)',
+          borderRadius: '28px',
+          background: 'rgba(255,255,255,0.04)',
+          backdropFilter: 'blur(18px)',
+          WebkitBackdropFilter: 'blur(18px)',
+          padding: isMobile ? '28px 22px' : '36px 32px',
+        }}>
+          <div style={{ fontSize: isMobile ? '24px' : '34px', fontWeight: 600, color: 'white' }}>No featured testimonials yet</div>
+          <p style={{ color: '#a1a1aa', lineHeight: 1.8, marginTop: '12px', fontSize: isMobile ? '14px' : '16px' }}>
+            Turn on a few testimonials from admin and the top featured ones will automatically appear here.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section style={{

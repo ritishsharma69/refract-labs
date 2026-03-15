@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -107,7 +108,7 @@ const Services = () => {
           </p>
           {/* CTAs */}
           <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', justifyContent: 'center', marginTop: isMobile ? '24px' : '36px', gap: isMobile ? '12px' : '20px' }}>
-            <button className="hero-cta-btn" style={{ width: isMobile ? '100%' : 'auto' }}>Work With Us</button>
+            <Link to="/contact" onClick={() => window.scrollTo(0, 0)}><button className="hero-cta-btn" style={{ width: isMobile ? '100%' : 'auto' }}>Work With Us</button></Link>
             <button className="group" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '15px', color: 'white', background: 'transparent', border: 'none', cursor: 'pointer' }}>
               <span>Explore our services</span>
               <svg style={{ width: '16px', height: '16px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">

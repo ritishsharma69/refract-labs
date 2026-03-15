@@ -22,7 +22,7 @@ const PrivacyPolicy = () => {
     fontFamily: 'Space Grotesk, sans-serif',
     fontSize: isMobile ? '20px' : '24px',
     fontWeight: 600,
-    color: 'white',
+    color: '#e07030',
     marginBottom: '16px',
   };
 
@@ -77,16 +77,16 @@ const PrivacyPolicy = () => {
         {/* Introduction */}
         <div style={sectionStyle}>
           <p style={textStyle}>
-            Pulse Partners AI LLC dba RefractWeb ("RefractWeb," "we," "us," or "our") is committed to protecting your privacy. This Privacy Policy describes how we collect, use, disclose, and protect information when you visit our website refractweb.com (the "Site") or engage with our services.
+            Pulse Partners AI LLC dba Refract Labs ("Refract Labs," "we," "us," or "our") is committed to protecting your privacy. This Privacy Policy describes how we collect, use, disclose, and protect information when you visit our website refractlabs.com (the "Site") or engage with our services.
           </p>
         </div>
 
         {/* Information We Collect */}
         <div style={sectionStyle}>
           <h2 style={headingStyle}>Information We Collect</h2>
-          <p style={textStyle}><strong style={{ color: 'white' }}>Personal Information:</strong> Name, email address, phone number, company name, job title, and any other information you provide when contacting us or requesting our services.</p>
-          <p style={{ ...textStyle, marginTop: '12px' }}><strong style={{ color: 'white' }}>Usage Data:</strong> IP address, browser type, device information, pages visited, time spent on pages, and other analytics data collected through cookies and similar technologies.</p>
-          <p style={{ ...textStyle, marginTop: '12px' }}><strong style={{ color: 'white' }}>Communications:</strong> Records of correspondence if you contact us directly.</p>
+          <p style={textStyle}><strong style={{ color: '#e07030' }}>Personal Information:</strong> Name, email address, phone number, company name, job title, and any other information you provide when contacting us or requesting our services.</p>
+          <p style={{ ...textStyle, marginTop: '12px' }}><strong style={{ color: '#e07030' }}>Usage Data:</strong> IP address, browser type, device information, pages visited, time spent on pages, and other analytics data collected through cookies and similar technologies.</p>
+          <p style={{ ...textStyle, marginTop: '12px' }}><strong style={{ color: '#e07030' }}>Communications:</strong> Records of correspondence if you contact us directly.</p>
         </div>
 
         {/* How We Use Your Information */}
@@ -127,7 +127,7 @@ const PrivacyPolicy = () => {
         <div style={sectionStyle}>
           <h2 style={headingStyle}>Your Rights</h2>
           <p style={textStyle}>
-            Depending on your location, you may have the right to access, correct, delete, or port your personal information. You may also have the right to opt-out of certain processing of your personal information. To exercise these rights, contact us at: <a href="mailto:legal@refractweb.com" style={{ color: '#c2622a' }}>legal@refractweb.com</a>.
+            Depending on your location, you may have the right to access, correct, delete, or port your personal information. You may also have the right to opt-out of certain processing of your personal information. To exercise these rights, contact us at: <a href="mailto:legal@refractlabs.com" style={{ color: '#c2622a' }}>legal@refractlabs.com</a>.
           </p>
         </div>
 
@@ -135,10 +135,10 @@ const PrivacyPolicy = () => {
         <div style={{ ...sectionStyle, marginBottom: 0 }}>
           <h2 style={headingStyle}>Contact Us</h2>
           <p style={textStyle}>
-            Pulse Partners AI LLC dba RefractWeb<br />
+            Pulse Partners AI LLC dba Refract Labs<br />
             6977 Navajo Rd. #520<br />
             San Diego, CA 92115<br />
-            Email: <a href="mailto:legal@refractweb.com" style={{ color: '#c2622a' }}>legal@refractweb.com</a>
+            Email: <a href="mailto:legal@refractlabs.com" style={{ color: '#c2622a' }}>legal@refractlabs.com</a>
           </p>
         </div>
       </div>

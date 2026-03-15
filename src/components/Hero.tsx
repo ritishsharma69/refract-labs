@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { SplineScene } from './ui/splite';
 import { Spotlight } from './ui/spotlight';
@@ -71,7 +72,7 @@ const Hero = () => {
       id="home"
       style={{
         width: '100%',
-        minHeight: isMobile ? 'auto' : 'calc(100vh - 80px)',
+        minHeight: isMobile ? 'auto' : 'calc(100vh - 140px)',
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
@@ -182,16 +183,18 @@ const Hero = () => {
                 justifyContent: isMobile ? 'flex-start' : 'flex-start',
               }}
             >
-              <button
-                className="hero-cta-btn"
-                style={{
-                  width: 'auto',
-                  padding: isMobile ? '12px 24px' : '14px 32px',
-                  fontSize: isMobile ? '14px' : '15px',
-                }}
-              >
-                Work With Us
-              </button>
+              <Link to="/contact" onClick={() => window.scrollTo(0, 0)}>
+                <button
+                  className="hero-cta-btn"
+                  style={{
+                    width: 'auto',
+                    padding: isMobile ? '12px 24px' : '14px 32px',
+                    fontSize: isMobile ? '14px' : '15px',
+                  }}
+                >
+                  Work With Us
+                </button>
+              </Link>
               <button
                 className="group flex items-center gap-2 text-white hover:text-white/80 transition-colors"
                 style={{ fontSize: isMobile ? '14px' : '15px' }}
@@ -225,17 +228,28 @@ const Hero = () => {
             style={{
               width: '100%',
               maxWidth: isMobile ? '400px' : '800px',
-              minHeight: isMobile ? '450px' : '700px',
+              minHeight: isMobile ? '400px' : '550px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               position: 'relative',
+              overflow: 'visible',
             }}
           >
-            <SplineScene
-              scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-              className="w-full h-full"
-            />
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                transform: `scale(${isMobile ? 1.26 : 1.2})`,
+                transformOrigin: 'center center',
+                willChange: 'transform',
+              }}
+            >
+              <SplineScene
+                scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+                className="w-full h-full"
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { getHomeFeaturedWorks, subscribeToContentUpdates } from '../lib/content-store';
 
 // Mobile detection hook
 const useIsMobile = () => {
@@ -11,13 +13,6 @@ const useIsMobile = () => {
   }, []);
   return isMobile;
 };
-
-const projects = [
-  { id: 1, name: "PROJECT AETHER", category: "VISUAL ENGINEERING", desc: "Zero-latency WebGL rendering for immersive luxury commerce.", type: "aether" },
-  { id: 2, name: "PROJECT SENTINEL", category: "SYSTEM ARCHITECTURE", desc: "Trustless biometric authentication protocols with fluid user experience.", type: "sentinel" },
-  { id: 3, name: "PROJECT CORTEX", category: "INTELLIGENT INTERFACES", desc: "Adaptive dashboard logic designed to visualize complex AI outputs.", type: "cortex" },
-  { id: 4, name: "PROJECT FLUX", category: "IDENTITY SYSTEMS", desc: "A molecular design system engineered for infinite digital scale.", type: "flux" },
-];
 
 const AetherPreview = () => (
   <div style={{ height: '100%', background: 'white', padding: '20px 24px 0 24px' }}>
@@ -133,17 +128,87 @@ const MOBILE_CARD_WIDTH = 300;
 const GAP = 24;
 const MOBILE_GAP = 16;
 
+// Image-based preview for admin-managed works
+const ImagePreview = ({ image, title }) => (
+  <div style={{ height: '100%', background: '#0a0a0a', position: 'relative' }}>
+    {image ? (
+      <img src={image} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+    ) : (
+      <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ fontSize: '48px', fontWeight: 800, color: 'rgba(255,255,255,0.08)' }}>{title?.charAt(0) || '?'}</span>
+      </div>
+    )}
+  </div>
+);
+
 const SelectedWork = () => {
+  const [projects, setProjects] = useState(() =>
+    getHomeFeaturedWorks().map((w) => ({
+      id: w.id,
+      name: w.title.toUpperCase(),
+      category: w.type.toUpperCase(),
+      desc: w.description || '',
+      image: w.image,
+    }))
+  );
   const [currentIndex, setCurrentIndex] = useState(0);
   const isMobile = useIsMobile();
   const totalCards = projects.length;
+
+  useEffect(() => {
+    const sync = () => {
+      const next = getHomeFeaturedWorks().map((w) => ({
+        id: w.id,
+        name: w.title.toUpperCase(),
+        category: w.type.toUpperCase(),
+        desc: w.description || '',
+        image: w.image,
+      }));
+      setProjects(next);
+      setCurrentIndex((prev) => Math.min(prev, Math.max(0, next.length - 1)));
+    };
+    const unsubscribe = subscribeToContentUpdates(sync);
+    return unsubscribe;
+  }, []);
 
   const cardWidth = isMobile ? MOBILE_CARD_WIDTH : CARD_WIDTH;
   const gap = isMobile ? MOBILE_GAP : GAP;
   const STEP = cardWidth + gap;
 
+  if (totalCards === 0) {
+    return (
+      <section style={{ width: '100%', padding: isMobile ? '60px 0 40px 0' : '120px 0 80px 0', overflow: 'hidden' }}>
+        <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 80px', marginBottom: isMobile ? '36px' : '64px' }}>
+          <h2 style={{ fontSize: isMobile ? '32px' : '52px', fontWeight: 700, color: 'white', letterSpacing: '-1.5px' }}>Selected work</h2>
+          <p style={{ color: '#888', fontSize: isMobile ? '14px' : '16px', lineHeight: 1.75, marginTop: '16px' }}>
+            Redefining the standard. We sharpen clarity, elevate design, and build digital identities that perform at the highest level.
+          </p>
+        </div>
+
+        <div style={{ padding: isMobile ? '0 24px' : '0 80px' }}>
+          <div style={{ maxWidth: '980px', margin: '0 auto', borderRadius: isMobile ? '18px' : '24px', overflow: 'hidden', background: '#111113', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ height: isMobile ? '220px' : '320px', background: 'linear-gradient(135deg, #111827 0%, #1f2937 45%, #0f172a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+              <span style={{ fontSize: isMobile ? '28px' : '42px', fontWeight: 800, color: 'rgba(255,255,255,0.08)', letterSpacing: '0.08em' }}>SELECTED WORK</span>
+            </div>
+            <div style={{ padding: isMobile ? '20px' : '28px 28px 32px 28px', textAlign: 'center' }}>
+              <div style={{ fontSize: isMobile ? '18px' : '24px', fontWeight: 700, color: 'white' }}>No home featured work selected yet</div>
+              <p style={{ fontSize: isMobile ? '13px' : '15px', color: '#777', lineHeight: 1.8, marginTop: '12px', maxWidth: '620px', marginInline: 'auto' }}>
+                Choose up to 4 works from admin and they will show here automatically, or open the full works page meanwhile.
+              </p>
+              <div style={{ marginTop: '22px' }}>
+                <Link to="/works" onClick={() => window.scrollTo(0, 0)}>
+                  <button style={{ background: '#c2622a', borderRadius: '50px', padding: isMobile ? '12px 24px' : '13px 26px', color: 'white', fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: isMobile ? '14px' : '16px' }}>View all work</button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   // Calculate max index - stop when last 2 cards are visible (don't scroll to empty)
-  const maxIndex = isMobile ? totalCards - 1 : totalCards - 2;
+  const maxIndex = Math.max(0, isMobile ? totalCards - 1 : totalCards - 2);
 
   return (
     <section style={{ width: '100%', padding: isMobile ? '60px 0 40px 0' : '120px 0 80px 0', overflow: 'hidden' }}>
@@ -154,7 +219,7 @@ const SelectedWork = () => {
           Redefining the standard. We sharpen clarity, elevate design, and build digital identities that perform at the highest level.
         </p>
         <div style={{ marginTop: isMobile ? '24px' : '36px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'center', alignItems: 'center', gap: isMobile ? '12px' : '16px' }}>
-          <button style={{ background: '#c2622a', borderRadius: '50px', padding: isMobile ? '12px 24px' : '13px 26px', color: 'white', fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: isMobile ? '14px' : '16px' }}>Work With Us</button>
+          <Link to="/contact" onClick={() => window.scrollTo(0, 0)}><button style={{ background: '#c2622a', borderRadius: '50px', padding: isMobile ? '12px 24px' : '13px 26px', color: 'white', fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: isMobile ? '14px' : '16px' }}>Work With Us</button></Link>
           <button style={{ background: 'transparent', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: isMobile ? '14px' : '16px' }}>Explore our services →</button>
         </div>
       </div>
@@ -186,7 +251,7 @@ const SelectedWork = () => {
               }}
             >
               <div style={{ height: isMobile ? '220px' : '340px', overflow: 'hidden' }}>
-                <PreviewRenderer type={project.type} />
+                <ImagePreview image={project.image} title={project.name} />
               </div>
               <div style={{ padding: isMobile ? '20px' : '28px 28px 32px 28px', background: '#111113' }}>
                 <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '6px' : '0' }}>

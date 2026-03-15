@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 // Bar heights for the animated chart
 const barHeights = [60, 90, 70, 110, 85, 130, 95, 145, 120, 160, 140, 175];
@@ -172,18 +173,20 @@ const ImpactAtScale = () => {
           </p>
           {/* CTA Row */}
           <div style={{ marginTop: isMobile ? '24px' : '32px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', justifyContent: 'center', gap: isMobile ? '12px' : '20px' }}>
-            <button style={{
-              background: '#c2622a',
-              borderRadius: '50px',
-              padding: isMobile ? '12px 24px' : '13px 26px',
-              color: 'white',
-              fontWeight: 500,
-              fontSize: '14px',
-              border: 'none',
-              cursor: 'pointer',
-            }}>
-              Work With Us
-            </button>
+            <Link to="/contact" onClick={() => window.scrollTo(0, 0)}>
+              <button style={{
+                background: '#c2622a',
+                borderRadius: '50px',
+                padding: isMobile ? '12px 24px' : '13px 26px',
+                color: 'white',
+                fontWeight: 500,
+                fontSize: '14px',
+                border: 'none',
+                cursor: 'pointer',
+              }}>
+                Work With Us
+              </button>
+            </Link>
             <span style={{ color: 'white', fontSize: '14px', cursor: 'pointer' }}>
               Explore our services →
             </span>

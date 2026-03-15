@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 
 // Mobile detection hook
 const useIsMobile = () => {
@@ -359,22 +360,24 @@ const BuildEnvironment = () => {
             }}>
               A proven stack for speed and scale. We leverage these tools to ensure reliability and uncompromising polish.
             </p>
-            <button style={{
-              background: 'linear-gradient(135deg, #c2622a 0%, #d4713a 100%)',
-              borderRadius: '50px',
-              padding: isMobile ? '10px 20px' : '12px 24px',
-              color: 'white',
-              fontSize: '14px',
-              fontWeight: 600,
-              border: 'none',
-              cursor: 'pointer',
-              width: 'fit-content',
-              marginTop: isMobile ? '20px' : '28px',
-              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-              boxShadow: '0 4px 20px rgba(194,98,42,0.3)',
-            }}>
-              Start a project
-            </button>
+            <Link to="/contact" onClick={() => window.scrollTo(0, 0)}>
+              <button style={{
+                background: 'linear-gradient(135deg, #c2622a 0%, #d4713a 100%)',
+                borderRadius: '50px',
+                padding: isMobile ? '10px 20px' : '12px 24px',
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: 600,
+                border: 'none',
+                cursor: 'pointer',
+                width: 'fit-content',
+                marginTop: isMobile ? '20px' : '28px',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                boxShadow: '0 4px 20px rgba(194,98,42,0.3)',
+              }}>
+                Start a project
+              </button>
+            </Link>
           </div>
 
           {/* Right Side - Icon Grid - Compact layout */}

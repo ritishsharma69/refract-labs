@@ -1,36 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Navbar from '../components/Navbar';
 import CTASection from '../components/CTASection';
 import Footer from '../components/Footer';
+import NeuralBackground from '../components/ui/flow-field-background';
 import useSmoothScroll from '../hooks/useSmoothScroll';
+import { getWorkItems, subscribeToContentUpdates, type WorkItem } from '../lib/content-store';
 
 gsap.registerPlugin(ScrollTrigger);
-
-interface WorkItem {
-  id: string | number;
-  title: string;
-  type: string;
-  image: string;
-}
-
-// Default work items
-const DEFAULT_WORK_ITEMS: WorkItem[] = [
-  { id: '1', title: 'Color Pallet', type: 'Branding', image: '/work-1.png' },
-  { id: '2', title: 'Design That Inspires', type: 'Web Design', image: '/work-2.png' },
-  { id: '3', title: 'Nublink', type: 'Identity', image: '/work-3.png' },
-  { id: '4', title: 'AI Platform', type: 'Software', image: '/work-4.png' },
-  { id: '5', title: 'Typography System', type: 'Branding', image: '/work-5.png' },
-  { id: '6', title: 'E-commerce', type: 'Web Development', image: '/work-6.png' },
-];
-
-// Get works from localStorage or use defaults
-const getWorkItems = (): WorkItem[] => {
-  const stored = localStorage.getItem('workItems');
-  if (stored) return JSON.parse(stored);
-  return DEFAULT_WORK_ITEMS;
-};
 
 const Works = () => {
   useSmoothScroll();
@@ -44,9 +23,12 @@ const Works = () => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    // Load work items from localStorage
     setWorkItems(getWorkItems());
-    return () => window.removeEventListener('resize', checkMobile);
+    const unsubscribe = subscribeToContentUpdates(() => setWorkItems(getWorkItems()));
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -204,14 +186,27 @@ const Works = () => {
           justifyContent: 'center',
           padding: isMobile ? '120px 24px 40px' : '140px 80px 60px',
           textAlign: 'center',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
+        {/* Flow Field Background */}
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+          <NeuralBackground
+            color="#818cf8"
+            trailOpacity={0.1}
+            speed={0.8}
+            particleCount={500}
+          />
+        </div>
         <h1 style={{
           fontFamily: 'Space Grotesk, sans-serif',
           fontSize: isMobile ? '36px' : '64px',
           fontWeight: 700,
           color: 'white',
           fontStyle: 'italic',
+          position: 'relative',
+          zIndex: 1,
         }}>
           Recent Works
         </h1>
@@ -221,11 +216,13 @@ const Works = () => {
           marginTop: '16px',
           maxWidth: '400px',
           lineHeight: 1.7,
+          position: 'relative',
+          zIndex: 1,
         }}>
           Let's discuss scope, timing, and fit.
         </p>
-        <div style={{ display: 'flex', gap: '20px', marginTop: '32px', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <button className="hero-cta-btn">Work With Us</button>
+        <div style={{ display: 'flex', gap: '20px', marginTop: '32px', flexWrap: 'wrap', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
+          <Link to="/contact" onClick={() => window.scrollTo(0, 0)}><button className="hero-cta-btn">Work With Us</button></Link>
           <button className="group flex items-center gap-2 text-white">
             <span>Explore our services</span>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

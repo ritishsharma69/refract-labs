@@ -73,6 +73,7 @@ const Navbar = () => {
     { label: 'Home', href: '/' },
     { label: 'About', href: '/about' },
     { label: 'Works', href: '/works' },
+    { label: 'Testimonials', href: '/testimonials' },
   ];
 
   return (
@@ -115,20 +116,21 @@ const Navbar = () => {
             textDecoration: 'none',
           } : undefined}
         >
-          RefractWeb
+          Refract Labs
         </Link>
         {!isMobile && (
           <>
             <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>Home</Link>
             <Link to="/about" className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}>About</Link>
             <Link to="/works" className={`nav-link ${location.pathname === '/works' ? 'active' : ''}`}>Works</Link>
+            <Link to="/testimonials" className={`nav-link ${location.pathname === '/testimonials' ? 'active' : ''}`}>Testimonials</Link>
           </>
         )}
       </div>
 
       {/* Desktop: Work With Us Button */}
       {!isMobile && (
-        <Link to="/contact">
+        <Link to="/contact" onClick={() => window.scrollTo(0, 0)}>
           <button
             ref={buttonRef}
             className="cta-btn"
@@ -216,7 +218,7 @@ const Navbar = () => {
                   letterSpacing: '-0.3px',
                 }}
               >
-                RefractWeb
+                Refract Labs
               </span>
             </div>
 
@@ -281,7 +283,7 @@ const Navbar = () => {
               padding: '24px 32px 48px 32px',
             }}
           >
-            <Link to="/contact" onClick={() => setMenuOpen(false)}>
+            <Link to="/contact" onClick={() => { setMenuOpen(false); window.scrollTo(0, 0); }}>
               <button
                 className="mobile-menu-cta"
                 style={{
