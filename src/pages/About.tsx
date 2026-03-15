@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -86,8 +86,43 @@ const About = () => {
     return () => clearTimeout(timeout);
   }, []);
 
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 78 }, (_, i) => ({
+        id: i,
+        left: `${(i * 37) % 100}%`,
+        top: `${(i * 53) % 100}%`,
+        size: 1.5 + ((i * 11) % 4),
+        opacity: 0.24 + (((i * 7) % 32) / 100),
+        duration: 10 + ((i * 13) % 15),
+        delay: -((i * 17) % 12) / 1.5,
+      })),
+    []
+  );
+
   return (
-    <div style={{ width: '100%', minHeight: '100vh', background: '#080808' }}>
+    <div style={{ width: '100%', minHeight: '100vh', background: '#080808', position: 'relative', overflow: 'hidden' }}>
+      {/* Particle Layer */}
+      <div aria-hidden style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0, opacity: 0.58 }}>
+        {particles.map((p) => (
+          <span
+            key={p.id}
+            style={{
+              position: 'absolute',
+              left: p.left,
+              top: p.top,
+              width: p.size,
+              height: p.size,
+              borderRadius: '9999px',
+              background: 'rgba(255,255,255,0.92)',
+              boxShadow: '0 0 12px rgba(255,255,255,0.26)',
+              opacity: p.opacity,
+              animation: `testimonialDrift ${p.duration}s ease-in-out ${p.delay}s infinite alternate, testimonialPulse ${Math.max(3.6, p.duration * 0.4)}s ease-in-out ${p.delay / 1.5}s infinite alternate`,
+            }}
+          />
+        ))}
+      </div>
+
       <Navbar />
 
       {/* Hero Section */}
@@ -101,6 +136,7 @@ const About = () => {
           alignItems: 'center',
           padding: isMobile ? '120px 24px 60px' : '140px 80px 80px',
           position: 'relative',
+          zIndex: 1,
           textAlign: 'center',
         }}
       >
@@ -140,7 +176,7 @@ const About = () => {
       </div>
 
       {/* Team Section - Testimonial Carousel */}
-      <div style={{ padding: isMobile ? '20px 16px' : '40px 80px' }}>
+      <div style={{ padding: isMobile ? '20px 16px' : '40px 80px', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <h2 style={{
             fontFamily: 'Space Grotesk, sans-serif',
@@ -170,6 +206,8 @@ const About = () => {
         style={{
           padding: isMobile ? '80px 24px' : '140px 80px',
           textAlign: 'center',
+          position: 'relative',
+          zIndex: 1,
         }}
       >
         <h2 style={{
@@ -187,15 +225,19 @@ const About = () => {
       </div>
 
       {/* Core Capabilities - Vertical Tabs */}
-      <div ref={capabilitiesRef}>
+      <div ref={capabilitiesRef} style={{ position: 'relative', zIndex: 1 }}>
         <VerticalTabs />
       </div>
 
       {/* CTA Section */}
-      <CTASection />
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <CTASection />
+      </div>
 
       {/* Footer */}
-      <Footer />
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <Footer />
+      </div>
     </div>
   );
 };
