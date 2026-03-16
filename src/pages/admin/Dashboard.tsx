@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FiUsers, FiBriefcase, FiHome, FiMessageSquare } from 'react-icons/fi';
+import { FiArrowRight, FiBriefcase, FiHome, FiMessageSquare, FiUsers } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import {
   fetchTeamMembers,
@@ -45,130 +45,166 @@ const Dashboard = () => {
   }, []);
 
   const colorClasses = {
-    orange: 'bg-orange-500/12 text-orange-300 border-orange-500/20',
-    blue: 'bg-blue-500/12 text-blue-300 border-blue-500/20',
-    green: 'bg-emerald-500/12 text-emerald-300 border-emerald-500/20',
-    purple: 'bg-purple-500/12 text-purple-300 border-purple-500/20',
+    orange: {
+      icon: 'border-orange-500/20 bg-orange-500/12 text-orange-200',
+      pill: 'border-orange-500/20 bg-orange-500/10 text-orange-200',
+    },
+    blue: {
+      icon: 'border-sky-500/20 bg-sky-500/12 text-sky-200',
+      pill: 'border-sky-500/20 bg-sky-500/10 text-sky-200',
+    },
+    green: {
+      icon: 'border-emerald-500/20 bg-emerald-500/12 text-emerald-200',
+      pill: 'border-emerald-500/20 bg-emerald-500/10 text-emerald-200',
+    },
+    purple: {
+      icon: 'border-violet-500/20 bg-violet-500/12 text-violet-200',
+      pill: 'border-violet-500/20 bg-violet-500/10 text-violet-200',
+    },
   };
 
+  const quickActions = [
+    {
+      label: 'Open team workspace',
+      description: 'Refresh bios, photos, and social links for everyone shown on the public team page.',
+      link: '/admin/team',
+      icon: FiUsers,
+      color: 'orange' as const,
+    },
+    {
+      label: 'Curate featured work',
+      description: 'Promote the strongest portfolio pieces and control which projects land on the homepage.',
+      link: '/admin/works',
+      icon: FiBriefcase,
+      color: 'blue' as const,
+    },
+    {
+      label: 'Update social proof',
+      description: 'Balance text and video testimonials while keeping the homepage showcase sharp and current.',
+      link: '/admin/testimonials',
+      icon: FiMessageSquare,
+      color: 'purple' as const,
+    },
+  ];
+
   return (
-    <div className="space-y-6">
-      <section className="admin-surface rounded-[30px] p-6 sm:p-8">
-        <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+    <div className="space-y-8">
+      <section className="admin-surface rounded-[34px] p-6 sm:p-8 xl:p-10">
+        <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr] xl:items-end">
           <div className="max-w-3xl">
             <span className="admin-chip">Control center</span>
-            <h1 className="mt-5 text-3xl font-bold text-white font-['Space_Grotesk'] sm:text-4xl">Dashboard</h1>
+            <h1 className="mt-5 text-3xl font-bold text-white font-['Space_Grotesk'] sm:text-4xl xl:text-[46px]">A cleaner command view for every admin flow.</h1>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-gray-400 sm:text-base">
-              Everything important is now easier to scan — roomy cards, clear actions, and fast shortcuts for the sections you update most often.
+              Everything important is easier to scan now — clearer hierarchy, richer cards, and fast access to the sections you update most often.
             </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <div className="admin-pill">
+                <span className="h-2.5 w-2.5 rounded-full bg-orange-300 shadow-[0_0_14px_rgba(253,186,116,0.8)]" />
+                Publishing workflow
+              </div>
+              <div className="admin-pill">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_14px_rgba(74,222,128,0.8)]" />
+                Local sync active
+              </div>
+            </div>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3 xl:min-w-[440px]">
+          <div className="grid gap-4 sm:grid-cols-3 xl:min-w-[420px]">
             {[
               { label: 'Selected works', value: homeWorks },
               { label: 'Selected testimonials', value: homeTestimonials },
               { label: 'Sections managed', value: 3 },
             ].map((item) => (
-              <div key={item.label} className="admin-surface-soft rounded-[24px] px-5 py-4">
-                <p className="text-2xl font-semibold text-white">{item.value}</p>
-                <p className="mt-2 text-xs uppercase tracking-[0.18em] text-gray-500">{item.label}</p>
+              <div key={item.label} className="admin-form-block rounded-[26px] px-5 py-5">
+                <p className="text-[11px] uppercase tracking-[0.22em] text-gray-500">{item.label}</p>
+                <p className="mt-4 text-3xl font-semibold text-white">{item.value}</p>
+                <p className="mt-2 text-sm leading-6 text-gray-500">Live count from the connected admin content store.</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Link
-              key={stat.label}
-              to={stat.link}
-              className="group rounded-[28px] border border-white/8 bg-[#101010]/92 p-6 shadow-[0_20px_50px_rgba(0,0,0,0.22)] transition-all duration-200 hover:-translate-y-1 hover:border-white/14 hover:bg-[#131313]"
-            >
-              <div className="mb-10 flex items-start justify-between gap-4">
-                <div className={`flex h-12 w-12 items-center justify-center rounded-2xl border ${colorClasses[stat.color as keyof typeof colorClasses]}`}>
-                  <Icon size={20} />
+      <section className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          {stats.map((stat) => {
+            const Icon = stat.icon;
+            const tone = colorClasses[stat.color as keyof typeof colorClasses];
+
+            return (
+              <Link
+                key={stat.label}
+                to={stat.link}
+                className="admin-grid-card group flex h-full flex-col rounded-[30px] p-6"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-2xl border ${tone.icon}`}>
+                    <Icon size={20} />
+                  </div>
+                  <span className={`rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.22em] ${tone.pill}`}>
+                    Live
+                  </span>
                 </div>
-                <span className="rounded-full border border-white/8 bg-white/[0.03] px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-gray-500 group-hover:text-gray-300">
-                  View
-                </span>
-              </div>
 
-              <div className="space-y-2">
-                <p className="text-4xl font-bold leading-none text-white">{stat.value}</p>
-                <p className="text-sm font-medium text-gray-300">{stat.label}</p>
-                <p className="text-sm leading-6 text-gray-500">Open the {stat.label.toLowerCase()} area to edit and organize content.</p>
-              </div>
-            </Link>
-          );
-        })}
-      </div>
+                <div className="mt-10 space-y-3">
+                  <p className="text-4xl font-bold leading-none text-white">{stat.value}</p>
+                  <p className="text-base font-medium text-white">{stat.label}</p>
+                  <p className="text-sm leading-7 text-gray-500">Open the {stat.label.toLowerCase()} area to edit, curate, and keep the public-facing experience up to date.</p>
+                </div>
 
-      {/* Quick Actions */}
-      <div className="admin-surface rounded-[30px] p-6 sm:p-8">
-        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h2 className="text-xl font-semibold text-white">Quick Actions</h2>
-            <p className="mt-2 text-sm leading-7 text-gray-400">Jump straight into the sections that get updated most frequently.</p>
-          </div>
-          <div className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm text-gray-400">
-            Home currently shows <span className="font-medium text-white">{homeWorks}</span> selected works and <span className="font-medium text-white">{homeTestimonials}</span> selected testimonials.
-          </div>
+                <div className="mt-auto pt-8">
+                  <span className="inline-flex items-center gap-2 text-sm font-medium text-gray-300 transition-colors group-hover:text-white">
+                    Open section
+                    <FiArrowRight size={16} />
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
 
-        <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
-          <Link
-            to="/admin/team"
-            className="group rounded-[24px] border border-white/8 bg-[#0d0d0d] p-5 transition-all duration-200 hover:-translate-y-1 hover:border-orange-500/25"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-500/12 text-orange-300">
-                <FiUsers size={24} />
-              </div>
-              <span className="rounded-full border border-orange-500/18 bg-orange-500/8 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-orange-300">Team</span>
+        <div className="admin-surface rounded-[32px] p-6 sm:p-8">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-2xl font-semibold text-white font-['Space_Grotesk']">Quick actions</h2>
+              <p className="mt-2 text-sm leading-7 text-gray-400">Jump straight into the areas that move the homepage and brand presentation fastest.</p>
             </div>
-            <div className="mt-5">
-              <p className="text-base font-medium text-white">Add Team Member</p>
-              <p className="mt-2 text-sm leading-7 text-gray-500">Create or update the people who represent the brand publicly.</p>
+            <div className="admin-pill">
+              <span className="h-2.5 w-2.5 rounded-full bg-orange-300 shadow-[0_0_14px_rgba(253,186,116,0.7)]" />
+              {homeWorks} works · {homeTestimonials} testimonials on home
             </div>
-          </Link>
+          </div>
 
-          <Link
-            to="/admin/works"
-            className="group rounded-[24px] border border-white/8 bg-[#0d0d0d] p-5 transition-all duration-200 hover:-translate-y-1 hover:border-blue-500/25"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500/12 text-blue-300">
-                <FiBriefcase size={24} />
-              </div>
-              <span className="rounded-full border border-blue-500/18 bg-blue-500/8 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-blue-300">Works</span>
-            </div>
-            <div className="mt-5">
-              <p className="text-base font-medium text-white">Add New Work</p>
-              <p className="mt-2 text-sm leading-7 text-gray-500">Upload fresh case studies and decide what should appear on the home page.</p>
-            </div>
-          </Link>
+          <div className="mt-6 space-y-4">
+            {quickActions.map((action) => {
+              const Icon = action.icon;
+              const tone = colorClasses[action.color];
 
-          <Link
-            to="/admin/testimonials"
-            className="group rounded-[24px] border border-white/8 bg-[#0d0d0d] p-5 transition-all duration-200 hover:-translate-y-1 hover:border-purple-500/25"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-500/12 text-purple-300">
-                <FiMessageSquare size={24} />
-              </div>
-              <span className="rounded-full border border-purple-500/18 bg-purple-500/8 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-purple-300">Social proof</span>
-            </div>
-            <div className="mt-5">
-              <p className="text-base font-medium text-white">Manage Testimonials</p>
-              <p className="mt-2 text-sm leading-7 text-gray-500">Control the home highlights and the full testimonials experience from one place.</p>
-            </div>
-          </Link>
+              return (
+                <Link
+                  key={action.label}
+                  to={action.link}
+                  className="admin-form-block group flex items-start justify-between gap-4 rounded-[26px] p-5 transition-all duration-200 hover:border-white/12"
+                >
+                  <div className="flex min-w-0 items-start gap-4">
+                    <div className={`mt-0.5 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border ${tone.icon}`}>
+                      <Icon size={20} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-base font-medium text-white">{action.label}</p>
+                      <p className="mt-2 text-sm leading-7 text-gray-500">{action.description}</p>
+                    </div>
+                  </div>
+
+                  <span className="mt-1 rounded-full border border-white/8 bg-white/[0.03] p-2 text-gray-400 transition-colors group-hover:text-white">
+                    <FiArrowRight size={16} />
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };
