@@ -86,11 +86,17 @@ export function TestimonialCarousel({ className }: TestimonialCarouselProps) {
   ].filter((s) => s.url);
 
   return (
-    <div className={cn("w-full max-w-6xl mx-auto px-4", className)}>
+    <div className={cn("w-full max-w-[1100px] mx-auto px-0 md:px-4", className)}>
       {/* Desktop layout */}
-      <div className='hidden md:flex relative items-stretch' style={{ minHeight: '500px' }}>
+      <div
+        className='hidden md:flex relative items-center justify-center mx-auto w-full'
+        style={{ minHeight: '500px', maxWidth: '920px' }}
+      >
         {/* Avatar - left side */}
-        <div className='w-[45%] rounded-3xl overflow-hidden flex-shrink-0' style={{ minHeight: '500px' }}>
+        <div
+          className='rounded-3xl overflow-hidden flex-shrink-0'
+          style={{ width: '380px', height: '460px' }}
+        >
           <AnimatePresence mode='wait'>
             <motion.div
               key={currentTestimonial.imageUrl}
@@ -116,9 +122,11 @@ export function TestimonialCarousel({ className }: TestimonialCarouselProps) {
           style={{
             background: 'linear-gradient(145deg, #141414 0%, #1a1a1a 50%, #111 100%)',
             padding: '48px 52px',
-            marginLeft: '-60px',
-            marginTop: '40px',
-            marginBottom: '40px',
+            width: '520px',
+            minHeight: '380px',
+            marginLeft: '-44px',
+            marginTop: '24px',
+            marginBottom: '24px',
           }}
         >
           <AnimatePresence mode='wait'>
@@ -220,7 +228,7 @@ export function TestimonialCarousel({ className }: TestimonialCarouselProps) {
       </div>
 
       {/* Bottom navigation */}
-      <div className='flex justify-center items-center gap-6 mt-10'>
+      <div className='flex justify-center items-center gap-6 mt-8 mx-auto w-full'>
         <button
           onClick={handlePrevious}
           aria-label='Previous testimonial'

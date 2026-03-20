@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Navbar from '../components/Navbar';
+import ExploreServicesButton from '../components/ExploreServicesButton';
 import CTASection from '../components/CTASection';
 import Footer from '../components/Footer';
 import NeuralBackground from '../components/ui/flow-field-background';
@@ -224,12 +225,7 @@ const Works = () => {
         </p>
         <div style={{ display: 'flex', gap: '20px', marginTop: '32px', flexWrap: 'wrap', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
           <Link to="/contact" onClick={() => window.scrollTo(0, 0)}><button className="hero-cta-btn">Work With Us</button></Link>
-          <button className="group flex items-center gap-2 text-white">
-            <span>Explore our services</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </button>
+          <ExploreServicesButton />
         </div>
       </div>
 

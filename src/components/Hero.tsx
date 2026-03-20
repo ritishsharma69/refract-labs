@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
+import ExploreServicesButton from './ExploreServicesButton';
 import { SplineScene } from './ui/splite';
 import { Spotlight } from './ui/spotlight';
 
@@ -195,15 +196,7 @@ const Hero = () => {
                   Work With Us
                 </button>
               </Link>
-              <button
-                className="group flex items-center gap-2 text-white hover:text-white/80 transition-colors"
-                style={{ fontSize: isMobile ? '14px' : '15px' }}
-              >
-                <span>Explore our services</span>
-                <svg className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </button>
+              <ExploreServicesButton style={{ fontSize: isMobile ? '14px' : '15px' }} />
             </div>
           </div>
 

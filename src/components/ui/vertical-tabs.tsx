@@ -181,7 +181,7 @@ export function VerticalTabs() {
         position: 'relative',
         overflow: 'hidden',
         background: '#080808',
-        padding: isMobile ? '60px 20px' : '100px 80px',
+        padding: isMobile ? '28px 20px 60px' : '44px 80px 100px',
       }}
     >
       {/* Subtle copper glow */}

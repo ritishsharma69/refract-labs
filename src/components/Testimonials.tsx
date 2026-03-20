@@ -121,7 +121,7 @@ const Testimonials = () => {
   if (!currentTestimonial) {
     return (
       <section style={{
-        minHeight: isMobile ? 'auto' : '70vh',
+        minHeight: 'auto',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -129,7 +129,7 @@ const Testimonials = () => {
         background: '#080808',
         position: 'relative',
         overflow: 'hidden',
-        padding: isMobile ? '60px 24px' : '80px 48px',
+        padding: isMobile ? '28px 24px 32px' : '24px 48px 36px',
       }}>
         <div style={{
           position: 'absolute',
@@ -165,7 +165,7 @@ const Testimonials = () => {
 
   return (
     <section style={{
-      minHeight: isMobile ? 'auto' : '100vh',
+      minHeight: 'auto',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -173,7 +173,7 @@ const Testimonials = () => {
       background: '#080808',
       position: 'relative',
       overflow: 'hidden',
-      padding: isMobile ? '60px 24px' : '80px 48px',
+      padding: isMobile ? '28px 24px 32px' : '24px 48px 36px',
     }}>
       {/* Subtle background glow */}
       <div style={{
@@ -282,7 +282,7 @@ const Testimonials = () => {
           border: '1px solid rgba(255,255,255,0.1)',
           borderRadius: '50px',
           padding: '8px 20px 8px 8px',
-          marginTop: '52px',
+          marginTop: '32px',
           position: 'relative',
           zIndex: 1,
         }}
@@ -339,7 +339,7 @@ const Testimonials = () => {
         display: 'flex',
         gap: '8px',
         justifyContent: 'center',
-        marginTop: '44px',
+        marginTop: '28px',
         position: 'relative',
         zIndex: 1,
       }}>

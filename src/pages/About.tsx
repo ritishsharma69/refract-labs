@@ -1,13 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import ExploreServicesButton from '../components/ExploreServicesButton';
 import Navbar from '../components/Navbar';
 import { TestimonialCarousel } from '../components/ui/profile-card-testimonial-carousel';
 import VerticalTabs from '../components/ui/vertical-tabs';
 import CTASection from '../components/CTASection';
 import Footer from '../components/Footer';
 import useSmoothScroll from '../hooks/useSmoothScroll';
+import { CAPABILITIES_HASH, scrollToCapabilitiesSection } from '../lib/capabilities-navigation';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,6 +19,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const About = () => {
   useSmoothScroll();
+  const location = useLocation();
   const heroRef = useRef<HTMLDivElement>(null);
   const quoteRef = useRef<HTMLDivElement>(null);
   const capabilitiesRef = useRef<HTMLDivElement>(null);
@@ -100,6 +103,23 @@ const About = () => {
     []
   );
 
+  const scrollToCapabilities = () => {
+    scrollToCapabilitiesSection(capabilitiesRef.current);
+  };
+
+  useEffect(() => {
+    if (location.hash !== CAPABILITIES_HASH) return;
+
+    const timers = [150, 350, 700].map((delay) =>
+      window.setTimeout(() => {
+        ScrollTrigger.refresh();
+        scrollToCapabilities();
+      }, delay)
+    );
+
+    return () => timers.forEach((timer) => window.clearTimeout(timer));
+  }, [location.hash, isMobile]);
+
   return (
     <div style={{ width: '100%', minHeight: '100vh', background: '#080808', position: 'relative', overflow: 'hidden' }}>
       {/* Particle Layer */}
@@ -166,18 +186,13 @@ const About = () => {
         {/* CTAs */}
         <div style={{ display: 'flex', gap: '20px', marginTop: '32px', flexWrap: 'wrap', justifyContent: 'center' }}>
           <Link to="/contact" onClick={() => window.scrollTo(0, 0)}><button className="hero-cta-btn">Work With Us</button></Link>
-          <button className="group flex items-center gap-2 text-white">
-            <span>Explore our services</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </button>
+          <ExploreServicesButton />
         </div>
       </div>
 
       {/* Team Section - Testimonial Carousel */}
-      <div style={{ padding: isMobile ? '20px 16px' : '40px 80px', position: 'relative', zIndex: 1 }}>
-        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+      <div style={{ padding: isMobile ? '28px 16px 20px' : '56px 80px 28px', position: 'relative', zIndex: 1 }}>
+        <div style={{ textAlign: 'center', marginBottom: isMobile ? '24px' : '28px' }}>
           <h2 style={{
             fontFamily: 'Space Grotesk, sans-serif',
             fontSize: isMobile ? '28px' : '42px',
@@ -204,7 +219,7 @@ const About = () => {
       <div
         ref={quoteRef}
         style={{
-          padding: isMobile ? '80px 24px' : '140px 80px',
+          padding: isMobile ? '36px 24px 28px' : '64px 80px 40px',
           textAlign: 'center',
           position: 'relative',
           zIndex: 1,
@@ -225,7 +240,7 @@ const About = () => {
       </div>
 
       {/* Core Capabilities - Vertical Tabs */}
-      <div ref={capabilitiesRef} style={{ position: 'relative', zIndex: 1 }}>
+      <div id="capabilities" ref={capabilitiesRef} style={{ position: 'relative', zIndex: 1 }}>
         <VerticalTabs />
       </div>
 

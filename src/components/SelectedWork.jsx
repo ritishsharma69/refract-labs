@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import ExploreServicesButton from './ExploreServicesButton';
 import { fetchWorkItems, subscribeToContentUpdates } from '../lib/content-store';
 
 // Mobile detection hook
@@ -173,8 +174,8 @@ const SelectedWork = () => {
 
   if (totalCards === 0) {
     return (
-      <section style={{ width: '100%', padding: isMobile ? '60px 0 40px 0' : '120px 0 80px 0', overflow: 'hidden' }}>
-        <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 80px', marginBottom: isMobile ? '36px' : '64px' }}>
+      <section style={{ width: '100%', padding: isMobile ? '36px 0 28px 0' : '64px 0 44px 0', overflow: 'hidden' }}>
+        <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 80px', marginBottom: isMobile ? '24px' : '36px' }}>
           <h2 style={{ fontSize: isMobile ? '32px' : '52px', fontWeight: 700, color: 'white', letterSpacing: '-1.5px' }}>Selected work</h2>
           <p style={{ color: '#888', fontSize: isMobile ? '14px' : '16px', lineHeight: 1.75, marginTop: '16px' }}>
             Redefining the standard. We sharpen clarity, elevate design, and build digital identities that perform at the highest level.
@@ -207,16 +208,16 @@ const SelectedWork = () => {
   const maxIndex = Math.max(0, isMobile ? totalCards - 1 : totalCards - 2);
 
   return (
-    <section style={{ width: '100%', padding: isMobile ? '60px 0 40px 0' : '120px 0 80px 0', overflow: 'hidden' }}>
+    <section style={{ width: '100%', padding: isMobile ? '36px 0 28px 0' : '64px 0 44px 0', overflow: 'hidden' }}>
       {/* Header */}
-      <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 80px', marginBottom: isMobile ? '36px' : '64px' }}>
+      <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 80px', marginBottom: isMobile ? '24px' : '36px' }}>
         <h2 style={{ fontSize: isMobile ? '32px' : '52px', fontWeight: 700, color: 'white', letterSpacing: '-1.5px' }}>Selected work</h2>
         <p style={{ color: '#888', fontSize: isMobile ? '14px' : '16px', lineHeight: 1.75, marginTop: '16px' }}>
           Redefining the standard. We sharpen clarity, elevate design, and build digital identities that perform at the highest level.
         </p>
-        <div style={{ marginTop: isMobile ? '24px' : '36px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'center', alignItems: 'center', gap: isMobile ? '12px' : '16px' }}>
+        <div style={{ marginTop: isMobile ? '18px' : '24px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'center', alignItems: 'center', gap: isMobile ? '12px' : '16px' }}>
           <Link to="/contact" onClick={() => window.scrollTo(0, 0)}><button style={{ background: '#c2622a', borderRadius: '50px', padding: isMobile ? '12px 24px' : '13px 26px', color: 'white', fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: isMobile ? '14px' : '16px' }}>Work With Us</button></Link>
-          <button style={{ background: 'transparent', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: isMobile ? '14px' : '16px' }}>Explore our services →</button>
+          <ExploreServicesButton style={{ fontSize: isMobile ? '14px' : '16px' }} />
         </div>
       </div>
 
@@ -288,7 +289,7 @@ const SelectedWork = () => {
       </div>
 
       {/* Bottom controls */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: isMobile ? '24px 24px 0 24px' : '48px 80px 0 80px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: isMobile ? '18px 24px 0 24px' : '28px 80px 0 80px' }}>
         {/* Progress bar - full width spanning left to right */}
         <div style={{ flex: 1, height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden', marginRight: isMobile ? '20px' : '40px' }}>
           <div style={{ height: '100%', width: `${((currentIndex + 1) / (maxIndex + 1)) * 100}%`, background: 'linear-gradient(90deg, #c2622a 0%, #e07a3a 100%)', borderRadius: '2px', transition: 'width 0.5s ease' }} />

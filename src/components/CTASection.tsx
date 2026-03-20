@@ -116,14 +116,14 @@ const CTASection = () => {
     <section
       ref={sectionRef}
       style={{
-        minHeight: isMobile ? 'auto' : '100vh',
+        minHeight: 'auto',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         background: '#080808',
         position: 'relative',
         overflow: 'hidden',
-        padding: isMobile ? '60px 24px' : '80px 48px',
+        padding: isMobile ? '28px 24px 36px' : '32px 48px 40px',
       }}
     >
       {/* Diagonal light beam - warm orange/white streak from top-right to center-left */}
@@ -181,7 +181,7 @@ const CTASection = () => {
           alignItems: 'center',
           maxWidth: '1200px',
           width: '100%',
-          gap: isMobile ? '32px' : '60px',
+          gap: isMobile ? '20px' : '28px',
           position: 'relative',
           zIndex: 1,
         }}
@@ -209,7 +209,7 @@ const CTASection = () => {
               fontSize: '17px',
               color: 'rgba(255,255,255,0.55)',
               lineHeight: 1.7,
-              marginTop: '24px',
+              marginTop: '18px',
               maxWidth: '420px',
             }}
           >
@@ -221,7 +221,7 @@ const CTASection = () => {
             <button
               ref={buttonRef}
               className="hero-cta-btn"
-              style={{ marginTop: '36px' }}
+              style={{ marginTop: '28px' }}
             >
               Start a Project
             </button>
@@ -235,7 +235,7 @@ const CTASection = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            minHeight: isMobile ? '400px' : '500px',
+            minHeight: isMobile ? '340px' : '420px',
           }}
         >
           <RadialOrbitalTimeline timelineData={timelineData} />

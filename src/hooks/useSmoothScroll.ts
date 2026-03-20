@@ -5,6 +5,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+let lenisInstance: Lenis | null = null;
+
+export const getLenisInstance = () => lenisInstance;
+
 const useSmoothScroll = () => {
   useEffect(() => {
     const lenis = new Lenis({
@@ -15,18 +19,25 @@ const useSmoothScroll = () => {
       smoothWheel: true,
     });
 
+    lenisInstance = lenis;
+
     // Connect Lenis to GSAP ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update);
 
-    gsap.ticker.add((time) => {
+    const updateLenis = (time: number) => {
       lenis.raf(time * 1000);
-    });
+    };
+
+    gsap.ticker.add(updateLenis);
 
     gsap.ticker.lagSmoothing(0);
 
     return () => {
+      if (lenisInstance === lenis) {
+        lenisInstance = null;
+      }
       lenis.destroy();
-      gsap.ticker.remove(lenis.raf);
+      gsap.ticker.remove(updateLenis);
     };
   }, []);
 };

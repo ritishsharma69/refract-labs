@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import ExploreServicesButton from './ExploreServicesButton';
 
 // Bar heights for the animated chart
 const barHeights = [60, 90, 70, 110, 85, 130, 95, 145, 120, 160, 140, 175];
@@ -141,7 +142,7 @@ const ImpactAtScale = () => {
   };
 
   return (
-    <section style={{ position: 'relative', background: 'transparent', padding: isMobile ? '60px 24px' : '100px 160px' }}>
+    <section style={{ position: 'relative', background: 'transparent', padding: isMobile ? '36px 24px 32px' : '64px 120px 44px' }}>
       {/* Background atmosphere glow */}
       <div style={{
         position: 'absolute',
@@ -157,7 +158,7 @@ const ImpactAtScale = () => {
 
       <div style={{ maxWidth: '1400px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
         {/* Section Header */}
-        <div style={{ textAlign: 'center', marginBottom: isMobile ? '36px' : '64px' }}>
+        <div style={{ textAlign: 'center', marginBottom: isMobile ? '24px' : '36px' }}>
           <h2 style={{
             fontFamily: 'Space Grotesk, sans-serif',
             fontSize: isMobile ? '32px' : '52px',
@@ -172,7 +173,7 @@ const ImpactAtScale = () => {
             Design is subjective. Performance is not.
           </p>
           {/* CTA Row */}
-          <div style={{ marginTop: isMobile ? '24px' : '32px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', justifyContent: 'center', gap: isMobile ? '12px' : '20px' }}>
+          <div style={{ marginTop: isMobile ? '18px' : '24px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', justifyContent: 'center', gap: isMobile ? '12px' : '20px' }}>
             <Link to="/contact" onClick={() => window.scrollTo(0, 0)}>
               <button style={{
                 background: '#c2622a',
@@ -187,9 +188,7 @@ const ImpactAtScale = () => {
                 Work With Us
               </button>
             </Link>
-            <span style={{ color: 'white', fontSize: '14px', cursor: 'pointer' }}>
-              Explore our services →
-            </span>
+            <ExploreServicesButton style={{ fontSize: '14px', fontWeight: 500 }} />
           </div>
         </div>
 

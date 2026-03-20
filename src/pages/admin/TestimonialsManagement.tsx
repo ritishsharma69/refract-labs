@@ -41,7 +41,7 @@ const TestimonialsManagement = () => {
     setIsModalOpen(true);
   };
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleSubmit = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
     const payload = {
       type: formData.type === 'video' ? 'video' as const : 'text' as const,

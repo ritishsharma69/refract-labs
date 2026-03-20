@@ -209,7 +209,7 @@ const BuildEnvironment = () => {
   }, []);
 
   return (
-    <section style={{ width: '100%', padding: isMobile ? '40px 20px' : '60px 120px' }}>
+    <section style={{ width: '100%', padding: isMobile ? '20px 20px 28px' : '24px 120px 28px' }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
         {/* Main Card - Reduced height by ~25% */}
         <div

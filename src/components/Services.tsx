@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import ExploreServicesButton from './ExploreServicesButton';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -67,7 +68,7 @@ const Services = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} id="services" style={{ position: 'relative', overflow: 'hidden', background: '#0a0a0a', padding: isMobile ? '60px 20px' : '120px 80px' }}>
+    <section ref={sectionRef} id="services" style={{ position: 'relative', overflow: 'hidden', background: '#0a0a0a', padding: isMobile ? '36px 20px 32px' : '64px 80px 48px' }}>
       {/* Warm copper radial glow behind bento grid */}
       <div
         style={{
@@ -107,14 +108,9 @@ const Services = () => {
             we build the entire ecosystem your business runs on.
           </p>
           {/* CTAs */}
-          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', justifyContent: 'center', marginTop: isMobile ? '24px' : '36px', gap: isMobile ? '12px' : '20px' }}>
+          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', justifyContent: 'center', marginTop: isMobile ? '18px' : '24px', gap: isMobile ? '12px' : '20px' }}>
             <Link to="/contact" onClick={() => window.scrollTo(0, 0)}><button className="hero-cta-btn" style={{ width: isMobile ? '100%' : 'auto' }}>Work With Us</button></Link>
-            <button className="group" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '15px', color: 'white', background: 'transparent', border: 'none', cursor: 'pointer' }}>
-              <span>Explore our services</span>
-              <svg style={{ width: '16px', height: '16px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </button>
+            <ExploreServicesButton style={{ fontSize: '15px' }} />
           </div>
         </div>
 
@@ -128,7 +124,7 @@ const Services = () => {
             gap: '14px',
             width: '100%',
             maxWidth: '1200px',
-            margin: isMobile ? '32px auto 0' : '64px auto 0',
+            margin: isMobile ? '20px auto 0' : '36px auto 0',
           }}
         >
 
