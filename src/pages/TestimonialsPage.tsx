@@ -7,18 +7,49 @@ import CTASection from '../components/CTASection';
 import useSmoothScroll from '../hooks/useSmoothScroll';
 import { fetchTestimonialItems, subscribeToContentUpdates, type TestimonialItem } from '../lib/content-store';
 
-const cardBase: React.CSSProperties = {
-  border: '1px solid rgba(255,255,255,0.08)',
-  background: 'linear-gradient(180deg, rgba(18,18,18,0.88), rgba(10,10,10,0.82))',
-  boxShadow: '0 30px 80px rgba(0,0,0,0.32)',
-  backdropFilter: 'blur(18px)',
-  WebkitBackdropFilter: 'blur(18px)',
+// Liquid Glass / Mirror-water card styles
+const liquidGlass: React.CSSProperties = {
+  position: 'relative',
+  borderRadius: '24px',
+  background: 'linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 40%, rgba(255,255,255,0.06) 100%)',
+  border: '1.5px solid rgba(255,255,255,0.15)',
+  boxShadow:
+    '0 8px 40px rgba(0,0,0,0.45), ' +
+    'inset 0 1px 0 rgba(255,255,255,0.2), ' +
+    'inset 0 -1px 0 rgba(255,255,255,0.05), ' +
+    '0 1px 0 rgba(255,255,255,0.1)',
+  backdropFilter: 'blur(28px) saturate(1.4)',
+  WebkitBackdropFilter: 'blur(28px) saturate(1.4)',
+  overflow: 'hidden',
+  transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
 };
+
+const liquidGlassHover: React.CSSProperties = {
+  border: '1.5px solid rgba(255,255,255,0.28)',
+  boxShadow:
+    '0 20px 60px rgba(0,0,0,0.5), ' +
+    'inset 0 1px 0 rgba(255,255,255,0.3), ' +
+    'inset 0 -1px 0 rgba(255,255,255,0.08), ' +
+    '0 1px 0 rgba(255,255,255,0.15), ' +
+    '0 0 80px rgba(140,200,255,0.06), ' +
+    '0 0 40px rgba(255,180,120,0.04)',
+};
+
+// Caustic light colors that rotate per card
+const causticColors = [
+  ['rgba(120,200,255,0.5)', 'rgba(180,140,255,0.4)'],  // blue + purple
+  ['rgba(100,255,200,0.45)', 'rgba(120,200,255,0.4)'],  // teal + blue
+  ['rgba(255,180,120,0.4)', 'rgba(255,140,180,0.35)'],  // warm orange + pink
+  ['rgba(180,140,255,0.45)', 'rgba(100,255,200,0.4)'],  // purple + teal
+];
+
+
 
 const TestimonialsPage = () => {
   useSmoothScroll();
   const [items, setItems] = useState<TestimonialItem[]>([]);
   const [activeVideo, setActiveVideo] = useState<TestimonialItem | null>(null);
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -103,28 +134,265 @@ const TestimonialsPage = () => {
               { label: 'Total Testimonials', value: stats.total },
               { label: 'Video Stories', value: stats.videos },
               { label: 'Average Rating', value: `${stats.average}/5` },
-            ].map((stat) => <div key={stat.label} style={{ ...cardBase, padding: '22px', borderRadius: '24px' }}><div style={{ fontSize: '30px', fontWeight: 700 }}>{stat.value}</div><div style={{ fontSize: '12px', color: '#a1a1aa', letterSpacing: '0.18em', textTransform: 'uppercase', marginTop: '8px' }}>{stat.label}</div></div>)}
+            ].map((stat) => <div key={stat.label} style={{ ...liquidGlass, padding: '22px' }}><div style={{ fontSize: '30px', fontWeight: 700 }}>{stat.value}</div><div style={{ fontSize: '12px', color: '#a1a1aa', letterSpacing: '0.18em', textTransform: 'uppercase', marginTop: '8px' }}>{stat.label}</div></div>)}
           </div>
         </div>
       </section>
 
       <section style={{ padding: '0 24px 100px' }}>
-        <div ref={gridRef} style={{ maxWidth: '1240px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', perspective: '1200px', perspectiveOrigin: '50% 50%' }}>
-          {items.length > 0 ? items.map((item, index) => (
-            <article key={item.id} style={{ ...cardBase, borderRadius: '28px', padding: '22px', transform: `rotateX(${index % 2 === 0 ? '2deg' : '-2deg'}) rotateY(${index % 3 === 0 ? '-2deg' : '2deg'})`, transformStyle: 'preserve-3d' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                <span style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: item.type === 'video' ? '#ff9050' : '#d4d4d8' }}>{item.type === 'video' ? 'Video Testimonial' : 'Client Testimonial'}</span>
-                <span style={{ color: '#ff9050', fontSize: '13px' }}>{'★'.repeat(Math.max(1, Math.min(5, item.stars || 5)))}</span>
-              </div>
-              {item.type === 'video' && <button onClick={() => setActiveVideo(item)} style={{ width: '100%', marginBottom: '18px', border: 'none', cursor: 'pointer', borderRadius: '20px', overflow: 'hidden', background: '#151515', position: 'relative' }}><div style={{ aspectRatio: '16 / 9', background: item.thumbnailUrl ? `url(${item.thumbnailUrl}) center/cover no-repeat` : 'linear-gradient(135deg, #1f1f1f, #3a1c0f)' }} /><div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ width: '72px', height: '72px', borderRadius: '50%', background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', color: 'white' }}>▶</div></div></button>}
-              <p style={{ color: 'white', lineHeight: 1.9, fontSize: '16px', minHeight: '120px' }}>{item.quote}</p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginTop: '20px' }}>
-                <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: item.avatarUrl ? `url(${item.avatarUrl}) center/cover no-repeat` : `linear-gradient(135deg, ${item.avatarColor || '#c2622a'}, #ff9050)` }} />
-                <div><div style={{ fontWeight: 600 }}>{item.name}</div><div style={{ color: '#a1a1aa', fontSize: '13px' }}>{item.role} · {item.company}</div>{item.duration && <div style={{ color: '#ff9050', fontSize: '12px', marginTop: '4px' }}>{item.duration}</div>}</div>
-              </div>
-            </article>
-          )) : (
-            <div style={{ ...cardBase, gridColumn: '1 / -1', borderRadius: '28px', padding: '36px', textAlign: 'center' }}>
+        <div ref={gridRef} style={{
+          maxWidth: '1240px',
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))',
+          gap: '20px',
+        }}>
+          {items.length > 0 ? items.map((item, index) => {
+            const isHovered = hoveredCard === index;
+            const colors = causticColors[index % causticColors.length];
+
+            return (
+              <article
+                key={item.id}
+                onMouseEnter={() => setHoveredCard(index)}
+                onMouseLeave={() => setHoveredCard(null)}
+                style={{
+                  ...liquidGlass,
+                  ...(isHovered ? liquidGlassHover : {}),
+                  padding: '28px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  cursor: 'default',
+                  transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
+                  minHeight: '280px',
+                }}
+              >
+                {/* === LIQUID GLASS LAYERS === */}
+
+                {/* Layer 1: Top mirror reflection sweep */}
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: '-50%',
+                  width: '200%',
+                  height: '45%',
+                  background: 'linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 40%, transparent 100%)',
+                  borderRadius: '24px 24px 50% 50%',
+                  pointerEvents: 'none',
+                  opacity: isHovered ? 1 : 0.7,
+                  transition: 'opacity 0.5s ease',
+                }} />
+
+                {/* Layer 2: Moving shimmer reflection */}
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '60%',
+                  background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.08) 45%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.08) 55%, transparent 70%)',
+                  backgroundSize: '200% 100%',
+                  animation: 'liquidShimmer 6s ease-in-out infinite',
+                  animationDelay: `${index * 0.8}s`,
+                  pointerEvents: 'none',
+                  borderRadius: '24px',
+                }} />
+
+                {/* Layer 3: Caustic light spot 1 */}
+                <div style={{
+                  position: 'absolute',
+                  top: '15%',
+                  right: '10%',
+                  width: '80px',
+                  height: '80px',
+                  borderRadius: '50%',
+                  background: `radial-gradient(circle, ${colors[0]} 0%, transparent 70%)`,
+                  filter: 'blur(20px)',
+                  pointerEvents: 'none',
+                  animation: 'causticFloat 8s ease-in-out infinite',
+                  animationDelay: `${index * 1.2}s`,
+                  opacity: isHovered ? 1 : 0.6,
+                  transition: 'opacity 0.4s ease',
+                }} />
+
+                {/* Layer 4: Caustic light spot 2 */}
+                <div style={{
+                  position: 'absolute',
+                  bottom: '20%',
+                  left: '8%',
+                  width: '60px',
+                  height: '60px',
+                  borderRadius: '50%',
+                  background: `radial-gradient(circle, ${colors[1]} 0%, transparent 70%)`,
+                  filter: 'blur(18px)',
+                  pointerEvents: 'none',
+                  animation: 'causticFloat2 10s ease-in-out infinite',
+                  animationDelay: `${index * 0.6}s`,
+                  opacity: isHovered ? 0.9 : 0.4,
+                  transition: 'opacity 0.4s ease',
+                }} />
+
+                {/* Layer 5: Small bright caustic dot */}
+                <div style={{
+                  position: 'absolute',
+                  top: '35%',
+                  left: '55%',
+                  width: '30px',
+                  height: '30px',
+                  borderRadius: '50%',
+                  background: 'radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 70%)',
+                  filter: 'blur(8px)',
+                  pointerEvents: 'none',
+                  animation: 'causticFloat 12s ease-in-out infinite reverse',
+                  animationDelay: `${index * 1.5}s`,
+                }} />
+
+                {/* Layer 6: Glass thickness - bottom edge glow */}
+                <div style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: '10%',
+                  right: '10%',
+                  height: '2px',
+                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), rgba(255,255,255,0.25), rgba(255,255,255,0.15), transparent)',
+                  borderRadius: '0 0 24px 24px',
+                  pointerEvents: 'none',
+                }} />
+
+                {/* Layer 7: Glass edge refraction - left/right */}
+                <div style={{
+                  position: 'absolute',
+                  top: '15%',
+                  bottom: '15%',
+                  left: 0,
+                  width: '1.5px',
+                  background: 'linear-gradient(180deg, transparent, rgba(255,255,255,0.12), rgba(255,255,255,0.06), transparent)',
+                  pointerEvents: 'none',
+                  borderRadius: '24px 0 0 24px',
+                }} />
+                <div style={{
+                  position: 'absolute',
+                  top: '15%',
+                  bottom: '15%',
+                  right: 0,
+                  width: '1.5px',
+                  background: 'linear-gradient(180deg, transparent, rgba(255,255,255,0.08), rgba(255,255,255,0.04), transparent)',
+                  pointerEvents: 'none',
+                  borderRadius: '0 24px 24px 0',
+                }} />
+
+                {/* === CONTENT === */}
+                <div style={{ position: 'relative', zIndex: 2, flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  {/* Header */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '18px' }}>
+                    <span style={{
+                      fontSize: '10px',
+                      letterSpacing: '0.25em',
+                      textTransform: 'uppercase',
+                      color: item.type === 'video' ? '#ff9050' : 'rgba(255,255,255,0.55)',
+                      padding: '6px 14px',
+                      borderRadius: '999px',
+                      background: item.type === 'video' ? 'rgba(224,112,48,0.1)' : 'rgba(255,255,255,0.06)',
+                      border: `1px solid ${item.type === 'video' ? 'rgba(224,112,48,0.18)' : 'rgba(255,255,255,0.1)'}`,
+                      backdropFilter: 'blur(8px)',
+                    }}>
+                      {item.type === 'video' ? '▶ Video' : 'Testimonial'}
+                    </span>
+                    <span style={{ color: '#ff9050', fontSize: '13px', letterSpacing: '2px' }}>
+                      {'★'.repeat(Math.max(1, Math.min(5, item.stars || 5)))}
+                    </span>
+                  </div>
+
+                  {/* Video thumbnail */}
+                  {item.type === 'video' && (
+                    <button
+                      onClick={() => setActiveVideo(item)}
+                      style={{
+                        width: '100%',
+                        marginBottom: '18px',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        cursor: 'pointer',
+                        borderRadius: '16px',
+                        overflow: 'hidden',
+                        background: 'rgba(255,255,255,0.03)',
+                        position: 'relative',
+                      }}
+                    >
+                      <div style={{
+                        aspectRatio: '16 / 9',
+                        background: item.thumbnailUrl
+                          ? `url(${item.thumbnailUrl}) center/cover no-repeat`
+                          : 'linear-gradient(135deg, rgba(255,255,255,0.02), rgba(120,200,255,0.06))',
+                      }} />
+                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{
+                          width: '52px',
+                          height: '52px',
+                          borderRadius: '50%',
+                          background: 'rgba(255,255,255,0.1)',
+                          backdropFilter: 'blur(16px)',
+                          border: '1.5px solid rgba(255,255,255,0.2)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '18px',
+                          color: 'white',
+                          transition: 'all 0.3s ease',
+                          transform: isHovered ? 'scale(1.15)' : 'scale(1)',
+                          boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                        }}>▶</div>
+                      </div>
+                    </button>
+                  )}
+
+                  {/* Quote */}
+                  <p style={{
+                    color: 'rgba(255,255,255,0.9)',
+                    lineHeight: 1.8,
+                    fontSize: '15px',
+                    flex: 1,
+                    fontStyle: 'italic',
+                    margin: 0,
+                  }}>
+                    "{item.quote}"
+                  </p>
+
+                  {/* Person */}
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '14px',
+                    marginTop: '22px',
+                    paddingTop: '16px',
+                    borderTop: '1px solid rgba(255,255,255,0.08)',
+                  }}>
+                    <div style={{
+                      width: '46px',
+                      height: '46px',
+                      borderRadius: '50%',
+                      background: item.avatarUrl
+                        ? `url(${item.avatarUrl}) center/cover no-repeat`
+                        : `linear-gradient(135deg, ${item.avatarColor || '#c2622a'}, #ff9050)`,
+                      border: '2px solid rgba(255,255,255,0.15)',
+                      flexShrink: 0,
+                      boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
+                    }} />
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: '14px' }}>{item.name}</div>
+                      <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: '12px', marginTop: '2px' }}>
+                        {item.role} · {item.company}
+                      </div>
+                      {item.duration && (
+                        <div style={{ color: '#ff9050', fontSize: '11px', marginTop: '4px' }}>{item.duration}</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </article>
+            );
+          }) : (
+            <div style={{ ...liquidGlass, gridColumn: '1 / -1', padding: '48px', textAlign: 'center' }}>
               <div style={{ fontSize: '30px', fontWeight: 700, color: 'white' }}>No testimonials added yet</div>
               <p style={{ maxWidth: '640px', margin: '14px auto 0', color: '#a1a1aa', lineHeight: 1.8 }}>
                 Add text or video testimonials from admin and they will appear here automatically.
@@ -138,7 +406,7 @@ const TestimonialsPage = () => {
 
       {activeVideo && (
         <div onClick={() => setActiveVideo(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.82)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', zIndex: 60 }}>
-          <div onClick={(e) => e.stopPropagation()} style={{ width: 'min(960px, 100%)', ...cardBase, borderRadius: '28px', padding: '20px' }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: 'min(960px, 100%)', ...liquidGlass, padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', marginBottom: '16px' }}><div><div style={{ fontWeight: 700 }}>{activeVideo.name}</div><div style={{ color: '#a1a1aa', fontSize: '14px' }}>{activeVideo.company}</div></div><button onClick={() => setActiveVideo(null)} style={{ background: 'transparent', color: 'white', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '999px', padding: '10px 16px' }}>Close</button></div>
             {activeVideo.videoUrl ? <video src={activeVideo.videoUrl} controls autoPlay style={{ width: '100%', borderRadius: '20px', background: '#000' }} /> : <div style={{ aspectRatio: '16 / 9', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #171717, #2f190f)', color: '#d4d4d8' }}>Add a video URL in admin to play this testimonial.</div>}
           </div>

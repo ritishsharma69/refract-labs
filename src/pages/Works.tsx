@@ -19,12 +19,13 @@ const Works = () => {
   const marqueeRef2 = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [workItems, setWorkItems] = useState<WorkItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    const load = () => fetchWorkItems().then(setWorkItems).catch(() => {});
+    const load = () => fetchWorkItems().then(items => { setWorkItems(items); setLoading(false); }).catch(() => setLoading(false));
     load();
     const unsubscribe = subscribeToContentUpdates(load);
     return () => {
@@ -229,38 +230,47 @@ const Works = () => {
         </div>
       </div>
 
-      {/* Marquee Section - Row 1 (Left to Right animation, meaning it moves left) */}
-      <div style={{
-        overflow: 'hidden',
-        padding: isMobile ? '20px 0' : '40px 0',
-      }}>
-        <div
-          ref={marqueeRef1}
-          style={{
-            display: 'flex',
-            width: 'fit-content',
-          }}
-        >
-          {/* Duplicate items for seamless loop */}
-          {[...workItems, ...workItems].map((item, index) => renderWorkCard(item, index))}
-        </div>
+      {/* Marquee Section - Row 1 */}
+      <div style={{ overflow: 'hidden', padding: isMobile ? '20px 0' : '40px 0' }}>
+        {loading ? (
+          <div style={{ display: 'flex', gap: isMobile ? '12px' : '24px', padding: '0 24px' }}>
+            {[1,2,3,4].map((i) => (
+              <div key={i} style={{ width: isMobile ? '280px' : '420px', flexShrink: 0, borderRadius: '16px', overflow: 'hidden', background: '#111113', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ height: isMobile ? '200px' : '280px', background: 'linear-gradient(90deg, #111113 25%, #1a1a1d 50%, #111113 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite' }} />
+                <div style={{ padding: '20px' }}>
+                  <div style={{ height: '12px', width: '40%', borderRadius: '4px', marginBottom: '10px', background: 'linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite' }} />
+                  <div style={{ height: '18px', width: '70%', borderRadius: '4px', background: 'linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.06) 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite' }} />
+                </div>
+              </div>
+            ))}
+            <style>{`@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
+          </div>
+        ) : (
+          <div ref={marqueeRef1} style={{ display: 'flex', width: 'fit-content' }}>
+            {[...workItems, ...workItems].map((item, index) => renderWorkCard(item, index))}
+          </div>
+        )}
       </div>
 
-      {/* Marquee Section - Row 2 (Right to Left animation, meaning it moves right) */}
-      <div style={{
-        overflow: 'hidden',
-        padding: isMobile ? '20px 0' : '40px 0',
-      }}>
-        <div
-          ref={marqueeRef2}
-          style={{
-            display: 'flex',
-            width: 'fit-content',
-          }}
-        >
-          {/* Duplicate items for seamless loop */}
-          {[...workItems.slice().reverse(), ...workItems.slice().reverse()].map((item, index) => renderWorkCard(item, index))}
-        </div>
+      {/* Marquee Section - Row 2 */}
+      <div style={{ overflow: 'hidden', padding: isMobile ? '20px 0' : '40px 0' }}>
+        {loading ? (
+          <div style={{ display: 'flex', gap: isMobile ? '12px' : '24px', padding: '0 24px' }}>
+            {[1,2,3,4].map((i) => (
+              <div key={i} style={{ width: isMobile ? '280px' : '420px', flexShrink: 0, borderRadius: '16px', overflow: 'hidden', background: '#111113', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ height: isMobile ? '200px' : '280px', background: 'linear-gradient(90deg, #111113 25%, #1a1a1d 50%, #111113 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite' }} />
+                <div style={{ padding: '20px' }}>
+                  <div style={{ height: '12px', width: '40%', borderRadius: '4px', marginBottom: '10px', background: 'linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite' }} />
+                  <div style={{ height: '18px', width: '70%', borderRadius: '4px', background: 'linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.06) 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite' }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div ref={marqueeRef2} style={{ display: 'flex', width: 'fit-content' }}>
+            {[...workItems.slice().reverse(), ...workItems.slice().reverse()].map((item, index) => renderWorkCard(item, index))}
+          </div>
+        )}
       </div>
 
       {/* CTA Section */}

@@ -1,66 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
-import RadialOrbitalTimeline from './ui/radial-orbital-timeline';
-import { Calendar, Code, FileText, User, Clock } from 'lucide-react';
-
-const timelineData = [
-  {
-    id: 1,
-    title: "Discovery",
-    date: "Week 1",
-    content: "Deep dive into your brand, audience, and business goals.",
-    category: "Planning",
-    icon: Calendar,
-    relatedIds: [2],
-    status: "completed" as const,
-    energy: 100,
-  },
-  {
-    id: 2,
-    title: "Strategy",
-    date: "Week 2",
-    content: "Craft a comprehensive roadmap and technical architecture.",
-    category: "Design",
-    icon: FileText,
-    relatedIds: [1, 3],
-    status: "completed" as const,
-    energy: 90,
-  },
-  {
-    id: 3,
-    title: "Build",
-    date: "Week 3-6",
-    content: "Transform vision into reality with precision development.",
-    category: "Development",
-    icon: Code,
-    relatedIds: [2, 4],
-    status: "in-progress" as const,
-    energy: 60,
-  },
-  {
-    id: 4,
-    title: "Refine",
-    date: "Week 7",
-    content: "Polish every detail and ensure flawless performance.",
-    category: "Testing",
-    icon: User,
-    relatedIds: [3, 5],
-    status: "pending" as const,
-    energy: 30,
-  },
-  {
-    id: 5,
-    title: "Launch",
-    date: "Week 8",
-    content: "Go live and watch your digital identity take flight.",
-    category: "Release",
-    icon: Clock,
-    relatedIds: [4],
-    status: "pending" as const,
-    energy: 10,
-  },
-];
+import OrbitingSkills from './ui/orbiting-skills';
 
 const CTASection = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -238,7 +179,7 @@ const CTASection = () => {
             minHeight: isMobile ? '340px' : '420px',
           }}
         >
-          <RadialOrbitalTimeline timelineData={timelineData} />
+          <OrbitingSkills />
         </div>
       </div>
     </section>

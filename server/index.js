@@ -21,7 +21,8 @@ app.use('/api/team', teamRoutes);
 app.use('/api/works', worksRoutes);
 app.use('/api/testimonials', testimonialsRoutes);
 
-// Health check
+// Root & health check
+app.get('/', (_req, res) => res.json({ status: 'ok', service: 'refract-labs-api' }));
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
 
 // Connect to MongoDB and start server
