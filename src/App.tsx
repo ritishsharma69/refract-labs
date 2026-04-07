@@ -21,6 +21,7 @@ import Dashboard from './pages/admin/Dashboard';
 import TeamManagement from './pages/admin/TeamManagement';
 import WorksManagement from './pages/admin/WorksManagement';
 import TestimonialsManagement from './pages/admin/TestimonialsManagement';
+import LeadsManagement from './pages/admin/LeadsManagement';
 import TestimonialsPage from './pages/TestimonialsPage';
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
           <Route path="team" element={<TeamManagement />} />
           <Route path="works" element={<WorksManagement />} />
           <Route path="testimonials" element={<TestimonialsManagement />} />
+          <Route path="leads" element={<LeadsManagement />} />
         </Route>
       </Routes>
     </Router>

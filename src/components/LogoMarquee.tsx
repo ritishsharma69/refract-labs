@@ -132,9 +132,9 @@ const LogoMarquee = () => {
       style={{
         width: '100%',
         overflow: 'hidden',
-        borderTop: '1px solid rgba(255,255,255,0.06)',
         padding: '28px 0',
         position: 'relative',
+        background: 'transparent',
       }}
     >
       {/* Left fade overlay */}
@@ -144,7 +144,7 @@ const LogoMarquee = () => {
         top: 0,
         bottom: 0,
         width: '160px',
-        background: 'linear-gradient(to right, #080808 0%, transparent 100%)',
+        background: 'linear-gradient(to right, rgba(8,8,8,0.9) 0%, transparent 100%)',
         zIndex: 2,
         pointerEvents: 'none',
       }} />
@@ -156,7 +156,7 @@ const LogoMarquee = () => {
         top: 0,
         bottom: 0,
         width: '160px',
-        background: 'linear-gradient(to left, #080808 0%, transparent 100%)',
+        background: 'linear-gradient(to left, rgba(8,8,8,0.9) 0%, transparent 100%)',
         zIndex: 2,
         pointerEvents: 'none',
       }} />

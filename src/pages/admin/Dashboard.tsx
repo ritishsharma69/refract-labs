@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import {
-  FiActivity,
   FiArrowRight,
   FiBriefcase,
-  FiHome,
-  FiLayers,
+  FiCheckCircle,
+  FiClock,
   FiMessageSquare,
+  FiMoreHorizontal,
+  FiPlus,
   FiStar,
   FiTrendingUp,
   FiUsers,
-  FiZap,
 } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import {
@@ -18,8 +18,6 @@ import {
   fetchTestimonialItems,
   subscribeToContentUpdates,
 } from '../../lib/content-store';
-
-type ToneKey = 'cyan' | 'blue' | 'violet' | 'teal';
 
 type DashboardCounts = {
   team: number;
@@ -66,43 +64,6 @@ const Dashboard = () => {
     };
   }, []);
 
-  const colorClasses: Record<ToneKey, {
-    icon: string;
-    pill: string;
-    bar: string;
-    progress: string;
-    glow: string;
-  }> = {
-    cyan: {
-      icon: 'border-cyan-400/20 bg-cyan-400/12 text-cyan-100',
-      pill: 'border-cyan-400/20 bg-cyan-400/10 text-cyan-100',
-      bar: 'from-cyan-300 via-sky-400 to-blue-500',
-      progress: 'from-cyan-300 to-sky-500',
-      glow: 'shadow-[0_0_24px_rgba(34,211,238,0.32)]',
-    },
-    blue: {
-      icon: 'border-sky-500/20 bg-sky-500/12 text-sky-200',
-      pill: 'border-sky-500/20 bg-sky-500/10 text-sky-200',
-      bar: 'from-sky-300 via-blue-400 to-indigo-500',
-      progress: 'from-sky-300 to-indigo-500',
-      glow: 'shadow-[0_0_24px_rgba(56,189,248,0.3)]',
-    },
-    violet: {
-      icon: 'border-violet-500/20 bg-violet-500/12 text-violet-200',
-      pill: 'border-violet-500/20 bg-violet-500/10 text-violet-200',
-      bar: 'from-violet-300 via-fuchsia-400 to-indigo-500',
-      progress: 'from-violet-300 to-fuchsia-500',
-      glow: 'shadow-[0_0_24px_rgba(167,139,250,0.3)]',
-    },
-    teal: {
-      icon: 'border-teal-400/20 bg-teal-400/12 text-teal-100',
-      pill: 'border-teal-400/20 bg-teal-400/10 text-teal-100',
-      bar: 'from-teal-300 via-cyan-400 to-sky-500',
-      progress: 'from-teal-300 to-cyan-500',
-      glow: 'shadow-[0_0_24px_rgba(45,212,191,0.3)]',
-    },
-  };
-
   const totalManagedEntries = counts.team + counts.works + counts.testimonials;
   const totalHomepagePicks = counts.featuredWorks + counts.featuredTestimonials;
   const showcaseCoverage = Math.min(
@@ -110,434 +71,519 @@ const Dashboard = () => {
     Math.round((totalHomepagePicks / Math.max(1, counts.works + counts.testimonials)) * 100),
   );
 
-  const stats = [
-    {
-      label: 'Team profiles',
-      value: counts.team,
-      icon: FiUsers,
-      color: 'cyan' as ToneKey,
-      link: '/admin/team',
-      detail: 'Public-facing member cards ready for editing.',
-    },
-    {
-      label: 'Portfolio items',
-      value: counts.works,
-      icon: FiBriefcase,
-      color: 'blue' as ToneKey,
-      link: '/admin/works',
-      detail: 'Projects available in the work library.',
-    },
-    {
-      label: 'Homepage spotlight',
-      value: totalHomepagePicks,
-      icon: FiHome,
-      color: 'violet' as ToneKey,
-      link: '/admin/works',
-      detail: `${showcaseCoverage}% of works + testimonials are featured.`,
-    },
-    {
-      label: 'Testimonials',
-      value: counts.testimonials,
-      icon: FiMessageSquare,
-      color: 'teal' as ToneKey,
-      link: '/admin/testimonials',
-      detail: `${counts.featuredTestimonials} featured trust stories live on home.`,
-    },
+  // Donut chart data
+  const donutData = [
+    { label: 'Team', value: counts.team, color: '#C8E972' },
+    { label: 'Works', value: counts.works, color: '#8B7BE8' },
+    { label: 'Featured', value: totalHomepagePicks, color: '#3B82F6' },
+    { label: 'Testimonials', value: counts.testimonials, color: '#F59E0B' },
   ];
 
-  const spotlightMetrics = [
-    { label: 'Collections online', value: '3 / 3', icon: FiLayers, note: 'Team, works, and testimonials are connected.' },
-    { label: 'Managed entries', value: String(totalManagedEntries), icon: FiActivity, note: 'Total assets currently controlled from admin.' },
-    { label: 'Homepage picks', value: String(totalHomepagePicks), icon: FiStar, note: 'Featured content appearing in public sections.' },
-  ];
+  const donutTotal = donutData.reduce((s, d) => s + d.value, 0) || 1;
+  let cumulativePercent = 0;
+  const donutSegments = donutData.map((d) => {
+    const percent = (d.value / donutTotal) * 100;
+    const offset = cumulativePercent;
+    cumulativePercent += percent;
+    return { ...d, percent, offset };
+  });
 
-  const performanceSeries = [
-    { label: 'Team', short: 'TM', value: counts.team, tone: 'cyan' as ToneKey },
-    { label: 'Works', short: 'WK', value: counts.works, tone: 'blue' as ToneKey },
-    { label: 'Featured', short: 'FT', value: totalHomepagePicks, tone: 'violet' as ToneKey },
-    { label: 'Proof', short: 'TS', value: counts.testimonials, tone: 'teal' as ToneKey },
+  // Bar chart data for content over time
+  const barData = [
+    { label: 'Team', value: counts.team },
+    { label: 'Works', value: counts.works },
+    { label: 'Feat.W', value: counts.featuredWorks },
+    { label: 'Testi.', value: counts.testimonials },
+    { label: 'Feat.T', value: counts.featuredTestimonials },
+    { label: 'Total', value: totalManagedEntries },
   ];
-  const maxSeriesValue = Math.max(4, ...performanceSeries.map((item) => item.value));
-
-  const quickActions = [
-    {
-      label: 'Team workspace',
-      description: 'Refresh bios, portraits, and profile links from one clean editing surface.',
-      link: '/admin/team',
-      icon: FiUsers,
-      color: 'cyan' as ToneKey,
-    },
-    {
-      label: 'Curate featured work',
-      description: 'Promote stronger projects and control what lands on the homepage first.',
-      link: '/admin/works',
-      icon: FiBriefcase,
-      color: 'blue' as ToneKey,
-    },
-    {
-      label: 'Update social proof',
-      description: 'Balance text and video testimonials for a sharper trust layer.',
-      link: '/admin/testimonials',
-      icon: FiMessageSquare,
-      color: 'violet' as ToneKey,
-    },
-  ];
-
-  const contentLanes = [
-    {
-      label: 'Team visibility',
-      value: counts.team,
-      tone: 'cyan' as ToneKey,
-      progress: totalManagedEntries ? Math.round((counts.team / totalManagedEntries) * 100) : 0,
-      note: 'Share of public people content in the system.',
-    },
-    {
-      label: 'Portfolio depth',
-      value: counts.works,
-      tone: 'blue' as ToneKey,
-      progress: totalManagedEntries ? Math.round((counts.works / totalManagedEntries) * 100) : 0,
-      note: 'Projects available to drive homepage credibility.',
-    },
-    {
-      label: 'Trust layer',
-      value: counts.testimonials,
-      tone: 'teal' as ToneKey,
-      progress: totalManagedEntries ? Math.round((counts.testimonials / totalManagedEntries) * 100) : 0,
-      note: 'Testimonials supporting the conversion narrative.',
-    },
-  ];
+  const maxBarValue = Math.max(1, ...barData.map((b) => b.value));
 
   const priorityQueue = [
     {
       label: 'Homepage work rotation',
       state: counts.featuredWorks >= 4 ? 'Healthy' : 'Needs focus',
-      helper: `${counts.featuredWorks}/4 featured works selected for home.`,
+      progress: Math.min(100, (counts.featuredWorks / 4) * 100),
+      helper: `${counts.featuredWorks}/4 featured works selected`,
       link: '/admin/works',
     },
     {
       label: 'Trust section coverage',
       state: counts.featuredTestimonials >= 3 ? 'Healthy' : 'Needs focus',
-      helper: `${counts.featuredTestimonials}/4 testimonials spotlighted.`,
+      progress: Math.min(100, (counts.featuredTestimonials / 4) * 100),
+      helper: `${counts.featuredTestimonials}/4 testimonials spotlighted`,
       link: '/admin/testimonials',
     },
     {
       label: 'Team presence',
       state: counts.team >= 4 ? 'Healthy' : 'Building',
-      helper: `${counts.team} team profiles currently visible in admin.`,
+      progress: Math.min(100, (counts.team / 4) * 100),
+      helper: `${counts.team} team profiles visible`,
       link: '/admin/team',
     },
   ];
 
-  return (
-    <div className="space-y-7 xl:space-y-8">
-      <section className="grid gap-7 2xl:grid-cols-[minmax(0,1.12fr)_400px]">
-        <div className="admin-hero-panel rounded-[34px] p-6 sm:p-8 2xl:p-10">
-          <div className="relative z-[1] max-w-3xl">
-            <span className="admin-chip">Executive overview</span>
-            <h1 className="mt-5 max-w-[12ch] text-3xl font-bold leading-[1.02] text-white font-['Space_Grotesk'] sm:text-4xl xl:text-[46px] 2xl:text-[52px]">
-              Run the entire content engine from one premium pulse dashboard.
-            </h1>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-              Same admin data, restructured into a cleaner analytics-style layout with stronger hierarchy, glowing cards, and faster scanning.
-            </p>
+  const recentActivity = [
+    { text: 'Content synced across all 3 collections', time: 'Just now', color: '#22C55E' },
+    { text: `${counts.featuredWorks} works featured on homepage`, time: 'Auto', color: '#3B82F6' },
+    { text: `${counts.featuredTestimonials} testimonials spotlighted`, time: 'Auto', color: '#8B7BE8' },
+    { text: `${counts.team} team profiles active`, time: 'Auto', color: '#F59E0B' },
+  ];
 
-            <div className="mt-8 grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
-              {[
-                { label: 'Collections', value: 3, note: 'Live content groups' },
-                { label: 'Managed assets', value: totalManagedEntries, note: 'Entries across all sections' },
-                { label: 'Homepage picks', value: totalHomepagePicks, note: 'Featured on public pages' },
-              ].map((item) => (
-                <div key={item.label} className="admin-metric-strip rounded-[24px] p-4 sm:p-5">
-                  <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">{item.label}</p>
-                  <p className="mt-4 text-3xl font-semibold text-white">{item.value}</p>
-                  <p className="mt-2 text-xs leading-6 text-slate-400">{item.note}</p>
+  return (
+    <div className="space-y-6">
+      {/* ── ROW 1: Stat Cards + Resource Card ── */}
+      <div className="grid gap-5 lg:grid-cols-[1fr_300px]">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {/* Team Profiles */}
+          <div className="admin-card rounded-2xl border-2 border-[var(--admin-lime)] p-5">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-medium text-[var(--admin-text-secondary)]">Team Profiles</p>
+              <FiMoreHorizontal size={16} className="text-[var(--admin-text-muted)]" />
+            </div>
+            <p className="mt-2 text-3xl font-bold" style={{ color: 'var(--admin-text)' }}>{counts.team}</p>
+            <div className="mt-2 flex items-center gap-1">
+              <FiTrendingUp size={14} className="text-green-500" />
+              <span className="text-xs font-medium text-green-600">Active</span>
+            </div>
+          </div>
+
+          {/* Portfolio Items */}
+          <div className="admin-card rounded-2xl p-5">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-medium text-[var(--admin-text-secondary)]">Portfolio Items</p>
+              <FiMoreHorizontal size={16} className="text-[var(--admin-text-muted)]" />
+            </div>
+            <p className="mt-2 text-3xl font-bold" style={{ color: 'var(--admin-text)' }}>{counts.works}</p>
+            <div className="mt-2 flex items-center gap-1">
+              <FiTrendingUp size={14} className="text-green-500" />
+              <span className="text-xs font-medium text-green-600">Live</span>
+            </div>
+          </div>
+
+          {/* Homepage Picks */}
+          <div className="admin-card rounded-2xl p-5">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-medium text-[var(--admin-text-secondary)]">Homepage Picks</p>
+              <FiMoreHorizontal size={16} className="text-[var(--admin-text-muted)]" />
+            </div>
+            <p className="mt-2 text-3xl font-bold" style={{ color: 'var(--admin-text)' }}>{totalHomepagePicks}</p>
+            <div className="mt-2 flex items-center gap-1">
+              <FiStar size={14} className="text-amber-500" />
+              <span className="text-xs font-medium text-amber-600">{showcaseCoverage}% coverage</span>
+            </div>
+          </div>
+
+          {/* Testimonials */}
+          <div className="admin-card rounded-2xl p-5">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-medium text-[var(--admin-text-secondary)]">Testimonials</p>
+              <FiMoreHorizontal size={16} className="text-[var(--admin-text-muted)]" />
+            </div>
+            <p className="mt-2 text-3xl font-bold" style={{ color: 'var(--admin-text)' }}>{counts.testimonials}</p>
+            <div className="mt-2 flex items-center gap-1">
+              <FiMessageSquare size={14} className="text-purple-500" />
+              <span className="text-xs font-medium text-purple-600">{counts.featuredTestimonials} featured</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Resource Card (Dark) */}
+        <div className="admin-card-dark flex flex-col justify-between rounded-2xl p-6">
+          <div>
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-white/80">Content Resources</p>
+              <FiMoreHorizontal size={16} className="text-white/40" />
+            </div>
+            <div className="mt-4 flex flex-col items-center">
+              <p className="text-5xl font-bold text-white">{totalManagedEntries}</p>
+              <p className="mt-1 text-sm text-white/50">Total Entries</p>
+            </div>
+          </div>
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <div className="rounded-xl bg-white/10 px-3 py-2 text-center">
+              <p className="text-lg font-bold text-white">{counts.featuredWorks}</p>
+              <p className="text-[11px] text-white/50">Featured Works</p>
+            </div>
+            <div className="rounded-xl bg-white/10 px-3 py-2 text-center">
+              <p className="text-lg font-bold text-white">{counts.featuredTestimonials}</p>
+              <p className="text-[11px] text-white/50">Featured Proofs</p>
+            </div>
+            <div className="rounded-xl bg-white/10 px-3 py-2 text-center">
+              <p className="text-lg font-bold text-white">3</p>
+              <p className="text-[11px] text-white/50">Collections</p>
+            </div>
+            <div className="rounded-xl bg-white/10 px-3 py-2 text-center">
+              <p className="text-lg font-bold text-white">{totalHomepagePicks}</p>
+              <p className="text-[11px] text-white/50">Homepage Items</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── ROW 2: Bar Chart + Donut Chart ── */}
+      <div className="grid gap-5 lg:grid-cols-2">
+        {/* Bar Chart */}
+        <div className="admin-card rounded-2xl p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-base font-semibold" style={{ color: 'var(--admin-text)' }}>Content Overview</p>
+              <p className="text-xs text-[var(--admin-text-muted)]">Distribution across sections</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 text-xs text-[var(--admin-text-muted)]">
+                <span className="h-2.5 w-2.5 rounded-sm" style={{ background: '#C8E972' }} /> Active
+              </span>
+              <span className="inline-flex items-center gap-1.5 text-xs text-[var(--admin-text-muted)]">
+                <span className="h-2.5 w-2.5 rounded-sm" style={{ background: '#E8E4DF' }} /> Featured
+              </span>
+            </div>
+          </div>
+          <div className="mt-6 flex items-end gap-3" style={{ height: 180 }}>
+            {barData.map((bar, i) => {
+              const h = Math.max(8, (bar.value / Math.max(1, maxBarValue)) * 160);
+              const isEven = i % 2 === 0;
+              return (
+                <div key={bar.label} className="flex flex-1 flex-col items-center gap-2">
+                  <span className="text-xs font-semibold" style={{ color: 'var(--admin-text)' }}>{bar.value}</span>
+                  <div
+                    className="w-full rounded-t-lg transition-all duration-500"
+                    style={{
+                      height: h,
+                      background: isEven ? '#C8E972' : '#E8E4DF',
+                      minWidth: 20,
+                    }}
+                  />
+                  <span className="text-[10px] text-[var(--admin-text-muted)]">{bar.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Donut Chart */}
+        <div className="admin-card rounded-2xl p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-base font-semibold" style={{ color: 'var(--admin-text)' }}>Content by Category</p>
+              <p className="text-xs text-[var(--admin-text-muted)]">Breakdown of all managed content</p>
+            </div>
+            <div className="admin-pill">Today</div>
+          </div>
+          <div className="mt-6 flex items-center gap-8">
+            {/* SVG Donut */}
+            <div className="relative" style={{ width: 160, height: 160 }}>
+              <svg viewBox="0 0 36 36" className="h-full w-full" style={{ transform: 'rotate(-90deg)' }}>
+                {donutSegments.map((seg) => (
+                  <circle
+                    key={seg.label}
+                    cx="18" cy="18" r="14"
+                    fill="none"
+                    stroke={seg.color}
+                    strokeWidth="4"
+                    strokeDasharray={`${seg.percent} ${100 - seg.percent}`}
+                    strokeDashoffset={`${-seg.offset}`}
+                    strokeLinecap="round"
+                  />
+                ))}
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <p className="text-2xl font-bold" style={{ color: 'var(--admin-text)' }}>{donutTotal}</p>
+                <p className="text-[10px] text-[var(--admin-text-muted)]">Total</p>
+              </div>
+            </div>
+            {/* Legend */}
+            <div className="flex flex-col gap-3">
+              {donutData.map((d) => (
+                <div key={d.label} className="flex items-center gap-2.5">
+                  <span className="h-3 w-3 rounded-full" style={{ background: d.color }} />
+                  <span className="text-sm text-[var(--admin-text-secondary)]">{d.label}</span>
+                  <span className="ml-auto text-sm font-semibold" style={{ color: 'var(--admin-text)' }}>{d.value}</span>
                 </div>
               ))}
             </div>
-
-            <div className="mt-8 flex flex-wrap gap-3 pt-1">
-              <Link to="/admin/works" className="admin-primary-btn inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-medium text-white">
-                Open portfolio control
-              </Link>
-              <Link to="/admin/testimonials" className="admin-secondary-btn inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-medium text-white">
-                Review trust layer
-              </Link>
-            </div>
           </div>
         </div>
+      </div>
 
-        <div className="admin-surface rounded-[34px] p-6 sm:p-8">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">Live operator board</p>
-              <h2 className="mt-3 text-2xl font-semibold text-white font-['Space_Grotesk']">Control signal</h2>
-            </div>
-            <div className="admin-pill">
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_14px_rgba(74,222,128,0.8)]" />
-              API synced
-            </div>
+      {/* ── ROW 3: Quick Actions + Tasks + Schedule ── */}
+      <div className="grid gap-5 lg:grid-cols-3">
+        {/* Quick Actions (Vacancies style) */}
+        <div className="admin-card rounded-2xl p-6">
+          <div className="flex items-center justify-between">
+            <p className="text-base font-semibold" style={{ color: 'var(--admin-text)' }}>Quick Actions</p>
+            <Link to="/admin/works" className="text-xs font-medium text-[var(--admin-purple)]">See All</Link>
           </div>
-
-          <div className="mt-6 space-y-4">
-            {spotlightMetrics.map((item) => {
-              const Icon = item.icon;
-
-              return (
-                <div key={item.label} className="admin-spotlight-card rounded-[26px] p-5">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex min-w-0 items-center gap-4">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-sky-400/20 bg-sky-400/10 text-sky-100">
-                        <Icon size={19} />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium text-white">{item.label}</p>
-                        <p className="mt-2 text-xs leading-6 text-slate-400">{item.note}</p>
-                      </div>
-                    </div>
-                    <p className="text-2xl font-semibold text-white">{item.value}</p>
-                  </div>
-                </div>
-              );
-            })}
-
-            <div className="admin-form-block rounded-[26px] p-5">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">Showcase coverage</p>
-                  <p className="mt-2 text-lg font-semibold text-white">{showcaseCoverage}% ready</p>
-                </div>
-                <FiTrendingUp className="text-sky-200" size={20} />
-              </div>
-              <div className="admin-progress-track mt-4 h-2.5 rounded-full">
-                <div className="admin-progress-fill h-full rounded-full bg-gradient-to-r from-sky-300 via-cyan-300 to-indigo-500" style={{ width: `${showcaseCoverage}%` }} />
-              </div>
-              <p className="mt-3 text-xs leading-6 text-slate-400">Percentage of works + testimonials currently featured for homepage storytelling.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="grid gap-6 md:grid-cols-2 2xl:grid-cols-4">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          const tone = colorClasses[stat.color];
-
-          return (
-            <Link
-              key={stat.label}
-              to={stat.link}
-              className="admin-kpi-card group flex h-full min-h-[230px] flex-col rounded-[30px] p-6 sm:p-7"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className={`flex h-12 w-12 items-center justify-center rounded-2xl border ${tone.icon}`}>
-                  <Icon size={20} />
-                </div>
-                <span className={`rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.22em] ${tone.pill}`}>
-                  Live
-                </span>
-              </div>
-
-              <div className="mt-9 space-y-3">
-                <p className="text-4xl font-bold leading-none text-white">{stat.value}</p>
-                <p className="text-base font-medium text-white">{stat.label}</p>
-                <p className="text-sm leading-7 text-slate-400">{stat.detail}</p>
-              </div>
-
-              <div className="mt-auto pt-8">
-                <span className="inline-flex items-center gap-2 text-sm font-medium text-slate-300 transition-colors group-hover:text-white">
-                  Open section
-                  <FiArrowRight size={16} />
-                </span>
-              </div>
-            </Link>
-          );
-        })}
-      </section>
-
-      <section className="grid gap-7 2xl:grid-cols-[minmax(0,1.08fr)_400px]">
-        <div className="admin-surface rounded-[34px] p-6 sm:p-8">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">Content pulse</p>
-              <h2 className="mt-2 text-2xl font-semibold text-white font-['Space_Grotesk']">Collection intensity</h2>
-              <p className="mt-2 text-sm leading-7 text-slate-400">A quick visual read on how much content each part of the admin currently controls.</p>
-            </div>
-            <div className="admin-pill">
-              <FiZap size={14} />
-              {totalManagedEntries} managed items
-            </div>
-          </div>
-
-          <div className="admin-chart-grid mt-8">
-            {performanceSeries.map((item) => {
-              const tone = colorClasses[item.tone];
-              const height = 20 + (item.value / maxSeriesValue) * 80;
-
-              return (
-                <div key={item.label} className="admin-chart-column">
-                  <div className="admin-chart-bar">
-                    <div className={`admin-chart-bar__fill bg-gradient-to-t ${tone.bar} ${tone.glow}`} style={{ height: `${height}%` }} />
-                  </div>
-                  <div className="mt-4 flex items-center justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-medium text-white">{item.label}</p>
-                      <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">{item.short}</p>
-                    </div>
-                    <span className={`rounded-full border px-2.5 py-1 text-[11px] ${tone.pill}`}>{item.value}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <div className="mt-4 space-y-3">
             {[
-              { label: 'Featured works', value: counts.featuredWorks },
-              { label: 'Featured testimonials', value: counts.featuredTestimonials },
-              { label: 'Collections managed', value: 3 },
-            ].map((item) => (
-              <div key={item.label} className="admin-metric-strip rounded-[24px] p-4">
-                <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">{item.label}</p>
-                <p className="mt-3 text-3xl font-semibold text-white">{item.value}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid gap-6">
-          <div className="admin-surface rounded-[34px] p-6 sm:p-8">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">Quick launch</p>
-                <h2 className="mt-2 text-2xl font-semibold text-white font-['Space_Grotesk']">Fast actions</h2>
-              </div>
-              <div className="admin-pill">
-                <FiTrendingUp size={14} />
-                Live editing
-              </div>
-            </div>
-
-            <div className="mt-6 space-y-4">
-              {quickActions.map((action) => {
-                const Icon = action.icon;
-                const tone = colorClasses[action.color];
-
-                return (
-                  <Link
-                    key={action.label}
-                    to={action.link}
-                    className="admin-action-tile group flex items-start justify-between gap-4 rounded-[26px] p-5"
-                  >
-                    <div className="flex min-w-0 items-start gap-4">
-                      <div className={`mt-0.5 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border ${tone.icon}`}>
-                        <Icon size={20} />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-base font-medium text-white">{action.label}</p>
-                        <p className="mt-2 text-sm leading-7 text-slate-400">{action.description}</p>
-                      </div>
-                    </div>
-
-                    <span className="mt-1 rounded-full border border-white/8 bg-white/[0.03] p-2 text-slate-400 transition-colors group-hover:text-white">
-                      <FiArrowRight size={16} />
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="admin-surface-soft rounded-[34px] p-6 sm:p-8">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">Distribution lanes</p>
-            <h2 className="mt-2 text-2xl font-semibold text-white font-['Space_Grotesk']">Content balance</h2>
-
-            <div className="mt-6 space-y-5">
-              {contentLanes.map((item) => {
-                const tone = colorClasses[item.tone];
-
-                return (
-                  <div key={item.label}>
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <p className="text-sm font-medium text-white">{item.label}</p>
-                        <p className="mt-1 text-xs leading-6 text-slate-400">{item.note}</p>
-                      </div>
-                      <span className={`rounded-full border px-3 py-1 text-[11px] ${tone.pill}`}>{item.value}</span>
-                    </div>
-                    <div className="admin-progress-track mt-3 h-2.5 rounded-full">
-                      <div className={`admin-progress-fill h-full rounded-full bg-gradient-to-r ${tone.progress}`} style={{ width: `${item.progress}%` }} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="grid gap-7 2xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
-        <div className="admin-surface rounded-[34px] p-6 sm:p-8">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">Priority queue</p>
-              <h2 className="mt-2 text-2xl font-semibold text-white font-['Space_Grotesk']">What to tune next</h2>
-            </div>
-            <FiStar className="text-sky-200" size={18} />
-          </div>
-
-          <div className="mt-6 space-y-4">
-            {priorityQueue.map((item) => (
-              <Link key={item.label} to={item.link} className="admin-action-tile group flex items-start justify-between gap-4 rounded-[24px] p-5">
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <p className="text-base font-medium text-white">{item.label}</p>
-                    <span className="rounded-full border border-sky-400/20 bg-sky-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-sky-100">
-                      {item.state}
-                    </span>
-                  </div>
-                  <p className="mt-2 text-sm leading-7 text-slate-400">{item.helper}</p>
-                </div>
-                <span className="mt-1 rounded-full border border-white/8 bg-white/[0.03] p-2 text-slate-400 transition-colors group-hover:text-white">
-                  <FiArrowRight size={16} />
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div className="admin-surface rounded-[34px] p-6 sm:p-8">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">System matrix</p>
-              <h2 className="mt-2 text-2xl font-semibold text-white font-['Space_Grotesk']">Operating layers</h2>
-            </div>
-            <div className="admin-pill">
-              <FiActivity size={14} />
-              Reference-style layout
-            </div>
-          </div>
-
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {stats.map((stat) => {
-              const Icon = stat.icon;
-              const tone = colorClasses[stat.color];
-
+              { label: 'Manage Team', desc: 'Edit bios & profiles', tags: ['Team', `${counts.team} Members`], link: '/admin/team', icon: FiUsers },
+              { label: 'Curate Portfolio', desc: 'Update works & features', tags: ['Works', `${counts.works} Items`], link: '/admin/works', icon: FiBriefcase },
+              { label: 'Social Proof', desc: 'Manage testimonials', tags: ['Proof', `${counts.testimonials} Stories`], link: '/admin/testimonials', icon: FiMessageSquare },
+            ].map((action) => {
+              const Icon = action.icon;
               return (
-                <div key={`${stat.label}-matrix`} className="admin-spotlight-card rounded-[26px] p-5">
-                  <div className="flex items-center justify-between gap-4">
-                    <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${tone.icon}`}>
-                      <Icon size={18} />
-                    </div>
-                    <span className={`rounded-full border px-3 py-1 text-[11px] ${tone.pill}`}>{stat.value}</span>
+                <Link
+                  key={action.label}
+                  to={action.link}
+                  className="group flex items-start gap-3 rounded-xl border border-[var(--admin-border)] p-4 transition-all hover:border-[var(--admin-border-hover)] hover:shadow-sm"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--admin-bg)]">
+                    <Icon size={18} className="text-[var(--admin-text-secondary)]" />
                   </div>
-                  <p className="mt-5 text-base font-medium text-white">{stat.label}</p>
-                  <p className="mt-2 text-sm leading-7 text-slate-400">{stat.detail}</p>
-                </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-semibold" style={{ color: 'var(--admin-text)' }}>{action.label}</p>
+                      <FiMoreHorizontal size={14} className="text-[var(--admin-text-muted)]" />
+                    </div>
+                    <p className="mt-0.5 text-xs text-[var(--admin-text-muted)]">{action.desc}</p>
+                    <div className="mt-2 flex gap-2">
+                      {action.tags.map((tag) => (
+                        <span key={tag} className="rounded-md bg-[var(--admin-bg)] px-2 py-0.5 text-[11px] font-medium text-[var(--admin-text-secondary)]">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </Link>
               );
             })}
           </div>
         </div>
-      </section>
+
+        {/* Tasks */}
+        <div className="admin-card rounded-2xl p-6">
+          <div className="flex items-center justify-between">
+            <p className="text-base font-semibold" style={{ color: 'var(--admin-text)' }}>Tasks</p>
+            <button className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--admin-bg)] text-[var(--admin-text-secondary)]">
+              <FiPlus size={14} />
+            </button>
+          </div>
+          <div className="mt-4 space-y-3">
+            {priorityQueue.map((task) => {
+              const badgeClass = task.state === 'Healthy'
+                ? 'admin-badge admin-badge--healthy'
+                : task.state === 'Building'
+                  ? 'admin-badge admin-badge--building'
+                  : 'admin-badge admin-badge--warning';
+
+              return (
+                <Link
+                  key={task.label}
+                  to={task.link}
+                  className="group flex items-start gap-3 rounded-xl border border-[var(--admin-border)] p-4 transition-all hover:border-[var(--admin-border-hover)] hover:shadow-sm"
+                >
+                  <div className="mt-0.5">
+                    <FiCheckCircle
+                      size={18}
+                      className={task.state === 'Healthy' ? 'text-green-500' : 'text-[var(--admin-text-muted)]'}
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium" style={{ color: 'var(--admin-text)' }}>{task.label}</p>
+                    <p className="mt-0.5 text-xs text-[var(--admin-text-muted)]">{task.helper}</p>
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className={badgeClass}>{task.state}</span>
+                      <div className="admin-progress-track h-1.5 flex-1 rounded-full">
+                        <div
+                          className="admin-progress-fill h-full rounded-full"
+                          style={{
+                            width: `${task.progress}%`,
+                            background: task.state === 'Healthy' ? '#22C55E' : task.state === 'Building' ? '#8B7BE8' : '#F59E0B',
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Schedule / Timeline */}
+        <div className="admin-card rounded-2xl p-6">
+          <div className="flex items-center justify-between">
+            <p className="text-base font-semibold" style={{ color: 'var(--admin-text)' }}>Schedule</p>
+            <div className="admin-pill">
+              <FiClock size={12} />
+              Today
+            </div>
+          </div>
+          <div className="mt-4 space-y-0">
+            {[
+              { time: 'Now', label: 'Content Sync Active', tag: 'System', color: '#C8E972' },
+              { time: 'Auto', label: 'Homepage Updates', tag: 'Publishing', color: '#8B7BE8' },
+              { time: 'Daily', label: 'Portfolio Review', tag: 'Works', color: '#3B82F6' },
+              { time: 'Weekly', label: 'Testimonial Curation', tag: 'Proof', color: '#F59E0B' },
+            ].map((item, i) => (
+              <div key={i} className="flex gap-4 py-3" style={{ borderBottom: i < 3 ? '1px solid var(--admin-border)' : 'none' }}>
+                <div className="w-12 shrink-0 text-xs font-medium text-[var(--admin-text-muted)]">{item.time}</div>
+                <div
+                  className="rounded-lg px-3 py-2 flex-1"
+                  style={{ background: item.color + '22', borderLeft: `3px solid ${item.color}` }}
+                >
+                  <p className="text-sm font-semibold" style={{ color: 'var(--admin-text)' }}>{item.label}</p>
+                  <p className="text-[11px] text-[var(--admin-text-muted)]">{item.tag}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── ROW 4: Content Table + Recent Activity ── */}
+      <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
+        {/* Content Table */}
+        <div className="admin-card overflow-hidden rounded-2xl">
+          <div className="flex items-center justify-between border-b border-[var(--admin-border)] px-6 py-4">
+            <div className="flex items-center gap-3">
+              <p className="text-base font-semibold" style={{ color: 'var(--admin-text)' }}>Content Overview</p>
+              <span className="rounded-full bg-[var(--admin-bg)] px-2.5 py-0.5 text-xs font-medium text-[var(--admin-text-secondary)]">{totalManagedEntries}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              {['All', 'Team', 'Works', 'Testimonials'].map((tab, i) => (
+                <button
+                  key={tab}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${i === 0
+                    ? 'bg-[var(--admin-lime)] text-[var(--admin-lime-dark)]'
+                    : 'text-[var(--admin-text-secondary)] hover:bg-[var(--admin-bg)]'
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Section</th>
+                <th>Type</th>
+                <th>Items</th>
+                <th>Featured</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--admin-bg)]">
+                      <FiUsers size={14} className="text-[var(--admin-text-secondary)]" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium" style={{ color: 'var(--admin-text)' }}>Team</p>
+                      <p className="text-xs text-[var(--admin-text-muted)]">People & profiles</p>
+                    </div>
+                  </div>
+                </td>
+                <td className="text-sm text-[var(--admin-text-secondary)]">Profiles</td>
+                <td className="text-sm font-medium" style={{ color: 'var(--admin-text)' }}>{counts.team}</td>
+                <td className="text-sm text-[var(--admin-text-secondary)]">—</td>
+                <td><span className="admin-badge admin-badge--healthy">Active</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--admin-bg)]">
+                      <FiBriefcase size={14} className="text-[var(--admin-text-secondary)]" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium" style={{ color: 'var(--admin-text)' }}>Works</p>
+                      <p className="text-xs text-[var(--admin-text-muted)]">Portfolio library</p>
+                    </div>
+                  </div>
+                </td>
+                <td className="text-sm text-[var(--admin-text-secondary)]">Projects</td>
+                <td className="text-sm font-medium" style={{ color: 'var(--admin-text)' }}>{counts.works}</td>
+                <td className="text-sm text-[var(--admin-text-secondary)]">{counts.featuredWorks} featured</td>
+                <td><span className="admin-badge admin-badge--healthy">Active</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--admin-bg)]">
+                      <FiMessageSquare size={14} className="text-[var(--admin-text-secondary)]" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium" style={{ color: 'var(--admin-text)' }}>Testimonials</p>
+                      <p className="text-xs text-[var(--admin-text-muted)]">Social proof</p>
+                    </div>
+                  </div>
+                </td>
+                <td className="text-sm text-[var(--admin-text-secondary)]">Reviews</td>
+                <td className="text-sm font-medium" style={{ color: 'var(--admin-text)' }}>{counts.testimonials}</td>
+                <td className="text-sm text-[var(--admin-text-secondary)]">{counts.featuredTestimonials} featured</td>
+                <td><span className="admin-badge admin-badge--healthy">Active</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div className="flex items-center justify-between border-t border-[var(--admin-border)] px-6 py-3">
+            <p className="text-xs text-[var(--admin-text-muted)]">3 collections managed</p>
+            <div className="flex gap-2">
+              <Link to="/admin/team" className="text-xs font-medium text-[var(--admin-purple)] hover:underline">View All →</Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="admin-card rounded-2xl p-6">
+          <div className="flex items-center justify-between">
+            <p className="text-base font-semibold" style={{ color: 'var(--admin-text)' }}>Recent Activity</p>
+            <FiMoreHorizontal size={16} className="text-[var(--admin-text-muted)]" />
+          </div>
+          <div className="mt-1">
+            <p className="text-xs font-semibold text-[var(--admin-text-secondary)]">Today</p>
+          </div>
+          <div className="mt-3 space-y-4">
+            {recentActivity.map((item, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <span className="admin-activity-dot mt-1.5" style={{ background: item.color }} />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm leading-snug" style={{ color: 'var(--admin-text)' }}>{item.text}</p>
+                  <p className="mt-0.5 text-xs text-[var(--admin-text-muted)]">{item.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Coverage Summary */}
+          <div className="mt-6 rounded-xl bg-[var(--admin-bg)] p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold" style={{ color: 'var(--admin-text)' }}>Showcase Coverage</p>
+              <span className="text-sm font-bold" style={{ color: 'var(--admin-purple)' }}>{showcaseCoverage}%</span>
+            </div>
+            <div className="admin-progress-track mt-3">
+              <div
+                className="admin-progress-fill h-full"
+                style={{ width: `${showcaseCoverage}%`, background: 'var(--admin-purple)' }}
+              />
+            </div>
+            <p className="mt-2 text-[11px] text-[var(--admin-text-muted)]">
+              Percentage of works + testimonials currently featured on homepage
+            </p>
+          </div>
+
+          {/* Quick links */}
+          <div className="mt-4 space-y-2">
+            <Link
+              to="/admin/works"
+              className="flex items-center justify-between rounded-xl bg-[var(--admin-lime)] px-4 py-3 text-sm font-semibold text-[var(--admin-lime-dark)] transition-all hover:shadow-md"
+            >
+              Open Portfolio
+              <FiArrowRight size={16} />
+            </Link>
+            <Link
+              to="/admin/testimonials"
+              className="flex items-center justify-between rounded-xl border border-[var(--admin-border)] px-4 py-3 text-sm font-medium transition-all hover:bg-[var(--admin-bg)]"
+              style={{ color: 'var(--admin-text)' }}
+            >
+              Review Testimonials
+              <FiArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -38,6 +38,16 @@ export interface TeamMember {
   };
 }
 
+export interface LeadItem {
+  id: string;
+  name: string;
+  email: string;
+  mobile: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
+}
+
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 const CONTENT_UPDATED_EVENT = 'refract-content-updated';
 
@@ -84,6 +94,16 @@ export const updateTeamMember = (id: string, data: Partial<TeamMember>) =>
   apiFetch<TeamMember>(`/team/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
 export const deleteTeamMember = (id: string) =>
   apiFetch<{ message: string }>(`/team/${id}`, { method: 'DELETE', headers: authHeaders() });
+
+// ── Leads ─────────────────────────────────────────────────
+export const submitLead = (data: { name: string; email: string; mobile: string; message: string }) =>
+  apiFetch<{ message: string }>('/leads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+export const fetchLeads = () =>
+  apiFetch<LeadItem[]>('/leads', { headers: authHeaders() });
+export const markLeadRead = (id: string) =>
+  apiFetch<LeadItem>(`/leads/${id}/read`, { method: 'PUT', headers: authHeaders() });
+export const deleteLead = (id: string) =>
+  apiFetch<{ message: string }>(`/leads/${id}`, { method: 'DELETE', headers: authHeaders() });
 
 // ── Auth ──────────────────────────────────────────────────
 export const loginAdmin = async (email: string, password: string) => {

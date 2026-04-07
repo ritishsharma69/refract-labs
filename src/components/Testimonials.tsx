@@ -8,6 +8,10 @@ interface Testimonial {
   name: string;
   company: string;
   avatarUrl?: string;
+  type: 'text' | 'video';
+  videoUrl?: string;
+  thumbnailUrl?: string;
+  duration?: string;
 }
 
 // Mobile detection hook
@@ -29,10 +33,15 @@ const mapToLocal = (items: TestimonialItem[]): Testimonial[] =>
     name: t.name,
     company: t.company.toUpperCase(),
     avatarUrl: t.avatarUrl || undefined,
+    type: t.type,
+    videoUrl: t.videoUrl || undefined,
+    thumbnailUrl: t.thumbnailUrl || undefined,
+    duration: t.duration || undefined,
   }));
 
 const Testimonials = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [activeVideo, setActiveVideo] = useState<Testimonial | null>(null);
 
   useEffect(() => {
     const load = () => fetchTestimonialItems()
@@ -250,6 +259,61 @@ const Testimonials = () => {
         </button>
       )}
 
+      {/* Video thumbnail for video testimonials */}
+      {currentTestimonial.type === 'video' && (
+        <button
+          onClick={() => setActiveVideo(currentTestimonial)}
+          style={{
+            width: isMobile ? '100%' : '480px',
+            maxWidth: '100%',
+            marginBottom: '24px',
+            border: '1px solid rgba(255,255,255,0.1)',
+            cursor: 'pointer',
+            borderRadius: '16px',
+            overflow: 'hidden',
+            background: 'rgba(255,255,255,0.03)',
+            position: 'relative',
+            zIndex: 1,
+          }}
+        >
+          <div style={{
+            aspectRatio: '16 / 9',
+            background: currentTestimonial.thumbnailUrl
+              ? `url(${currentTestimonial.thumbnailUrl}) center/cover no-repeat`
+              : 'linear-gradient(135deg, rgba(255,255,255,0.02), rgba(194,98,42,0.15))',
+          }} />
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.12)',
+              backdropFilter: 'blur(16px)',
+              border: '1.5px solid rgba(255,255,255,0.25)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '20px',
+              color: 'white',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+            }}>▶</div>
+          </div>
+          {currentTestimonial.duration && (
+            <div style={{
+              position: 'absolute',
+              bottom: '10px',
+              right: '10px',
+              background: 'rgba(0,0,0,0.7)',
+              color: 'white',
+              fontSize: '11px',
+              padding: '3px 8px',
+              borderRadius: '4px',
+            }}>{currentTestimonial.duration}</div>
+          )}
+        </button>
+      )}
+
       {/* Quote text */}
       <p
         ref={quoteRef}
@@ -360,6 +424,26 @@ const Testimonials = () => {
           />
         ))}
       </div>
+
+      {/* Video Modal */}
+      {activeVideo && (
+        <div onClick={() => setActiveVideo(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', zIndex: 60 }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: 'min(960px, 100%)', background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(28px)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '24px', padding: '20px', position: 'relative' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', marginBottom: '16px' }}>
+              <div>
+                <div style={{ fontWeight: 700, color: 'white' }}>{activeVideo.name}</div>
+                <div style={{ color: '#a1a1aa', fontSize: '14px' }}>{activeVideo.company}</div>
+              </div>
+              <button onClick={() => setActiveVideo(null)} style={{ background: 'transparent', color: 'white', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '999px', padding: '10px 16px', cursor: 'pointer' }}>Close</button>
+            </div>
+            {activeVideo.videoUrl ? (
+              <video src={activeVideo.videoUrl} controls autoPlay style={{ width: '100%', borderRadius: '20px', background: '#000' }} />
+            ) : (
+              <div style={{ aspectRatio: '16 / 9', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #171717, #2f190f)', color: '#d4d4d8' }}>Add a video URL in admin to play this testimonial.</div>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 };
