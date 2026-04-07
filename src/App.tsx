@@ -1,9 +1,16 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
+import { getLenisInstance } from './hooks/useSmoothScroll';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
+    // Reset Lenis smooth scroll position
+    const lenis = getLenisInstance();
+    if (lenis) {
+      lenis.scrollTo(0, { immediate: true });
+    }
+    // Also reset native scroll as fallback
     window.scrollTo(0, 0);
   }, [pathname]);
   return null;
