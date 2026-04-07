@@ -149,6 +149,7 @@ const mapWorks = (works) =>
     category: w.type.toUpperCase(),
     desc: w.description || '',
     image: w.image,
+    link: w.link || '',
   }));
 
 const SelectedWork = () => {
@@ -236,11 +237,16 @@ const SelectedWork = () => {
           {projects.map((project) => (
             <div
               key={project.id}
+              onClick={() => {
+                if (project.link) {
+                  window.open(project.link, '_blank', 'noopener,noreferrer');
+                }
+              }}
               style={{
                 width: `${cardWidth}px`,
                 flexShrink: 0,
                 flexGrow: 0,
-                cursor: 'pointer',
+                cursor: project.link ? 'pointer' : 'default',
                 borderRadius: isMobile ? '16px' : '20px',
                 overflow: 'hidden',
                 background: '#111113',
