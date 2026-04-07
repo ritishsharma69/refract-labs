@@ -7,6 +7,7 @@ import ExploreServicesButton from '../components/ExploreServicesButton';
 import CTASection from '../components/CTASection';
 import Footer from '../components/Footer';
 import NeuralBackground from '../components/ui/flow-field-background';
+import SEO from '../components/SEO';
 import useSmoothScroll from '../hooks/useSmoothScroll';
 import { fetchWorkItems, subscribeToContentUpdates, type WorkItem } from '../lib/content-store';
 
@@ -176,6 +177,12 @@ const Works = () => {
 
   return (
     <div style={{ width: '100%', minHeight: '100vh', background: '#080808' }}>
+      <SEO
+        title="Our Works"
+        description="Explore RefractLabs portfolio — web applications, UI/UX designs, branding projects and digital products we've built for clients worldwide."
+        keywords="web development portfolio, UI UX design projects, React projects, digital agency portfolio, RefractLabs works"
+        url="/works"
+      />
       <Navbar />
 
       {/* Hero Section */}

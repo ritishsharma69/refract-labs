@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import CTASection from '../components/CTASection';
 import useSmoothScroll from '../hooks/useSmoothScroll';
+import SEO from '../components/SEO';
 import { fetchTestimonialItems, subscribeToContentUpdates, type TestimonialItem } from '../lib/content-store';
 
 // Liquid Glass / Mirror-water card styles
@@ -98,6 +99,12 @@ const TestimonialsPage = () => {
 
   return (
     <div style={{ minHeight: '100vh', background: '#080808', color: 'white', position: 'relative', overflow: 'hidden' }}>
+      <SEO
+        title="Testimonials"
+        description="See what our clients say about RefractLabs. Read reviews and testimonials from businesses we've helped with web development, design and digital solutions."
+        keywords="RefractLabs reviews, client testimonials, web development reviews, UI UX design feedback, agency testimonials"
+        url="/testimonials"
+      />
       {/* Particle Layer */}
       <div aria-hidden style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0, opacity: 0.58 }}>
         {particles.map((p) => (

@@ -1,0 +1,8 @@
+# RefractLabs - robots.txt
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /admin/*
+
+# Sitemap
+Sitemap: https://refractlabs.com/sitemap.xml

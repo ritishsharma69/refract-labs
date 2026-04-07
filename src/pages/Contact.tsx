@@ -5,6 +5,7 @@ import ShaderHero from '../components/ui/animated-shader-hero';
 
 import LogoMarquee from '../components/LogoMarquee';
 import Footer from '../components/Footer';
+import SEO from '../components/SEO';
 import useSmoothScroll from '../hooks/useSmoothScroll';
 import { submitLead } from '../lib/content-store';
 
@@ -63,6 +64,12 @@ const Contact = () => {
 
   return (
     <div style={{ width: '100%', minHeight: '100vh', background: '#080808' }}>
+      <SEO
+        title="Contact Us"
+        description="Get in touch with RefractLabs. Let's discuss your web development, UI/UX design or branding project. Fill out the form or reach us directly."
+        keywords="contact RefractLabs, hire web developer, get quote, web development inquiry, UI UX design consultation"
+        url="/contact"
+      />
       <Navbar />
 
       {/* Shader Hero Background with Contact Content */}
