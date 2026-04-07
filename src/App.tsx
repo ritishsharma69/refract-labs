@@ -1,18 +1,40 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { getLenisInstance } from './hooks/useSmoothScroll';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
-  useEffect(() => {
-    // Reset Lenis smooth scroll position
+
+  // useLayoutEffect runs before browser paint — reset scroll immediately
+  useLayoutEffect(() => {
+    // Kill all ScrollTrigger instances from previous page
+    ScrollTrigger.getAll().forEach((t) => t.kill());
+
+    // Force native scroll to top immediately
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    // Reset Lenis if available
     const lenis = getLenisInstance();
     if (lenis) {
       lenis.scrollTo(0, { immediate: true });
     }
-    // Also reset native scroll as fallback
-    window.scrollTo(0, 0);
+
+    // Also reset after a small delay (for when new Lenis instance mounts)
+    const timer = setTimeout(() => {
+      window.scrollTo(0, 0);
+      const newLenis = getLenisInstance();
+      if (newLenis) {
+        newLenis.scrollTo(0, { immediate: true });
+      }
+      ScrollTrigger.refresh();
+    }, 50);
+
+    return () => clearTimeout(timer);
   }, [pathname]);
+
   return null;
 }
 import Home from './pages/Home';
