@@ -1,5 +1,6 @@
 import { useRef, useState, type DragEvent, type ChangeEvent } from 'react';
 import { FiUpload, FiImage, FiX } from 'react-icons/fi';
+import { uploadImage } from '../../lib/content-store';
 
 interface ImageDropzoneProps {
   value: string;
@@ -23,8 +24,9 @@ const ImageDropzone = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
-  const readFile = (file: File) => {
+  const readFile = async (file: File) => {
     setError(null);
     if (!file.type.startsWith('image/')) {
       setError('Only image files are supported.');
@@ -34,9 +36,15 @@ const ImageDropzone = ({
       setError(`Image must be smaller than ${maxSizeMB}MB.`);
       return;
     }
-    const reader = new FileReader();
-    reader.onloadend = () => onChange(reader.result as string);
-    reader.readAsDataURL(file);
+    try {
+      setUploading(true);
+      const url = await uploadImage(file);
+      onChange(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Upload failed.');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -92,7 +100,12 @@ const ImageDropzone = ({
           background: isDragging ? 'var(--admin-purple-light)' : 'var(--admin-bg)',
         }}
       >
-        {value ? (
+        {uploading ? (
+          <div className="flex flex-col items-center justify-center px-6 text-center">
+            <div className="mb-3 h-10 w-10 animate-spin rounded-full border-2 border-[var(--admin-purple)] border-t-transparent" />
+            <p className="text-sm font-medium" style={{ color: 'var(--admin-text)' }}>Uploading…</p>
+          </div>
+        ) : value ? (
           <>
             <img src={value} alt="Preview" className="h-full w-full object-cover" />
             <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">

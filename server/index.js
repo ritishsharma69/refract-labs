@@ -8,6 +8,7 @@ import teamRoutes from './routes/team.js';
 import worksRoutes from './routes/works.js';
 import testimonialsRoutes from './routes/testimonials.js';
 import leadsRoutes from './routes/leads.js';
+import uploadRoutes from './routes/upload.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -22,6 +23,7 @@ app.use('/api/team', teamRoutes);
 app.use('/api/works', worksRoutes);
 app.use('/api/testimonials', testimonialsRoutes);
 app.use('/api/leads', leadsRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Root & health check
 app.get('/', (_req, res) => res.json({ status: 'ok', service: 'refract-labs-api' }));

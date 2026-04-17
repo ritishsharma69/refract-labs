@@ -58,6 +58,23 @@ const authHeaders = () => ({
   Authorization: `Bearer ${getAuthToken()}`,
 });
 
+// ── Image upload (Cloudinary via backend) ─────────────────
+export const uploadImage = async (file: File): Promise<string> => {
+  const form = new FormData();
+  form.append('file', file);
+  const res = await fetch(`${API_BASE}/upload`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${getAuthToken()}` },
+    body: form,
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error((body as { message?: string }).message || 'Upload failed');
+  }
+  const data = (await res.json()) as { url: string };
+  return data.url;
+};
+
 // ── Generic fetch wrapper ─────────────────────────────────
 const apiFetch = async <T>(path: string, options?: RequestInit): Promise<T> => {
   const res = await fetch(`${API_BASE}${path}`, options);
