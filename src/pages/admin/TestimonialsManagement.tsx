@@ -1,8 +1,12 @@
-import { useState, useEffect } from 'react';
-import { FiArrowDown, FiArrowUp, FiEdit2, FiMessageSquare, FiPlus, FiTrash2, FiVideo, FiX } from 'react-icons/fi';
+import { useEffect, useMemo, useState } from 'react';
+import type { FormEvent } from 'react';
+import { FiEdit2, FiMessageSquare, FiPlus, FiTrash2, FiVideo } from 'react-icons/fi';
 import { fetchTestimonialItems, createTestimonialItem, updateTestimonialItem, deleteTestimonialItem as apiDeleteItem, emitContentUpdate, type TestimonialItem } from '../../lib/content-store';
 import ImageDropzone from '../../components/admin/ImageDropzone';
 import AdminLoader from '../../components/admin/AdminLoader';
+import PageHeader from '../../components/admin/PageHeader';
+import EmptyState from '../../components/admin/EmptyState';
+import Modal from '../../components/admin/Modal';
 
 const defaultFormData = (): Partial<TestimonialItem> => ({
   type: 'text',
@@ -45,7 +49,7 @@ const TestimonialsManagement = () => {
     setIsModalOpen(true);
   };
 
-  const handleSubmit = async (event: { preventDefault: () => void }) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     const payload = {
       type: formData.type === 'video' ? 'video' as const : 'text' as const,
@@ -62,141 +66,96 @@ const TestimonialsManagement = () => {
       featuredOnHome: Boolean(formData.featuredOnHome),
     };
 
-    try {
-      if (editingItem) {
-        await updateTestimonialItem(editingItem.id, payload);
-      } else {
-        await createTestimonialItem(payload);
-      }
-      await loadItems();
-      emitContentUpdate();
-    } catch { /* ignore */ }
-
+    if (editingItem) {
+      await updateTestimonialItem(editingItem.id, payload);
+    } else {
+      await createTestimonialItem(payload);
+    }
+    await loadItems();
+    emitContentUpdate();
     setIsModalOpen(false);
   };
 
-  const moveItem = (_index: number, _direction: -1 | 1) => {
-    // Reordering requires more complex backend; skipping for now
-  };
-
-  const toggleFeatured = async (id: string) => {
-    const item = items.find((i) => i.id === id);
-    if (!item) return;
-    try {
-      await updateTestimonialItem(id, { featuredOnHome: !item.featuredOnHome });
-      await loadItems();
-      emitContentUpdate();
-    } catch { /* ignore */ }
+  const toggleFeatured = async (item: TestimonialItem) => {
+    await updateTestimonialItem(item.id, { featuredOnHome: !item.featuredOnHome });
+    await loadItems();
+    emitContentUpdate();
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Delete this testimonial?')) {
-      try {
-        await apiDeleteItem(id);
-        await loadItems();
-        emitContentUpdate();
-      } catch { /* ignore */ }
-    }
+    if (!confirm('Delete this testimonial?')) return;
+    await apiDeleteItem(id);
+    await loadItems();
+    emitContentUpdate();
   };
 
-  const featuredCount = items.filter((item) => item.featuredOnHome).length;
-  const videoCount = items.filter((item) => item.type === 'video').length;
-  const textCount = items.length - videoCount;
+  const { featuredCount, videoCount, textCount } = useMemo(() => {
+    const v = items.filter((i) => i.type === 'video').length;
+    return {
+      featuredCount: items.filter((i) => i.featuredOnHome).length,
+      videoCount: v,
+      textCount: items.length - v,
+    };
+  }, [items]);
 
   return (
     <div className="space-y-8">
-      <section className="admin-surface rounded-[34px] p-6 sm:p-8 xl:p-10">
-        <div className="grid gap-6 xl:grid-cols-[1.12fr_0.88fr] xl:items-end">
-          <div className="max-w-3xl">
-            <span className="admin-chip">Social proof</span>
-            <h1 className="mt-5 text-3xl font-bold text-white font-['Space_Grotesk'] sm:text-4xl xl:text-[44px]">Testimonials now feel curated, not stacked on top of each other.</h1>
-            <p className="mt-3 text-sm leading-7 text-gray-400 sm:text-base">
-              Manage homepage highlights and shape the full `/testimonials` experience from a clearer editor with better card hierarchy.
-            </p>
-            <p className="mt-3 text-sm text-orange-300/90">Home page still shows the first 4 items marked “Show on Home”.</p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <div className="admin-pill">
-                <span className="h-2.5 w-2.5 rounded-full bg-violet-400 shadow-[0_0_14px_rgba(167,139,250,0.8)]" />
-                Text + video proof
-              </div>
-              <div className="admin-pill">
-                <span className="h-2.5 w-2.5 rounded-full bg-orange-300 shadow-[0_0_14px_rgba(253,186,116,0.8)]" />
-                Home picks highlighted
-              </div>
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-3">
-            {[
-              { label: 'All testimonials', value: items.length },
-              { label: 'Home picks', value: featuredCount },
-              { label: 'Video stories', value: videoCount },
-            ].map((item) => (
-              <div key={item.label} className="admin-form-block rounded-[26px] px-5 py-5">
-                <p className="text-[11px] uppercase tracking-[0.22em] text-gray-500">{item.label}</p>
-                <p className="mt-4 text-3xl font-semibold text-white">{item.value}</p>
-                <p className="mt-2 text-sm leading-6 text-gray-500">Live testimonial summary from the admin content feed.</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-8 flex flex-col gap-4 border-t border-white/8 pt-6 lg:flex-row lg:items-center lg:justify-between">
-          <p className="max-w-2xl text-sm leading-7 text-gray-500">
-            The new card system makes it easier to distinguish text quotes, video stories, featured items, and client identity details at a glance.
-          </p>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <PageHeader
+        chip="Social proof"
+        title="Testimonials now feel curated, not stacked on top of each other."
+        description="Manage homepage highlights and shape the full `/testimonials` experience from a clearer editor with better card hierarchy."
+        note="Home page still shows the first 4 items marked “Show on Home”."
+        pills={[
+          { label: 'Text + video proof', color: 'rgba(167,139,250,0.8)' },
+          { label: 'Home picks highlighted', color: 'rgba(253,186,116,0.8)' },
+        ]}
+        stats={[
+          { label: 'All testimonials', value: items.length, helper: 'Live testimonial summary from the admin content feed.' },
+          { label: 'Home picks', value: featuredCount, helper: 'Live testimonial summary from the admin content feed.' },
+          { label: 'Video stories', value: videoCount, helper: 'Live testimonial summary from the admin content feed.' },
+        ]}
+        footerNote="The new card system makes it easier to distinguish text quotes, video stories, featured items, and client identity details at a glance."
+        actions={
+          <>
             <div className="admin-pill">
               <span className="h-2.5 w-2.5 rounded-full bg-sky-400 shadow-[0_0_14px_rgba(56,189,248,0.8)]" />
               {textCount} text entries
             </div>
             <button onClick={openAddModal} className="admin-primary-btn inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold">
-              <FiPlus size={18} />
-              <span>Add Testimonial</span>
+              <FiPlus size={18} /> <span>Add Testimonial</span>
             </button>
-          </div>
-        </div>
-      </section>
+          </>
+        }
+      />
 
       {isLoading ? (
         <AdminLoader variant="cards" count={3} />
+      ) : items.length === 0 ? (
+        <EmptyState
+          eyebrow="Social proof library"
+          title="No testimonials added yet."
+          description="Add the first client quote or video story to populate this redesigned testimonial feed. Home picks and type counts will update automatically."
+          action={
+            <button onClick={openAddModal} className="admin-primary-btn inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold">
+              <FiPlus size={18} /> <span>Add First Testimonial</span>
+            </button>
+          }
+        />
       ) : (
       <div className="grid grid-cols-1 gap-7 md:grid-cols-2 2xl:grid-cols-3">
-        {items.length === 0 ? (
-          <div className="admin-empty-state col-span-full rounded-[32px] px-6 py-14 text-center sm:px-10">
-            <p className="text-[11px] uppercase tracking-[0.28em] text-gray-500">Social proof library</p>
-            <h3 className="mt-4 text-2xl font-semibold text-white font-['Space_Grotesk']">No testimonials added yet.</h3>
-            <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-gray-400">
-              Add the first client quote or video story to populate this redesigned testimonial feed. Home picks and type counts will update automatically.
-            </p>
-            <button
-              onClick={openAddModal}
-              className="admin-primary-btn mt-6 inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold"
-            >
-              <FiPlus size={18} />
-              <span>Add First Testimonial</span>
-            </button>
-          </div>
-        ) : items.map((item, index) => (
+        {items.map((item) => (
           <div key={item.id} className="admin-grid-card overflow-hidden rounded-[30px]">
             <div className="p-6">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex flex-wrap gap-2">
-                  <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] ${item.type === 'video' ? 'bg-orange-500 text-white' : 'bg-white/8 text-gray-300'}`}>
-                    {item.type === 'video' ? <FiVideo size={12} /> : <FiMessageSquare size={12} />}
-                    {item.type}
+              <div className="flex flex-wrap gap-2">
+                <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] ${item.type === 'video' ? 'bg-orange-500 text-white' : 'bg-white/8 text-gray-300'}`}>
+                  {item.type === 'video' ? <FiVideo size={12} /> : <FiMessageSquare size={12} />}
+                  {item.type}
+                </span>
+                {item.featuredOnHome && (
+                  <span className="rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-orange-400">
+                    Show on Home
                   </span>
-                  {item.featuredOnHome && (
-                    <span className="rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-orange-400">
-                      Show on Home
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex gap-2">
-                  <button onClick={() => moveItem(index, -1)} className="admin-icon-btn rounded-xl p-2.5 text-gray-400 hover:text-white" title="Move up"><FiArrowUp size={14} /></button>
-                  <button onClick={() => moveItem(index, 1)} className="admin-icon-btn rounded-xl p-2.5 text-gray-400 hover:text-white" title="Move down"><FiArrowDown size={14} /></button>
-                </div>
+                )}
               </div>
 
               {item.type === 'video' && (
@@ -237,7 +196,7 @@ const TestimonialsManagement = () => {
               </div>
 
               <div className="mt-6 flex flex-wrap gap-3">
-                <button onClick={() => toggleFeatured(item.id)} className={`rounded-xl px-3.5 py-2.5 text-xs font-medium transition-colors ${item.featuredOnHome ? 'bg-orange-500 text-white' : 'border border-white/8 bg-white/[0.04] text-gray-300 hover:bg-white/[0.08]'}`}>
+                <button onClick={() => toggleFeatured(item)} className={`rounded-xl px-3.5 py-2.5 text-xs font-medium transition-colors ${item.featuredOnHome ? 'bg-orange-500 text-white' : 'border border-white/8 bg-white/[0.04] text-gray-300 hover:bg-white/[0.08]'}`}>
                   {item.featuredOnHome ? 'Remove from Home' : 'Show on Home'}
                 </button>
                 <button onClick={() => openEditModal(item)} className="admin-secondary-btn rounded-xl px-3.5 py-2.5 text-xs font-medium">
@@ -253,19 +212,14 @@ const TestimonialsManagement = () => {
       </div>
       )}
 
-      {isModalOpen && (
-        <div className="admin-modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="admin-modal-panel max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-[32px]">
-            <div className="flex items-start justify-between gap-4 border-b border-white/6 p-6 sm:p-8">
-              <div>
-                <p className="text-[11px] uppercase tracking-[0.24em] text-gray-500">Testimonial editor</p>
-                <h2 className="mt-2 text-2xl font-semibold text-white font-['Space_Grotesk']">{editingItem ? 'Edit Testimonial' : 'Add Testimonial'}</h2>
-                <p className="mt-2 text-sm leading-7 text-gray-400">Edit quotes, video fields, client identity, and homepage visibility without changing the underlying data flow.</p>
-              </div>
-              <button onClick={() => setIsModalOpen(false)} className="admin-icon-btn rounded-2xl p-3 text-gray-300 hover:text-white"><FiX size={20} /></button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-6 p-6 sm:p-8">
+      <Modal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        eyebrow="Testimonial editor"
+        title={editingItem ? 'Edit Testimonial' : 'Add Testimonial'}
+        description="Edit quotes, video fields, client identity, and homepage visibility without changing the underlying data flow."
+      >
+        <form onSubmit={handleSubmit} className="space-y-6 p-6 sm:p-8">
               <div className="admin-form-block rounded-[28px] p-5 sm:p-6">
                 <div className="mb-4">
                   <h3 className="text-base font-medium text-white">Content format</h3>
@@ -368,14 +322,12 @@ const TestimonialsManagement = () => {
                 </label>
               </div>
 
-              <div className="flex flex-col gap-3 pt-2 sm:flex-row">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="admin-secondary-btn flex-1 rounded-2xl px-4 py-3 text-sm font-medium text-gray-300">Cancel</button>
-                <button type="submit" className="admin-primary-btn flex-1 rounded-2xl px-4 py-3 text-sm font-semibold">{editingItem ? 'Save Changes' : 'Add Testimonial'}</button>
-              </div>
-            </form>
+          <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+            <button type="button" onClick={() => setIsModalOpen(false)} className="admin-secondary-btn flex-1 rounded-2xl px-4 py-3 text-sm font-medium text-gray-300">Cancel</button>
+            <button type="submit" className="admin-primary-btn flex-1 rounded-2xl px-4 py-3 text-sm font-semibold">{editingItem ? 'Save Changes' : 'Add Testimonial'}</button>
           </div>
-        </div>
-      )}
+        </form>
+      </Modal>
     </div>
   );
 };

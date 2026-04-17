@@ -1,32 +1,43 @@
-import { useState, useEffect } from 'react';
-import { FiPlus, FiEdit2, FiTrash2, FiX } from 'react-icons/fi';
+import { useEffect, useMemo, useState } from 'react';
+import type { FormEvent } from 'react';
+import { FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
 import { fetchTeamMembers, createTeamMember, updateTeamMember, deleteTeamMember as apiDeleteMember, emitContentUpdate, type TeamMember } from '../../lib/content-store';
 import ImageDropzone from '../../components/admin/ImageDropzone';
 import AdminLoader from '../../components/admin/AdminLoader';
+import PageHeader from '../../components/admin/PageHeader';
+import EmptyState from '../../components/admin/EmptyState';
+import Modal from '../../components/admin/Modal';
+
+const SOCIAL_FIELDS: Array<{ key: keyof NonNullable<TeamMember['social']>; label: string }> = [
+  { key: 'twitter', label: 'Twitter URL' },
+  { key: 'linkedin', label: 'LinkedIn URL' },
+  { key: 'instagram', label: 'Instagram URL' },
+  { key: 'behance', label: 'Behance URL' },
+];
+
+const defaultFormData = (): Partial<TeamMember> => ({
+  name: '', role: '', image: '', description: '',
+  social: { twitter: '', linkedin: '', instagram: '', behance: '' },
+});
+
+const countSocials = (member: TeamMember) => Object.values(member.social || {}).filter(Boolean).length;
 
 const TeamManagement = () => {
   const [team, setTeam] = useState<TeamMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
-  const [formData, setFormData] = useState<Partial<TeamMember>>({
-    name: '', role: '', image: '', description: '',
-    social: { twitter: '', linkedin: '', instagram: '', behance: '' }
-  });
+  const [formData, setFormData] = useState<Partial<TeamMember>>(defaultFormData);
 
   const loadTeam = async () => {
-    try { setTeam(await fetchTeamMembers()); } catch { /* ignore */ }
-    finally { setIsLoading(false); }
+    try { setTeam(await fetchTeamMembers()); } finally { setIsLoading(false); }
   };
 
   useEffect(() => { loadTeam(); }, []);
 
   const openAddModal = () => {
     setEditingMember(null);
-    setFormData({
-      name: '', role: '', image: '', description: '',
-      social: { twitter: '', linkedin: '', instagram: '', behance: '' }
-    });
+    setFormData(defaultFormData());
     setIsModalOpen(true);
   };
 
@@ -36,7 +47,7 @@ const TeamManagement = () => {
     setIsModalOpen(true);
   };
 
-  const handleSubmit = async (e: { preventDefault: () => void }) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const payload = {
       name: formData.name || '',
@@ -46,105 +57,67 @@ const TeamManagement = () => {
       social: formData.social || {},
     };
 
-    try {
-      if (editingMember) {
-        await updateTeamMember(editingMember.id, payload);
-      } else {
-        await createTeamMember(payload as Omit<TeamMember, 'id'>);
-      }
-      await loadTeam();
-      emitContentUpdate();
-    } catch { /* ignore */ }
+    if (editingMember) {
+      await updateTeamMember(editingMember.id, payload);
+    } else {
+      await createTeamMember(payload as Omit<TeamMember, 'id'>);
+    }
+    await loadTeam();
+    emitContentUpdate();
     setIsModalOpen(false);
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this team member?')) {
-      try {
-        await apiDeleteMember(id);
-        await loadTeam();
-        emitContentUpdate();
-      } catch { /* ignore */ }
-    }
+    if (!confirm('Delete this team member?')) return;
+    await apiDeleteMember(id);
+    await loadTeam();
+    emitContentUpdate();
   };
 
-
-
-  const activeSocialLinks = (member: TeamMember) => Object.values(member.social || {}).filter(Boolean).length;
-  const totalLinkedProfiles = team.reduce((total, member) => total + activeSocialLinks(member), 0);
-  const membersWithImages = team.filter((member) => Boolean(member.image)).length;
+  const { totalLinkedProfiles, membersWithImages } = useMemo(() => ({
+    totalLinkedProfiles: team.reduce((sum, m) => sum + countSocials(m), 0),
+    membersWithImages: team.filter((m) => Boolean(m.image)).length,
+  }), [team]);
 
   return (
     <div className="space-y-8">
-      <section className="admin-surface rounded-[34px] p-6 sm:p-8 xl:p-10">
-        <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr] xl:items-end">
-          <div className="max-w-3xl">
-            <span className="admin-chip">People</span>
-            <h1 className="mt-5 text-3xl font-bold text-white font-['Space_Grotesk'] sm:text-4xl xl:text-[44px]">Design-forward team profiles without touching the workflow.</h1>
-            <p className="mt-3 text-sm leading-7 text-gray-400 sm:text-base">
-              Keep leadership and team profiles polished, readable, and ready for the public-facing team section with better hierarchy and cleaner editing surfaces.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <div className="admin-pill">
-                <span className="h-2.5 w-2.5 rounded-full bg-orange-300 shadow-[0_0_14px_rgba(253,186,116,0.8)]" />
-                Visual profile cards
-              </div>
-              <div className="admin-pill">
-                <span className="h-2.5 w-2.5 rounded-full bg-sky-400 shadow-[0_0_14px_rgba(56,189,248,0.8)]" />
-                Linked socials tracked
-              </div>
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-3">
-            {[
-              { label: 'Total members', value: team.length },
-              { label: 'Linked profiles', value: totalLinkedProfiles },
-              { label: 'Portraits added', value: membersWithImages },
-            ].map((item) => (
-              <div key={item.label} className="admin-form-block rounded-[26px] px-5 py-5">
-                <p className="text-[11px] uppercase tracking-[0.22em] text-gray-500">{item.label}</p>
-                <p className="mt-4 text-3xl font-semibold text-white">{item.value}</p>
-                <p className="mt-2 text-sm leading-6 text-gray-500">Live summary from the current team dataset.</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-8 flex flex-col gap-4 border-t border-white/8 pt-6 lg:flex-row lg:items-center lg:justify-between">
-          <p className="max-w-2xl text-sm leading-7 text-gray-500">
-            Use the improved cards below to scan bios faster, spot missing profile links, and open editing without the old cramped layout.
-          </p>
-          <button
-            onClick={openAddModal}
-            className="admin-primary-btn inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold"
-          >
-            <FiPlus size={18} />
-            <span>Add Member</span>
+      <PageHeader
+        chip="People"
+        title="Design-forward team profiles without touching the workflow."
+        description="Keep leadership and team profiles polished, readable, and ready for the public-facing team section with better hierarchy and cleaner editing surfaces."
+        pills={[
+          { label: 'Visual profile cards', color: 'rgba(253,186,116,0.8)' },
+          { label: 'Linked socials tracked', color: 'rgba(56,189,248,0.8)' },
+        ]}
+        stats={[
+          { label: 'Total members', value: team.length, helper: 'Live summary from the current team dataset.' },
+          { label: 'Linked profiles', value: totalLinkedProfiles, helper: 'Live summary from the current team dataset.' },
+          { label: 'Portraits added', value: membersWithImages, helper: 'Live summary from the current team dataset.' },
+        ]}
+        footerNote="Use the improved cards below to scan bios faster, spot missing profile links, and open editing without the old cramped layout."
+        actions={
+          <button onClick={openAddModal} className="admin-primary-btn inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold">
+            <FiPlus size={18} /> <span>Add Member</span>
           </button>
-        </div>
-      </section>
+        }
+      />
 
       {isLoading ? (
         <AdminLoader variant="cards" count={3} />
+      ) : team.length === 0 ? (
+        <EmptyState
+          eyebrow="Team profiles"
+          title="No team members added yet."
+          description="Start by creating the first profile. The new layout will automatically turn it into a richer visual card with cleaner actions and spacing."
+          action={
+            <button onClick={openAddModal} className="admin-primary-btn inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold">
+              <FiPlus size={18} /> <span>Add First Member</span>
+            </button>
+          }
+        />
       ) : (
       <div className="grid grid-cols-1 gap-7 md:grid-cols-2 2xl:grid-cols-3">
-        {team.length === 0 ? (
-          <div className="admin-empty-state col-span-full rounded-[32px] px-6 py-14 text-center sm:px-10">
-            <p className="text-[11px] uppercase tracking-[0.28em] text-gray-500">Team profiles</p>
-            <h3 className="mt-4 text-2xl font-semibold text-white font-['Space_Grotesk']">No team members added yet.</h3>
-            <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-gray-400">
-              Start by creating the first profile. The new layout will automatically turn it into a richer visual card with cleaner actions and spacing.
-            </p>
-            <button
-              onClick={openAddModal}
-              className="admin-primary-btn mt-6 inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold"
-            >
-              <FiPlus size={18} />
-              <span>Add First Member</span>
-            </button>
-          </div>
-        ) : team.map((member) => (
+        {team.map((member) => (
           <div key={member.id} className="admin-grid-card group overflow-hidden rounded-[30px]">
             <div className="relative aspect-[4/3] bg-[#0a0d12]">
               {member.image ? (
@@ -188,7 +161,7 @@ const TeamManagement = () => {
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="admin-form-block rounded-[22px] px-4 py-4">
                   <p className="text-[11px] uppercase tracking-[0.22em] text-gray-500">Connected profiles</p>
-                  <p className="mt-2 text-lg font-semibold text-white">{activeSocialLinks(member)}</p>
+                  <p className="mt-2 text-lg font-semibold text-white">{countSocials(member)}</p>
                   <p className="mt-1 text-xs leading-6 text-gray-500">Twitter, LinkedIn, Instagram, or Behance links attached.</p>
                 </div>
 
@@ -205,134 +178,76 @@ const TeamManagement = () => {
       </div>
       )}
 
-      {isModalOpen && (
-        <div className="admin-modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="admin-modal-panel max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[32px]">
-            <div className="flex items-start justify-between gap-4 border-b border-white/6 p-6 sm:p-8">
+      <Modal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        eyebrow="Team profile editor"
+        title={editingMember ? 'Edit Member' : 'Add Member'}
+        description="Update the profile details, portrait, and social links without touching the current content structure."
+        maxWidth="3xl"
+      >
+        <form onSubmit={handleSubmit} className="space-y-6 p-6 sm:p-8">
+          <div className="admin-form-block rounded-[28px] p-5 sm:p-6">
+            <div className="mb-4">
+              <h3 className="text-base font-medium text-white">Photo</h3>
+              <p className="mt-1 text-sm text-gray-500">Drag &amp; drop a portrait, click to browse, or paste a URL.</p>
+            </div>
+            <ImageDropzone
+              value={formData.image || ''}
+              onChange={(val) => setFormData({ ...formData, image: val })}
+              placeholder="Drop portrait here or click to browse"
+              previewShape="square"
+            />
+          </div>
+
+          <div className="admin-form-block rounded-[28px] p-5 sm:p-6">
+            <div className="mb-4">
+              <h3 className="text-base font-medium text-white">Profile details</h3>
+              <p className="mt-1 text-sm text-gray-500">These fields control the visible name, role, and supporting bio text.</p>
+            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <p className="text-[11px] uppercase tracking-[0.24em] text-gray-500">Team profile editor</p>
-                <h2 className="mt-2 text-2xl font-semibold text-white font-['Space_Grotesk']">
-                  {editingMember ? 'Edit Member' : 'Add Member'}
-                </h2>
-                <p className="mt-2 text-sm leading-7 text-gray-400">Update the profile details, portrait, and social links without touching the current content structure.</p>
+                <label className="mb-2 block text-sm text-gray-400">Name</label>
+                <input type="text" value={formData.name || ''} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="admin-input px-4 py-3 text-sm" required />
               </div>
-              <button onClick={() => setIsModalOpen(false)} className="admin-icon-btn rounded-2xl p-3 text-gray-300 hover:text-white">
-                <FiX size={20} />
-              </button>
+              <div>
+                <label className="mb-2 block text-sm text-gray-400">Role</label>
+                <input type="text" value={formData.role || ''} onChange={(e) => setFormData({ ...formData, role: e.target.value })} className="admin-input px-4 py-3 text-sm" required />
+              </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6 p-6 sm:p-8">
-              <div className="admin-form-block rounded-[28px] p-5 sm:p-6">
-                <div className="mb-4">
-                  <h3 className="text-base font-medium text-white">Photo</h3>
-                  <p className="mt-1 text-sm text-gray-500">Drag &amp; drop a portrait, click to browse, or paste a URL.</p>
-                </div>
-                <ImageDropzone
-                  value={formData.image || ''}
-                  onChange={(val) => setFormData({ ...formData, image: val })}
-                  placeholder="Drop portrait here or click to browse"
-                  previewShape="square"
-                />
-              </div>
+            <div className="mt-4">
+              <label className="mb-2 block text-sm text-gray-400">Description</label>
+              <textarea value={formData.description || ''} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="admin-textarea min-h-[120px] px-4 py-3 text-sm" required />
+            </div>
+          </div>
 
-              <div className="admin-form-block rounded-[28px] p-5 sm:p-6">
-                <div className="mb-4">
-                  <h3 className="text-base font-medium text-white">Profile details</h3>
-                  <p className="mt-1 text-sm text-gray-500">These fields control the visible name, role, and supporting bio text.</p>
-                </div>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div>
-                    <label className="mb-2 block text-sm text-gray-400">Name</label>
-                    <input
-                      type="text"
-                      value={formData.name || ''}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="admin-input px-4 py-3 text-sm"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-2 block text-sm text-gray-400">Role</label>
-                    <input
-                      type="text"
-                      value={formData.role || ''}
-                      onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                      className="admin-input px-4 py-3 text-sm"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="mt-4">
-                  <label className="mb-2 block text-sm text-gray-400">Description</label>
-                  <textarea
-                    value={formData.description || ''}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="admin-textarea min-h-[120px] px-4 py-3 text-sm"
-                    required
+          <div className="admin-form-block rounded-[28px] p-5 sm:p-6">
+            <div className="mb-4">
+              <h3 className="text-base font-medium text-white">Social links</h3>
+              <p className="mt-1 text-sm text-gray-500">Optional profile URLs for team cards and future integrations.</p>
+            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {SOCIAL_FIELDS.map(({ key, label }) => (
+                <div key={key}>
+                  <label className="mb-2 block text-sm text-gray-400">{label}</label>
+                  <input
+                    type="text"
+                    value={formData.social?.[key] || ''}
+                    onChange={(e) => setFormData({ ...formData, social: { ...formData.social, [key]: e.target.value } })}
+                    className="admin-input px-4 py-3 text-sm"
                   />
                 </div>
-              </div>
-
-              <div className="admin-form-block rounded-[28px] p-5 sm:p-6">
-                <div className="mb-4">
-                  <h3 className="text-base font-medium text-white">Social links</h3>
-                  <p className="mt-1 text-sm text-gray-500">Optional profile URLs for team cards and future integrations.</p>
-                </div>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div>
-                    <label className="mb-2 block text-sm text-gray-400">Twitter URL</label>
-                    <input
-                      type="text"
-                      value={formData.social?.twitter || ''}
-                      onChange={(e) => setFormData({ ...formData, social: { ...formData.social, twitter: e.target.value } })}
-                      className="admin-input px-4 py-3 text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-2 block text-sm text-gray-400">LinkedIn URL</label>
-                    <input
-                      type="text"
-                      value={formData.social?.linkedin || ''}
-                      onChange={(e) => setFormData({ ...formData, social: { ...formData.social, linkedin: e.target.value } })}
-                      className="admin-input px-4 py-3 text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-2 block text-sm text-gray-400">Instagram URL</label>
-                    <input
-                      type="text"
-                      value={formData.social?.instagram || ''}
-                      onChange={(e) => setFormData({ ...formData, social: { ...formData.social, instagram: e.target.value } })}
-                      className="admin-input px-4 py-3 text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-2 block text-sm text-gray-400">Behance URL</label>
-                    <input
-                      type="text"
-                      value={formData.social?.behance || ''}
-                      onChange={(e) => setFormData({ ...formData, social: { ...formData.social, behance: e.target.value } })}
-                      className="admin-input px-4 py-3 text-sm"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-3 pt-2 sm:flex-row">
-                <button type="button" onClick={() => setIsModalOpen(false)}
-                  className="admin-secondary-btn flex-1 rounded-2xl px-4 py-3 text-sm font-medium text-gray-300">
-                  Cancel
-                </button>
-                <button type="submit"
-                  className="admin-primary-btn flex-1 rounded-2xl px-4 py-3 text-sm font-semibold">
-                  {editingMember ? 'Save Changes' : 'Add Member'}
-                </button>
-              </div>
-            </form>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+
+          <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+            <button type="button" onClick={() => setIsModalOpen(false)} className="admin-secondary-btn flex-1 rounded-2xl px-4 py-3 text-sm font-medium text-gray-300">Cancel</button>
+            <button type="submit" className="admin-primary-btn flex-1 rounded-2xl px-4 py-3 text-sm font-semibold">{editingMember ? 'Save Changes' : 'Add Member'}</button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { useLayoutEffect } from 'react';
+import { lazy, Suspense, useLayoutEffect } from 'react';
 import { getLenisInstance } from './hooks/useSmoothScroll';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -44,14 +44,22 @@ import Contact from './pages/Contact';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import CookiePolicy from './pages/CookiePolicy';
-import AdminLogin from './pages/admin/AdminLogin';
-import AdminLayout from './pages/admin/AdminLayout';
-import Dashboard from './pages/admin/Dashboard';
-import TeamManagement from './pages/admin/TeamManagement';
-import WorksManagement from './pages/admin/WorksManagement';
-import TestimonialsManagement from './pages/admin/TestimonialsManagement';
-import LeadsManagement from './pages/admin/LeadsManagement';
 import TestimonialsPage from './pages/TestimonialsPage';
+
+// Admin routes are lazy-loaded so they're only compiled/downloaded when accessed
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
+const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
+const TeamManagement = lazy(() => import('./pages/admin/TeamManagement'));
+const WorksManagement = lazy(() => import('./pages/admin/WorksManagement'));
+const TestimonialsManagement = lazy(() => import('./pages/admin/TestimonialsManagement'));
+const LeadsManagement = lazy(() => import('./pages/admin/LeadsManagement'));
+
+const AdminFallback = () => (
+  <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a]">
+    <div className="h-10 w-10 animate-spin rounded-full border-[3px] border-white/10 border-t-[#8b7be8]" />
+  </div>
+);
 
 function App() {
   return (
@@ -68,14 +76,20 @@ function App() {
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/cookie-policy" element={<CookiePolicy />} />
 
-        {/* Admin Routes */}
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="team" element={<TeamManagement />} />
-          <Route path="works" element={<WorksManagement />} />
-          <Route path="testimonials" element={<TestimonialsManagement />} />
-          <Route path="leads" element={<LeadsManagement />} />
+        {/* Admin Routes (lazy-loaded) */}
+        <Route
+          path="/admin/login"
+          element={<Suspense fallback={<AdminFallback />}><AdminLogin /></Suspense>}
+        />
+        <Route
+          path="/admin"
+          element={<Suspense fallback={<AdminFallback />}><AdminLayout /></Suspense>}
+        >
+          <Route path="dashboard" element={<Suspense fallback={<AdminFallback />}><Dashboard /></Suspense>} />
+          <Route path="team" element={<Suspense fallback={<AdminFallback />}><TeamManagement /></Suspense>} />
+          <Route path="works" element={<Suspense fallback={<AdminFallback />}><WorksManagement /></Suspense>} />
+          <Route path="testimonials" element={<Suspense fallback={<AdminFallback />}><TestimonialsManagement /></Suspense>} />
+          <Route path="leads" element={<Suspense fallback={<AdminFallback />}><LeadsManagement /></Suspense>} />
         </Route>
       </Routes>
     </Router>

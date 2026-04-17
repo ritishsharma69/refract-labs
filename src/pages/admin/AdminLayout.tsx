@@ -1,21 +1,15 @@
 import { useEffect, useState } from 'react';
-import {
-  Home,
-  Users,
-  Briefcase,
-  MessageSquare,
-  Inbox,
-  Settings,
-  LogOut,
-  Bell,
-  Search,
-  Menu,
-  X,
-  ChevronsRight,
-  ChevronDown,
-} from 'lucide-react';
+import { Home, Users, Briefcase, MessageSquare, Inbox, LogOut, Bell, Search, Menu, X, ChevronsRight, ChevronDown } from 'lucide-react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { verifyToken, logoutAdmin } from '../../lib/content-store';
+
+const NAV_ITEMS = [
+  { label: 'Dashboard', path: '/admin/dashboard', icon: Home },
+  { label: 'Team', path: '/admin/team', icon: Users },
+  { label: 'Works', path: '/admin/works', icon: Briefcase },
+  { label: 'Testimonials', path: '/admin/testimonials', icon: MessageSquare },
+  { label: 'Leads', path: '/admin/leads', icon: Inbox },
+];
 
 const AdminLayout = () => {
   const navigate = useNavigate();
@@ -30,7 +24,6 @@ const AdminLayout = () => {
       navigate('/admin/login');
       return;
     }
-    // Validate token against backend — clears stale/invalid tokens
     verifyToken().then((valid) => {
       if (!valid) {
         logoutAdmin();
@@ -39,24 +32,12 @@ const AdminLayout = () => {
     });
   }, [navigate]);
 
-  useEffect(() => {
-    setSidebarOpen(false);
-  }, [location.pathname]);
+  useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
 
   const handleLogout = () => {
-    localStorage.removeItem('adminAuth');
-    localStorage.removeItem('adminEmail');
+    logoutAdmin();
     navigate('/admin/login');
   };
-
-  const navItems = [
-    { label: 'Dashboard', path: '/admin/dashboard', icon: Home },
-    { label: 'Team', path: '/admin/team', icon: Users },
-    { label: 'Works', path: '/admin/works', icon: Briefcase },
-    { label: 'Testimonials', path: '/admin/testimonials', icon: MessageSquare },
-    { label: 'Leads', path: '/admin/leads', icon: Inbox },
-    { label: 'Settings', path: '#', icon: Settings },
-  ];
 
   const pageMeta: Record<string, { label: string }> = {
     '/admin/dashboard': { label: 'Dashboard' },
@@ -115,7 +96,7 @@ const AdminLayout = () => {
 
           {/* Nav */}
           <nav className="space-y-1 mb-8">
-            {navItems.map((item) => {
+            {NAV_ITEMS.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
 
