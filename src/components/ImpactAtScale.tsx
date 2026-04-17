@@ -1,27 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import ExploreServicesButton from './ExploreServicesButton';
+import useIsMobile from '../hooks/useIsMobile';
+import useInView from '../hooks/useInView';
 
 // Bar heights for the animated chart
 const barHeights = [60, 90, 70, 110, 85, 130, 95, 145, 120, 160, 140, 175];
-
-// Mobile detection hook
-const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-  return isMobile;
-};
 
 const ImpactAtScale = () => {
   const [card2Hovered, setCard2Hovered] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [ballPos, setBallPos] = useState({ x: 540, y: 200 });
   const isMobile = useIsMobile();
+  const [sectionRef, inView] = useInView<HTMLElement>({ rootMargin: '300px 0px' });
 
   // Refs for smooth ball animation ALONG the path
   const svgRef = useRef<SVGSVGElement>(null);
@@ -56,32 +47,26 @@ const ImpactAtScale = () => {
     }
   }, [mounted]);
 
-  // Smooth animation loop - ball travels ALONG the path
+  // Smooth animation loop - gated by IntersectionObserver so it only runs while visible
   useEffect(() => {
+    if (!inView) return;
+
     const loop = () => {
-      if (!pathRef.current) {
-        animFrameRef.current = requestAnimationFrame(loop);
-        return;
-      }
-
       const path = pathRef.current;
-      const diff = targetLengthRef.current - currentLengthRef.current;
-
-      // Smooth easing - move 4% of remaining distance each frame
-      if (Math.abs(diff) > 0.5) {
-        currentLengthRef.current += diff * 0.04;
-
-        // Get actual point ON the path at this length
-        const pt = path.getPointAtLength(currentLengthRef.current);
-        setBallPos({ x: pt.x, y: pt.y });
+      if (path) {
+        const diff = targetLengthRef.current - currentLengthRef.current;
+        if (Math.abs(diff) > 0.5) {
+          currentLengthRef.current += diff * 0.04;
+          const pt = path.getPointAtLength(currentLengthRef.current);
+          setBallPos({ x: pt.x, y: pt.y });
+        }
       }
-
       animFrameRef.current = requestAnimationFrame(loop);
     };
 
     animFrameRef.current = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animFrameRef.current);
-  }, []);
+  }, [inView]);
 
   // Find path length for a given X coordinate
   const findLengthForX = (path: SVGPathElement, targetX: number): number => {
@@ -142,7 +127,7 @@ const ImpactAtScale = () => {
   };
 
   return (
-    <section style={{ position: 'relative', background: 'transparent', padding: isMobile ? '36px 24px 32px' : '64px 120px 44px' }}>
+    <section ref={sectionRef} style={{ position: 'relative', background: 'transparent', padding: isMobile ? '36px 24px 32px' : '64px 120px 44px', contain: 'layout paint' }}>
       {/* Background atmosphere glow */}
       <div style={{
         position: 'absolute',

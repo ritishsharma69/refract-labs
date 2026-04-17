@@ -1,17 +1,6 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-
-// Mobile detection hook
-const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-  return isMobile;
-};
+import useIsMobile from '../hooks/useIsMobile';
 
 // 12 icons with their corner glow colors (warm copper/purple palette)
 const allIcons = [
@@ -232,6 +221,7 @@ const BuildEnvironment = () => {
             overflow: 'hidden',
             transition: 'transform 0.3s ease, box-shadow 0.3s ease',
             willChange: 'transform',
+            contain: 'layout paint',
           }}
         >
           {/* Background Glows - Ambient lighting */}

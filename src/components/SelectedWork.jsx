@@ -1,128 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ExploreServicesButton from './ExploreServicesButton';
 import { fetchWorkItems, subscribeToContentUpdates } from '../lib/content-store';
-
-// Mobile detection hook
-const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-  return isMobile;
-};
-
-const AetherPreview = () => (
-  <div style={{ height: '100%', background: 'white', padding: '20px 24px 0 24px' }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-      <div style={{ display: 'flex', gap: '16px' }}>
-        {['Home', 'About', 'Services', 'Contact'].map(item => (
-          <span key={item} style={{ fontSize: '10px', color: '#888' }}>{item}</span>
-        ))}
-      </div>
-    </div>
-    <div style={{ marginTop: '30px' }}>
-      <h2 style={{ fontSize: '28px', fontWeight: 800, color: '#111', lineHeight: 1.2 }}>Design That</h2>
-      <h2 style={{ fontSize: '28px', fontWeight: 800, color: '#111', lineHeight: 1.2 }}>Inspires & Delights</h2>
-      <div style={{ display: 'flex', gap: '16px', marginTop: '16px' }}>
-        <span style={{ fontSize: '11px', color: '#333' }}>Contact Us ↗</span>
-        <span style={{ fontSize: '11px', color: '#333' }}>Learn More →</span>
-      </div>
-    </div>
-    <div style={{ marginTop: '30px', height: '120px', background: 'linear-gradient(135deg, #f472b6 0%, #fce7f3 60%, white 100%)', borderRadius: '8px 8px 0 0' }} />
-  </div>
-);
-
-const SentinelPreview = () => (
-  <div style={{ height: '100%', background: '#0d0d0d', padding: '24px', position: 'relative', overflow: 'hidden' }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span style={{ color: 'white', fontSize: '14px' }}>✕</span>
-        <span style={{ color: 'white', fontSize: '18px', fontWeight: 700 }}>Nublink</span>
-      </div>
-      <div style={{ display: 'flex', gap: '8px' }}>
-        {[1,2,3].map(i => <span key={i} style={{ color: 'white', opacity: 0.7, fontSize: '12px' }}>✕</span>)}
-      </div>
-    </div>
-    <div style={{ position: 'absolute', right: '40px', top: '80px' }}>
-      <div style={{ position: 'relative', width: '140px', height: '140px' }}>
-        <div style={{ position: 'absolute', width: '100px', height: '100px', border: '2px solid rgba(255,255,255,0.12)', transform: 'rotate(45deg)', top: '20px', left: '20px' }} />
-        <div style={{ position: 'absolute', width: '80px', height: '80px', border: '2px solid rgba(255,255,255,0.08)', transform: 'rotate(45deg)', top: '30px', left: '30px' }} />
-      </div>
-    </div>
-    <div style={{ position: 'absolute', bottom: '24px', left: '24px' }}>
-      <div style={{ color: 'white', fontSize: '16px', fontWeight: 600, marginBottom: '8px' }}>Biometric Identity.</div>
-      <div style={{ color: '#666', fontSize: '12px', lineHeight: 1.8 }}>
-        PrivacySecurity.<br/>Authentication.<br/>IdentityVerification.<br/>Personalized Experience.
-      </div>
-    </div>
-  </div>
-);
-
-const CortexPreview = () => (
-  <div style={{ height: '100%', background: '#0a0a0a', padding: '24px', position: 'relative', overflow: 'hidden' }}>
-    <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', marginBottom: '20px' }}>
-      {['Home', 'About', 'Mission', 'Services', 'Contact'].map(item => (
-        <span key={item} style={{ fontSize: '9px', color: '#444' }}>{item}</span>
-      ))}
-    </div>
-    <div style={{ textAlign: 'center', marginTop: '20px' }}>
-      <div style={{ fontSize: '26px', fontWeight: 800, color: 'white' }}>Intelligence,</div>
-      <div style={{ fontSize: '26px', fontWeight: 800, color: 'white' }}>Reimagined With AI</div>
-    </div>
-    <div style={{ position: 'relative', width: '200px', height: '200px', margin: '30px auto 0' }}>
-      {[200, 160, 120, 80].map((size, i) => (
-        <div key={i} style={{
-          position: 'absolute', width: `${size}px`, height: `${size}px`,
-          border: `3px solid ${['#ff6b00', '#ff9500', '#ffb700', '#ffd000'][i]}`,
-          borderRadius: '50%', left: `${(200-size)/2}px`, top: `${(200-size)/2}px`,
-          transform: `rotate(${i * 30}deg)`, filter: i < 2 ? 'blur(1px)' : 'none',
-          boxShadow: i === 0 ? '0 0 60px rgba(255,120,0,0.5)' : 'none',
-          animation: 'spin 8s linear infinite', animationDelay: `${i * 0.5}s`
-        }} />
-      ))}
-    </div>
-    <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
-  </div>
-);
-
-const FluxPreview = () => (
-  <div style={{ height: '100%', background: 'white', padding: '24px' }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <div>
-        <div style={{ fontSize: '28px', fontWeight: 800, color: '#111' }}>Color</div>
-        <div style={{ fontSize: '28px', fontWeight: 800, color: '#111' }}>Pallet</div>
-      </div>
-      <div style={{ display: 'flex', gap: '4px', alignItems: 'flex-end' }}>
-        {['#ffffff', '#333', '#666', '#4B6BFF', '#9B59FF', '#FF59C8', '#FF5959'].map((color, i) => (
-          <div key={i} style={{ width: '32px', height: `${50 + (i % 3) * 10}px`, background: color, borderRadius: '4px', border: color === '#ffffff' ? '1px solid #ddd' : 'none' }} />
-        ))}
-      </div>
-    </div>
-    <div style={{ marginTop: '40px', display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
-      <div style={{ fontSize: '64px', fontWeight: 300, color: '#111', fontFamily: 'serif' }}>Aa</div>
-      <div>
-        <div style={{ fontSize: '13px', color: '#333', lineHeight: 1.8 }}>
-          Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj<br/>Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt<br/>Uu Vv Ww Xx Yy Zz
-        </div>
-        <div style={{ fontSize: '11px', color: '#999', marginTop: '8px' }}>SF Pro Display</div>
-      </div>
-    </div>
-  </div>
-);
-
-const PreviewRenderer = ({ type }) => {
-  switch(type) {
-    case 'aether': return <AetherPreview />;
-    case 'sentinel': return <SentinelPreview />;
-    case 'cortex': return <CortexPreview />;
-    case 'flux': return <FluxPreview />;
-    default: return null;
-  }
-};
+import useIsMobile from '../hooks/useIsMobile';
 
 const CARD_WIDTH = 500;
 const MOBILE_CARD_WIDTH = 300;
@@ -223,7 +103,7 @@ const SelectedWork = () => {
       </div>
 
       {/* Slider viewport */}
-      <div style={{ overflow: 'hidden', width: '100%', position: 'relative' }}>
+      <div style={{ overflow: 'hidden', width: '100%', position: 'relative', contain: 'layout paint' }}>
         {/* Cards track - centered start position with calc */}
         <div style={{
           display: 'flex',

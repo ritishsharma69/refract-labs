@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { fetchTestimonialItems, subscribeToContentUpdates, type TestimonialItem } from '../lib/content-store';
+import useIsMobile from '../hooks/useIsMobile';
 
 interface Testimonial {
   id: string;
@@ -13,18 +14,6 @@ interface Testimonial {
   thumbnailUrl?: string;
   duration?: string;
 }
-
-// Mobile detection hook
-const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-  return isMobile;
-};
 
 const mapToLocal = (items: TestimonialItem[]): Testimonial[] =>
   items.map((t) => ({

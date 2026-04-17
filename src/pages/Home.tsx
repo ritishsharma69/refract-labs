@@ -16,6 +16,14 @@ import useSmoothScroll from '../hooks/useSmoothScroll';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Tells the browser to skip layout/paint for off-screen sections until
+// they're near the viewport. Massive scroll perf win with zero visual change.
+// `containIntrinsicSize` reserves a placeholder size so scrollbars don't jump.
+const DEFER_STYLE = {
+  contentVisibility: 'auto',
+  containIntrinsicSize: '1px 800px',
+} as React.CSSProperties;
+
 const Home = () => {
   useSmoothScroll();
 
@@ -50,25 +58,12 @@ const Home = () => {
         <LogoMarquee />
       </div>
 
-      {/* Services / Capabilities Section */}
-      <Services />
-
-      {/* Selected Work Section */}
-      <SelectedWork />
-
-      {/* Impact at Scale Section */}
-      <ImpactAtScale />
-
-      {/* Build Environment Section */}
-      <BuildEnvironment />
-
-      {/* Testimonials Section */}
-      <Testimonials />
-
-      {/* Final CTA Section */}
-      <CTASection />
-
-      {/* Footer */}
+      <div style={DEFER_STYLE}><Services /></div>
+      <div style={DEFER_STYLE}><SelectedWork /></div>
+      <div style={DEFER_STYLE}><ImpactAtScale /></div>
+      <div style={DEFER_STYLE}><BuildEnvironment /></div>
+      <div style={DEFER_STYLE}><Testimonials /></div>
+      <div style={DEFER_STYLE}><CTASection /></div>
       <Footer />
     </div>
   );
