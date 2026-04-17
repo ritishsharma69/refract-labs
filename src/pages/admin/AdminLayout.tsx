@@ -15,6 +15,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { verifyToken, logoutAdmin } from '../../lib/content-store';
 
 const AdminLayout = () => {
   const navigate = useNavigate();
@@ -27,7 +28,15 @@ const AdminLayout = () => {
     const isAuth = localStorage.getItem('adminAuth');
     if (!isAuth) {
       navigate('/admin/login');
+      return;
     }
+    // Validate token against backend — clears stale/invalid tokens
+    verifyToken().then((valid) => {
+      if (!valid) {
+        logoutAdmin();
+        navigate('/admin/login');
+      }
+    });
   }, [navigate]);
 
   useEffect(() => {

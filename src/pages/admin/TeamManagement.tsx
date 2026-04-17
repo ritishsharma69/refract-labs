@@ -1,9 +1,12 @@
-import { useState, useEffect, type ChangeEvent } from 'react';
-import { FiPlus, FiEdit2, FiTrash2, FiX, FiUpload } from 'react-icons/fi';
+import { useState, useEffect } from 'react';
+import { FiPlus, FiEdit2, FiTrash2, FiX } from 'react-icons/fi';
 import { fetchTeamMembers, createTeamMember, updateTeamMember, deleteTeamMember as apiDeleteMember, emitContentUpdate, type TeamMember } from '../../lib/content-store';
+import ImageDropzone from '../../components/admin/ImageDropzone';
+import AdminLoader from '../../components/admin/AdminLoader';
 
 const TeamManagement = () => {
   const [team, setTeam] = useState<TeamMember[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
   const [formData, setFormData] = useState<Partial<TeamMember>>({
@@ -13,6 +16,7 @@ const TeamManagement = () => {
 
   const loadTeam = async () => {
     try { setTeam(await fetchTeamMembers()); } catch { /* ignore */ }
+    finally { setIsLoading(false); }
   };
 
   useEffect(() => { loadTeam(); }, []);
@@ -64,16 +68,7 @@ const TeamManagement = () => {
     }
   };
 
-  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({ ...formData, image: reader.result as string });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+
 
   const activeSocialLinks = (member: TeamMember) => Object.values(member.social || {}).filter(Boolean).length;
   const totalLinkedProfiles = team.reduce((total, member) => total + activeSocialLinks(member), 0);
@@ -130,6 +125,9 @@ const TeamManagement = () => {
         </div>
       </section>
 
+      {isLoading ? (
+        <AdminLoader variant="cards" count={3} />
+      ) : (
       <div className="grid grid-cols-1 gap-7 md:grid-cols-2 2xl:grid-cols-3">
         {team.length === 0 ? (
           <div className="admin-empty-state col-span-full rounded-[32px] px-6 py-14 text-center sm:px-10">
@@ -205,6 +203,7 @@ const TeamManagement = () => {
           </div>
         ))}
       </div>
+      )}
 
       {isModalOpen && (
         <div className="admin-modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -226,28 +225,13 @@ const TeamManagement = () => {
               <div className="admin-form-block rounded-[28px] p-5 sm:p-6">
                 <div className="mb-4">
                   <h3 className="text-base font-medium text-white">Photo</h3>
-                  <p className="mt-1 text-sm text-gray-500">Upload a portrait or paste an image URL for this profile card.</p>
+                  <p className="mt-1 text-sm text-gray-500">Drag &amp; drop a portrait, click to browse, or paste a URL.</p>
                 </div>
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                  <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-[22px] border border-white/10 bg-white/[0.03]">
-                    {formData.image ? (
-                      <img src={formData.image} alt="" className="h-full w-full object-cover" />
-                    ) : (
-                      <span className="text-2xl font-semibold text-white/25">{(formData.name || 'R').charAt(0)}</span>
-                    )}
-                  </div>
-                  <label className="admin-secondary-btn flex cursor-pointer items-center gap-2 rounded-2xl px-4 py-3 text-sm">
-                    <FiUpload size={16} className="text-gray-400" />
-                    <span className="text-sm text-gray-400">Upload Image</span>
-                    <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                  </label>
-                </div>
-                <input
-                  type="text"
+                <ImageDropzone
                   value={formData.image || ''}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  className="admin-input mt-3 px-4 py-3 text-sm"
-                  placeholder="Or paste image URL"
+                  onChange={(val) => setFormData({ ...formData, image: val })}
+                  placeholder="Drop portrait here or click to browse"
+                  previewShape="square"
                 />
               </div>
 

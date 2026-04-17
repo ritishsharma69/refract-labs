@@ -61,6 +61,15 @@ const authHeaders = () => ({
 // ── Generic fetch wrapper ─────────────────────────────────
 const apiFetch = async <T>(path: string, options?: RequestInit): Promise<T> => {
   const res = await fetch(`${API_BASE}${path}`, options);
+  if (res.status === 401 && path !== '/auth/login') {
+    // Stale/invalid token — clear auth and bounce to login
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminEmail');
+    localStorage.removeItem('adminAuth');
+    if (typeof window !== 'undefined' && !window.location.pathname.endsWith('/admin/login')) {
+      window.location.href = '/admin/login';
+    }
+  }
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error((body as { message?: string }).message || `API error ${res.status}`);

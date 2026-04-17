@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import type { ChangeEvent, FormEvent } from 'react';
-import { FiArrowDown, FiArrowUp, FiEdit2, FiPlus, FiUpload, FiX } from 'react-icons/fi';
+import type { FormEvent } from 'react';
+import { FiArrowDown, FiArrowUp, FiEdit2, FiPlus, FiX } from 'react-icons/fi';
 import { fetchWorkItems, createWorkItem, updateWorkItem, deleteWorkItem as apiDeleteWork, emitContentUpdate, type WorkItem } from '../../lib/content-store';
+import ImageDropzone from '../../components/admin/ImageDropzone';
+import AdminLoader from '../../components/admin/AdminLoader';
 
 const defaultFormData = (): Partial<WorkItem> => ({
   title: '',
@@ -14,12 +16,14 @@ const defaultFormData = (): Partial<WorkItem> => ({
 
 const WorksManagement = () => {
   const [works, setWorks] = useState<WorkItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingWork, setEditingWork] = useState<WorkItem | null>(null);
   const [formData, setFormData] = useState<Partial<WorkItem>>(defaultFormData);
 
   const loadWorks = async () => {
     try { setWorks(await fetchWorkItems()); } catch { /* ignore */ }
+    finally { setIsLoading(false); }
   };
 
   useEffect(() => { loadWorks(); }, []);
@@ -67,17 +71,6 @@ const WorksManagement = () => {
         await loadWorks();
         emitContentUpdate();
       } catch { /* ignore */ }
-    }
-  };
-
-  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({ ...formData, image: reader.result as string });
-      };
-      reader.readAsDataURL(file);
     }
   };
 
@@ -151,6 +144,9 @@ const WorksManagement = () => {
         </div>
       </section>
 
+      {isLoading ? (
+        <AdminLoader variant="cards" count={4} />
+      ) : (
       <div className="grid grid-cols-1 gap-7 md:grid-cols-2 2xl:grid-cols-3">
         {works.length === 0 ? (
           <div className="admin-empty-state col-span-full rounded-[32px] px-6 py-14 text-center sm:px-10">
@@ -258,6 +254,7 @@ const WorksManagement = () => {
           </div>
         ))}
       </div>
+      )}
 
       {isModalOpen && (
         <div className="admin-modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -279,28 +276,13 @@ const WorksManagement = () => {
               <div className="admin-form-block rounded-[28px] p-5 sm:p-6">
                 <div className="mb-4">
                   <h3 className="text-base font-medium text-white">Cover image</h3>
-                  <p className="mt-1 text-sm text-gray-500">Upload a project cover or paste an image URL for the preview card.</p>
+                  <p className="mt-1 text-sm text-gray-500">Drag &amp; drop an image, click to browse, or paste a URL for the preview card.</p>
                 </div>
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                  <div className="flex h-20 w-28 items-center justify-center overflow-hidden rounded-[22px] border border-white/10 bg-white/[0.03]">
-                    {formData.image ? (
-                      <img src={formData.image} alt="" className="h-full w-full object-cover" />
-                    ) : (
-                      <span className="text-xl font-semibold text-white/25">{(formData.title || 'W').charAt(0)}</span>
-                    )}
-                  </div>
-                  <label className="admin-secondary-btn flex cursor-pointer items-center gap-2 rounded-2xl px-4 py-3 text-sm">
-                    <FiUpload size={16} className="text-gray-400" />
-                    <span className="text-sm text-gray-400">Upload Image</span>
-                    <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                  </label>
-                </div>
-                <input
-                  type="text"
+                <ImageDropzone
                   value={formData.image || ''}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  className="admin-input mt-3 px-4 py-3 text-sm"
-                  placeholder="Or paste image URL"
+                  onChange={(val) => setFormData({ ...formData, image: val })}
+                  placeholder="Drop cover image here or click to browse"
+                  previewShape="rect"
                 />
               </div>
 

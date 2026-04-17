@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import { FiTrash2, FiMail, FiPhone, FiUser, FiClock, FiCheckCircle } from 'react-icons/fi';
 import { fetchLeads, deleteLead, markLeadRead, type LeadItem } from '../../lib/content-store';
+import AdminLoader from '../../components/admin/AdminLoader';
 
 const LeadsManagement = () => {
   const [leads, setLeads] = useState<LeadItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'unread' | 'read'>('all');
 
   const loadLeads = async () => {
     try { setLeads(await fetchLeads()); } catch { /* ignore */ }
+    finally { setIsLoading(false); }
   };
 
   useEffect(() => { loadLeads(); }, []);
@@ -84,6 +87,9 @@ const LeadsManagement = () => {
       </section>
 
       {/* Lead cards */}
+      {isLoading ? (
+        <AdminLoader variant="list" count={4} />
+      ) : (
       <div className="space-y-4">
         {filteredLeads.length === 0 ? (
           <div className="admin-empty-state col-span-full rounded-[32px] px-6 py-14 text-center sm:px-10">
@@ -161,6 +167,7 @@ const LeadsManagement = () => {
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 };

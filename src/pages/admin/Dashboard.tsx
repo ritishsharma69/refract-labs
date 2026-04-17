@@ -16,6 +16,7 @@ import {
   fetchTestimonialItems,
   subscribeToContentUpdates,
 } from '../../lib/content-store';
+import AdminLoader from '../../components/admin/AdminLoader';
 
 type DashboardCounts = {
   team: number;
@@ -33,6 +34,7 @@ const Dashboard = () => {
     testimonials: 0,
     featuredTestimonials: 0,
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const syncStats = async () => {
@@ -52,6 +54,8 @@ const Dashboard = () => {
         });
       } catch {
         // ignore fetch failures and keep the UI resilient
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -113,6 +117,10 @@ const Dashboard = () => {
     { label: 'Homepage Picks', value: totalHomepagePicks, sub: `${showcaseCoverage}% coverage`, icon: Star, color: 'purple' as const },
     { label: 'Testimonials', value: counts.testimonials, sub: `${counts.featuredTestimonials} featured`, icon: MessageSquare, color: 'orange' as const },
   ];
+
+  if (isLoading) {
+    return <AdminLoader variant="spinner" label="Loading dashboard..." />;
+  }
 
   return (
     <div className="space-y-8">

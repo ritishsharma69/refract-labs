@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { FiArrowDown, FiArrowUp, FiEdit2, FiMessageSquare, FiPlus, FiTrash2, FiVideo, FiX } from 'react-icons/fi';
 import { fetchTestimonialItems, createTestimonialItem, updateTestimonialItem, deleteTestimonialItem as apiDeleteItem, emitContentUpdate, type TestimonialItem } from '../../lib/content-store';
+import ImageDropzone from '../../components/admin/ImageDropzone';
+import AdminLoader from '../../components/admin/AdminLoader';
 
 const defaultFormData = (): Partial<TestimonialItem> => ({
   type: 'text',
@@ -19,12 +21,14 @@ const defaultFormData = (): Partial<TestimonialItem> => ({
 
 const TestimonialsManagement = () => {
   const [items, setItems] = useState<TestimonialItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<TestimonialItem | null>(null);
   const [formData, setFormData] = useState<Partial<TestimonialItem>>(defaultFormData);
 
   const loadItems = async () => {
     try { setItems(await fetchTestimonialItems()); } catch { /* ignore */ }
+    finally { setIsLoading(false); }
   };
 
   useEffect(() => { loadItems(); }, []);
@@ -154,6 +158,9 @@ const TestimonialsManagement = () => {
         </div>
       </section>
 
+      {isLoading ? (
+        <AdminLoader variant="cards" count={3} />
+      ) : (
       <div className="grid grid-cols-1 gap-7 md:grid-cols-2 2xl:grid-cols-3">
         {items.length === 0 ? (
           <div className="admin-empty-state col-span-full rounded-[32px] px-6 py-14 text-center sm:px-10">
@@ -244,6 +251,7 @@ const TestimonialsManagement = () => {
           </div>
         ))}
       </div>
+      )}
 
       {isModalOpen && (
         <div className="admin-modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -313,8 +321,13 @@ const TestimonialsManagement = () => {
                 </div>
 
                 <div className="mt-4">
-                  <label className="block text-sm text-gray-400 mb-2">Avatar Image URL (optional)</label>
-                  <input type="text" value={formData.avatarUrl || ''} onChange={(e) => setFormData({ ...formData, avatarUrl: e.target.value })} className="admin-input px-4 py-3 text-sm" placeholder="https://..." />
+                  <label className="block text-sm text-gray-400 mb-2">Avatar image (optional)</label>
+                  <ImageDropzone
+                    value={formData.avatarUrl || ''}
+                    onChange={(val) => setFormData({ ...formData, avatarUrl: val })}
+                    placeholder="Drop avatar here or click to browse"
+                    previewShape="square"
+                  />
                 </div>
               </div>
 
@@ -325,16 +338,22 @@ const TestimonialsManagement = () => {
                     <p className="mt-1 text-sm text-gray-500">Attach the thumbnail, duration, and hosted video URL for video testimonials.</p>
                   </div>
 
+                  <div className="mb-4">
+                    <label className="block text-sm text-gray-400 mb-2">Thumbnail</label>
+                    <ImageDropzone
+                      value={formData.thumbnailUrl || ''}
+                      onChange={(val) => setFormData({ ...formData, thumbnailUrl: val })}
+                      placeholder="Drop thumbnail here or click to browse"
+                      previewShape="rect"
+                    />
+                  </div>
+
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div>
-                      <label className="block text-sm text-gray-400 mb-2">Thumbnail URL</label>
-                      <input type="text" value={formData.thumbnailUrl || ''} onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })} className="admin-input px-4 py-3 text-sm" placeholder="https://..." />
-                    </div>
                     <div>
                       <label className="block text-sm text-gray-400 mb-2">Duration</label>
                       <input type="text" value={formData.duration || ''} onChange={(e) => setFormData({ ...formData, duration: e.target.value })} className="admin-input px-4 py-3 text-sm" placeholder="1:24" />
                     </div>
-                    <div className="md:col-span-2">
+                    <div>
                       <label className="block text-sm text-gray-400 mb-2">Video URL</label>
                       <input type="text" value={formData.videoUrl || ''} onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })} className="admin-input px-4 py-3 text-sm" placeholder="Direct .mp4 or hosted video URL" />
                     </div>
