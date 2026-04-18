@@ -65,10 +65,34 @@ const Contact = () => {
   return (
     <div style={{ width: '100%', minHeight: '100vh', background: '#080808' }}>
       <SEO
-        title="Contact Us"
-        description="Get in touch with RefractLabs. Let's discuss your web development, UI/UX design or social media management project. Fill out the form or reach us directly."
-        keywords="contact RefractLabs, hire web developer, get quote, web development inquiry, UI UX design consultation"
+        title="Contact RefractLabs — Start Your Project"
+        description="Talk to RefractLabs about your next web development, UI/UX design or social media management project. Get a fast response and a clear proposal within 24 hours."
+        keywords="contact RefractLabs, hire web developer, UI UX design consultation, social media agency contact, project inquiry, digital agency quote"
         url="/contact"
+        breadcrumbs={[
+          { name: 'Home', url: '/' },
+          { name: 'Contact', url: '/contact' },
+        ]}
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'ContactPage',
+          '@id': 'https://refractlabs.com/contact#webpage',
+          url: 'https://refractlabs.com/contact',
+          name: 'Contact RefractLabs',
+          isPartOf: { '@id': 'https://refractlabs.com/#website' },
+          about: { '@id': 'https://refractlabs.com/#organization' },
+          inLanguage: 'en-US',
+          mainEntity: {
+            '@type': 'Organization',
+            '@id': 'https://refractlabs.com/#organization',
+            contactPoint: {
+              '@type': 'ContactPoint',
+              contactType: 'customer service',
+              email: 'project@refractlabs.com',
+              availableLanguage: ['English', 'Hindi'],
+            },
+          },
+        }}
       />
       <Navbar />
 

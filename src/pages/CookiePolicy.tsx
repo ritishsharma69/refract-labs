@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import SEO from '../components/SEO';
 import useSmoothScroll from '../hooks/useSmoothScroll';
 
 const CookiePolicy = () => {
@@ -38,6 +39,15 @@ const CookiePolicy = () => {
 
   return (
     <div style={{ width: '100%', minHeight: '100vh', background: '#080808' }}>
+      <SEO
+        title="Cookie Policy"
+        description="How RefractLabs uses cookies and similar technologies to operate, secure and improve our websites and services."
+        url="/cookie-policy"
+        breadcrumbs={[
+          { name: 'Home', url: '/' },
+          { name: 'Cookie Policy', url: '/cookie-policy' },
+        ]}
+      />
       <Navbar />
 
       <div style={{ padding: isMobile ? '120px 24px 40px' : '160px 80px 60px', textAlign: 'center' }}>

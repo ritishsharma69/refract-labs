@@ -1,8 +1,55 @@
 # RefractLabs - robots.txt
+
+# Default: allow everything except admin & API
 User-agent: *
 Allow: /
+Disallow: /admin
 Disallow: /admin/
 Disallow: /admin/*
+Disallow: /api/
+Disallow: /*?*utm_
+Disallow: /*?*ref=
+Disallow: /*?*fbclid=
+Disallow: /*?*gclid=
 
-# Sitemap
+# Googlebot
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Google Images — allow all public images
+User-agent: Googlebot-Image
+Allow: /
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Block known SEO scrapers / bandwidth wasters
+User-agent: AhrefsBot
+Disallow: /
+User-agent: SemrushBot
+Disallow: /
+User-agent: MJ12bot
+Disallow: /
+User-agent: DotBot
+Disallow: /
+
+# Block known AI training crawlers (opt-out)
+User-agent: GPTBot
+Disallow: /
+User-agent: CCBot
+Disallow: /
+User-agent: ClaudeBot
+Disallow: /
+User-agent: Google-Extended
+Disallow: /
+User-agent: anthropic-ai
+Disallow: /
+
+# Host & Sitemap
+Host: https://refractlabs.com
 Sitemap: https://refractlabs.com/sitemap.xml

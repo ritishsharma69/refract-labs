@@ -39,10 +39,47 @@ const Home = () => {
   return (
     <div style={{ width: '100%', minHeight: '100vh' }}>
       <SEO
-        title="Home"
-        description="RefractLabs — Premium Web Development, UI/UX Design & Digital Identity Agency. We bend ideas into reality with cutting-edge React, Next.js & modern web technologies."
-        keywords="web development agency, UI UX design, React development, Next.js, digital agency India, social media management, RefractLabs"
+        title="Web Development, UI/UX Design & Social Media Management Agency"
+        description="RefractLabs is a premium digital agency building high-performance websites, UI/UX products and social media strategies. Partner with us to turn ideas into measurable growth."
+        keywords="web development agency, UI UX design agency, social media management, React development, Next.js developers, digital agency India, product design studio, creative agency"
         url="/"
+        schema={[
+          {
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            '@id': 'https://refractlabs.com/#webpage',
+            url: 'https://refractlabs.com/',
+            name: 'RefractLabs — Web Development, UI/UX Design & Social Media Management Agency',
+            isPartOf: { '@id': 'https://refractlabs.com/#website' },
+            about: { '@id': 'https://refractlabs.com/#organization' },
+            primaryImageOfPage: 'https://refractlabs.com/og-image.png',
+            inLanguage: 'en-US',
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Service',
+            serviceType: 'Web Development',
+            provider: { '@id': 'https://refractlabs.com/#organization' },
+            areaServed: 'Worldwide',
+            description: 'High-performance websites and web applications built with React, Next.js and modern web technologies.',
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Service',
+            serviceType: 'UI/UX Design',
+            provider: { '@id': 'https://refractlabs.com/#organization' },
+            areaServed: 'Worldwide',
+            description: 'Product design, user research, design systems and interaction design that scale across platforms.',
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Service',
+            serviceType: 'Social Media Management',
+            provider: { '@id': 'https://refractlabs.com/#organization' },
+            areaServed: 'Worldwide',
+            description: 'Content creation, campaign management and community growth across every platform that matters.',
+          },
+        ]}
       />
       <Navbar />
 

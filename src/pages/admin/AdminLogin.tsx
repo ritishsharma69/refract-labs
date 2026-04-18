@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FiArrowRight, FiLock, FiShield } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { loginAdmin } from '../../lib/content-store';
 
 const AdminLogin = () => {
@@ -27,6 +28,11 @@ const AdminLogin = () => {
 
   return (
     <div className="admin-shell-bg min-h-screen px-4 py-6 sm:px-6 lg:px-8">
+      <Helmet>
+        <title>Admin Login — RefractLabs</title>
+        <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+        <meta name="googlebot" content="noindex, nofollow" />
+      </Helmet>
       <div className="mx-auto grid min-h-[calc(100vh-3rem)] w-full max-w-6xl gap-6 lg:grid-cols-[1.05fr_0.95fr]">
         <section className="admin-surface relative hidden overflow-hidden rounded-[36px] p-8 lg:flex lg:flex-col lg:justify-between xl:p-10">
           <div className="pointer-events-none absolute -right-16 top-0 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.22),transparent_64%)]" />

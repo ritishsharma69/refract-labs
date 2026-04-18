@@ -228,10 +228,40 @@ const Works = () => {
   return (
     <div style={{ width: '100%', minHeight: '100vh', background: '#080808' }}>
       <SEO
-        title="Our Works"
-        description="Explore RefractLabs portfolio — web applications, UI/UX designs, social media management projects and digital products we've built for clients worldwide."
-        keywords="web development portfolio, UI UX design projects, React projects, digital agency portfolio, RefractLabs works"
+        title="Our Works — Portfolio & Case Studies"
+        description="Explore RefractLabs' portfolio of web applications, UI/UX designs and social media campaigns built for ambitious brands across industries worldwide."
+        keywords="web development portfolio, UI UX design projects, React case studies, social media campaigns, digital agency portfolio, RefractLabs works"
         url="/works"
+        breadcrumbs={[
+          { name: 'Home', url: '/' },
+          { name: 'Works', url: '/works' },
+        ]}
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          '@id': 'https://refractlabs.com/works#webpage',
+          url: 'https://refractlabs.com/works',
+          name: 'RefractLabs Works & Portfolio',
+          isPartOf: { '@id': 'https://refractlabs.com/#website' },
+          about: { '@id': 'https://refractlabs.com/#organization' },
+          inLanguage: 'en-US',
+          mainEntity: {
+            '@type': 'ItemList',
+            numberOfItems: workItems.length,
+            itemListElement: workItems.slice(0, 20).map((item, i) => ({
+              '@type': 'ListItem',
+              position: i + 1,
+              item: {
+                '@type': 'CreativeWork',
+                name: item.title,
+                image: item.image,
+                genre: item.type,
+                ...(item.link ? { url: item.link } : {}),
+                ...(item.description ? { description: item.description } : {}),
+              },
+            })),
+          },
+        }}
       />
       <Navbar />
 

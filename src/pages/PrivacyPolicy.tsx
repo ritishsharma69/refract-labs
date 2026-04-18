@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import SEO from '../components/SEO';
 import useSmoothScroll from '../hooks/useSmoothScroll';
 
 const PrivacyPolicy = () => {
@@ -40,6 +41,15 @@ const PrivacyPolicy = () => {
 
   return (
     <div style={{ width: '100%', minHeight: '100vh', background: '#080808' }}>
+      <SEO
+        title="Privacy Policy"
+        description="How RefractLabs collects, uses and protects your personal data across our websites and services. Read our full privacy policy."
+        url="/privacy-policy"
+        breadcrumbs={[
+          { name: 'Home', url: '/' },
+          { name: 'Privacy Policy', url: '/privacy-policy' },
+        ]}
+      />
       <Navbar />
 
       {/* Hero Section */}

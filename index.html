@@ -2,51 +2,131 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- Favicons & App Icons -->
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" href="/vite.svg" />
+    <link rel="mask-icon" href="/vite.svg" color="#c75b2a" />
 
     <!-- Primary Meta Tags -->
-    <title>RefractLabs — We Bend Ideas Into Reality</title>
-    <meta name="description" content="RefractLabs — Premium Web Development, UI/UX Design & Digital Identity Agency. We bend ideas into reality with cutting-edge technology." />
-    <meta name="keywords" content="web development, UI UX design, digital agency, React, Next.js, branding, software development, RefractLabs" />
+    <title>RefractLabs — Web Development, UI/UX Design & Social Media Management Agency</title>
+    <meta name="title" content="RefractLabs — Web Development, UI/UX Design & Social Media Management Agency" />
+    <meta name="description" content="RefractLabs is a premium digital agency building high-performance websites, UI/UX experiences and social media strategies that turn ideas into measurable growth." />
+    <meta name="keywords" content="web development agency, UI UX design, social media management, React development, Next.js, digital marketing, software development, brand strategy, creative agency, RefractLabs" />
     <meta name="author" content="RefractLabs" />
+    <meta name="publisher" content="RefractLabs" />
+    <meta name="copyright" content="RefractLabs" />
     <meta name="theme-color" content="#c75b2a" />
-    <meta name="robots" content="index, follow" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="rating" content="general" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="bingbot" content="index, follow" />
     <link rel="canonical" href="https://refractlabs.com/" />
+    <link rel="alternate" hreflang="en" href="https://refractlabs.com/" />
+    <link rel="alternate" hreflang="x-default" href="https://refractlabs.com/" />
+
+    <!-- iOS / PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="RefractLabs" />
+    <meta name="application-name" content="RefractLabs" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Search Engine Verification (add your codes) -->
+    <!-- <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE" /> -->
+    <!-- <meta name="msvalidate.01" content="YOUR_BING_VERIFICATION_CODE" /> -->
+    <!-- <meta name="yandex-verification" content="YOUR_YANDEX_VERIFICATION_CODE" /> -->
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://refractlabs.com/" />
-    <meta property="og:title" content="RefractLabs — We Bend Ideas Into Reality" />
-    <meta property="og:description" content="Premium Web Development, UI/UX Design & Digital Identity Agency. We bend ideas into reality." />
+    <meta property="og:title" content="RefractLabs — Web Development, UI/UX Design & Social Media Management Agency" />
+    <meta property="og:description" content="Premium digital agency building high-performance websites, UI/UX experiences and social media strategies that turn ideas into measurable growth." />
     <meta property="og:image" content="https://refractlabs.com/og-image.png" />
+    <meta property="og:image:secure_url" content="https://refractlabs.com/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="RefractLabs — Digital Agency for Web, Design & Social Media" />
     <meta property="og:site_name" content="RefractLabs" />
+    <meta property="og:locale" content="en_US" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@refractlabs" />
+    <meta name="twitter:creator" content="@refractlabs" />
     <meta name="twitter:url" content="https://refractlabs.com/" />
-    <meta name="twitter:title" content="RefractLabs — We Bend Ideas Into Reality" />
-    <meta name="twitter:description" content="Premium Web Development, UI/UX Design & Digital Identity Agency." />
+    <meta name="twitter:title" content="RefractLabs — Web Development, UI/UX Design & Social Media Management Agency" />
+    <meta name="twitter:description" content="Premium digital agency building high-performance websites, UI/UX experiences and social media strategies that turn ideas into measurable growth." />
     <meta name="twitter:image" content="https://refractlabs.com/og-image.png" />
+    <meta name="twitter:image:alt" content="RefractLabs — Digital Agency for Web, Design & Social Media" />
 
-    <!-- Structured Data - Organization -->
+    <!-- Performance: DNS prefetch & preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Structured Data: ProfessionalService (primary entity) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Organization",
+      "@type": "ProfessionalService",
+      "@id": "https://refractlabs.com/#organization",
       "name": "RefractLabs",
+      "alternateName": "Refract Labs",
       "url": "https://refractlabs.com",
-      "logo": "https://refractlabs.com/vite.svg",
-      "description": "Premium Web Development, UI/UX Design & Digital Identity Agency",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://refractlabs.com/vite.svg",
+        "width": 512,
+        "height": 512
+      },
+      "image": "https://refractlabs.com/og-image.png",
+      "description": "RefractLabs is a premium digital agency building high-performance websites, UI/UX experiences and social media strategies that turn ideas into measurable growth.",
+      "slogan": "We Bend Ideas Into Reality",
       "email": "hello.refractlabs@gmail.com",
-      "contactPoint": {
+      "telephone": "+91-98765-43210",
+      "priceRange": "$$-$$$",
+      "foundingDate": "2024",
+      "founder": { "@type": "Organization", "name": "RefractLabs" },
+      "areaServed": [
+        { "@type": "Country", "name": "India" },
+        { "@type": "Country", "name": "United States" },
+        { "@type": "Place", "name": "Worldwide" }
+      ],
+      "serviceType": [
+        "Web Development",
+        "UI/UX Design",
+        "Social Media Management",
+        "Software Development",
+        "Brand Strategy"
+      ],
+      "knowsAbout": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "UI Design",
+        "UX Research",
+        "Social Media Strategy",
+        "Content Marketing",
+        "SEO"
+      ],
+      "contactPoint": [{
         "@type": "ContactPoint",
         "telephone": "+91-98765-43210",
         "contactType": "customer service",
-        "email": "project@refractlabs.com"
-      },
-      "sameAs": [],
-      "foundingDate": "2024",
+        "email": "project@refractlabs.com",
+        "availableLanguage": ["English", "Hindi"]
+      }],
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "4545 La Jolla Village Dr",
@@ -54,32 +134,43 @@
         "addressRegion": "CA",
         "postalCode": "92122",
         "addressCountry": "US"
-      }
+      },
+      "sameAs": [
+        "https://www.linkedin.com/company/refractlabs",
+        "https://twitter.com/refractlabs",
+        "https://www.instagram.com/refractlabs"
+      ]
     }
     </script>
 
-    <!-- Structured Data - WebSite (for Google Sitelinks Search Box) -->
+    <!-- Structured Data: WebSite (Sitelinks Search Box) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
+      "@id": "https://refractlabs.com/#website",
       "name": "RefractLabs",
       "url": "https://refractlabs.com",
+      "description": "Premium digital agency for web development, UI/UX design and social media management.",
+      "inLanguage": "en-US",
+      "publisher": { "@id": "https://refractlabs.com/#organization" },
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://refractlabs.com/?q={search_term_string}",
+        "target": { "@type": "EntryPoint", "urlTemplate": "https://refractlabs.com/works?q={search_term_string}" },
         "query-input": "required name=search_term_string"
       }
     }
     </script>
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div style="padding:24px;font-family:Inter,system-ui,sans-serif;background:#080808;color:#fff;min-height:100vh">
+        <h1>RefractLabs</h1>
+        <p>You need to enable JavaScript to explore our portfolio, services and case studies. RefractLabs is a digital agency specialising in web development, UI/UX design and social media management.</p>
+        <p>Email: <a href="mailto:project@refractlabs.com" style="color:#c75b2a">project@refractlabs.com</a></p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

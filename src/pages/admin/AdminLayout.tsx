@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Home, Users, Briefcase, MessageSquare, Inbox, LogOut, Bell, Search, Menu, X, ChevronsRight, ChevronDown } from 'lucide-react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { verifyToken, logoutAdmin } from '../../lib/content-store';
 
 const NAV_ITEMS = [
@@ -55,6 +56,11 @@ const AdminLayout = () => {
 
   return (
     <div className="admin-shell-bg flex min-h-screen">
+      <Helmet>
+        <title>Admin — RefractLabs</title>
+        <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+        <meta name="googlebot" content="noindex, nofollow" />
+      </Helmet>
       {/* Mobile hamburger */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}

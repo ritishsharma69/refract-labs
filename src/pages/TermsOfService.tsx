@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import SEO from '../components/SEO';
 import useSmoothScroll from '../hooks/useSmoothScroll';
 
 const TermsOfService = () => {
@@ -38,6 +39,15 @@ const TermsOfService = () => {
 
   return (
     <div style={{ width: '100%', minHeight: '100vh', background: '#080808' }}>
+      <SEO
+        title="Terms of Service"
+        description="The terms and conditions that govern your use of RefractLabs' websites, services and engagements."
+        url="/terms-of-service"
+        breadcrumbs={[
+          { name: 'Home', url: '/' },
+          { name: 'Terms of Service', url: '/terms-of-service' },
+        ]}
+      />
       <Navbar />
 
       <div style={{ padding: isMobile ? '120px 24px 40px' : '160px 80px 60px', textAlign: 'center' }}>

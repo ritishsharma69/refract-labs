@@ -100,10 +100,52 @@ const TestimonialsPage = () => {
   return (
     <div style={{ minHeight: '100vh', background: '#080808', color: 'white', position: 'relative', overflow: 'hidden' }}>
       <SEO
-        title="Testimonials"
-        description="See what our clients say about RefractLabs. Read reviews and testimonials from businesses we've helped with web development, design and digital solutions."
-        keywords="RefractLabs reviews, client testimonials, web development reviews, UI UX design feedback, agency testimonials"
+        title="Client Testimonials & Reviews"
+        description={`See what ${stats.total || 'our'} clients say about RefractLabs. Real reviews from brands we've helped with web development, UI/UX design and social media management.`}
+        keywords="RefractLabs reviews, client testimonials, web development reviews, UI UX design feedback, social media agency reviews, agency testimonials"
         url="/testimonials"
+        breadcrumbs={[
+          { name: 'Home', url: '/' },
+          { name: 'Testimonials', url: '/testimonials' },
+        ]}
+        schema={[
+          {
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            '@id': 'https://refractlabs.com/testimonials#webpage',
+            url: 'https://refractlabs.com/testimonials',
+            name: 'RefractLabs Client Testimonials',
+            isPartOf: { '@id': 'https://refractlabs.com/#website' },
+            about: { '@id': 'https://refractlabs.com/#organization' },
+            inLanguage: 'en-US',
+          },
+          ...(items.length > 0
+            ? [{
+                '@context': 'https://schema.org',
+                '@type': 'Organization',
+                '@id': 'https://refractlabs.com/#organization',
+                aggregateRating: {
+                  '@type': 'AggregateRating',
+                  ratingValue: stats.average,
+                  reviewCount: stats.total,
+                  bestRating: 5,
+                  worstRating: 1,
+                },
+                review: items.slice(0, 10).map((t) => ({
+                  '@type': 'Review',
+                  reviewRating: {
+                    '@type': 'Rating',
+                    ratingValue: t.stars,
+                    bestRating: 5,
+                    worstRating: 1,
+                  },
+                  author: { '@type': 'Person', name: t.name },
+                  reviewBody: t.quote,
+                  ...(t.company ? { publisher: { '@type': 'Organization', name: t.company } } : {}),
+                })),
+              }]
+            : []),
+        ]}
       />
       {/* Particle Layer */}
       <div aria-hidden style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0, opacity: 0.58 }}>

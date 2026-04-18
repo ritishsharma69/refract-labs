@@ -125,9 +125,23 @@ const About = () => {
     <div style={{ width: '100%', minHeight: '100vh', background: '#080808', position: 'relative', overflow: 'hidden' }}>
       <SEO
         title="About Us"
-        description="Learn about RefractLabs — our mission, team, and capabilities. We specialize in web development, UI/UX design, social media management and digital transformation."
-        keywords="about RefractLabs, web development team, UI UX design agency, digital transformation, company culture"
+        description="Meet RefractLabs — a team of engineers, designers and strategists building high-performance websites, UI/UX products and social media programs for ambitious brands."
+        keywords="about RefractLabs, web development team, UI UX design agency, social media agency, digital transformation, creative studio"
         url="/about"
+        breadcrumbs={[
+          { name: 'Home', url: '/' },
+          { name: 'About', url: '/about' },
+        ]}
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'AboutPage',
+          '@id': 'https://refractlabs.com/about#webpage',
+          url: 'https://refractlabs.com/about',
+          name: 'About RefractLabs',
+          isPartOf: { '@id': 'https://refractlabs.com/#website' },
+          about: { '@id': 'https://refractlabs.com/#organization' },
+          inLanguage: 'en-US',
+        }}
       />
       {/* Particle Layer */}
       <div aria-hidden style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0, opacity: 0.58 }}>
