@@ -184,7 +184,7 @@ const ImpactAtScale = () => {
           gridTemplateRows: 'auto auto',
           gap: isMobile ? '12px' : '16px',
         }}>
-          {/* Card 1 - $100M+ Revenue */}
+          {/* Card 1 - ₹1 Cr+ Revenue */}
           <div style={{ ...cardBaseStyle, height: isMobile ? '280px' : '380px' }}>
             <div style={{ position: 'relative', zIndex: 1 }}>
               <span style={{ color: '#888', fontSize: isMobile ? '12px' : '14px', fontWeight: 500 }}>Revenue Supported</span>
@@ -196,10 +196,10 @@ const ImpactAtScale = () => {
                 marginTop: '8px',
                 margin: '8px 0 0 0',
               }}>
-                $100M+
+                ₹1 Cr+
               </h3>
               <p style={{ color: '#777', fontSize: isMobile ? '12px' : '14px', lineHeight: 1.7, marginTop: '12px', maxWidth: '280px' }}>
-                Systems backing <span style={{ color: 'white', fontWeight: 600 }}>nine-figure revenue</span>. When performance is non-negotiable, <span style={{ color: 'white', fontWeight: 600 }}>we deliver</span>.
+                Systems backing <span style={{ color: 'white', fontWeight: 600 }}>7-figure revenue</span> brands. When performance is non-negotiable, <span style={{ color: 'white', fontWeight: 600 }}>we deliver</span>.
               </p>
             </div>
             {/* Animated Bar Chart */}
@@ -232,14 +232,14 @@ const ImpactAtScale = () => {
             </div>
           </div>
 
-          {/* Card 2 - 100+ Assets */}
+          {/* Card 2 - 3 Industries Served */}
           <div
             style={{ ...cardBaseStyle, height: isMobile ? '280px' : '380px' }}
             onMouseEnter={() => setCard2Hovered(true)}
             onMouseLeave={() => setCard2Hovered(false)}
           >
             <div style={{ position: 'relative', zIndex: 1 }}>
-              <span style={{ color: '#888', fontSize: isMobile ? '12px' : '14px', fontWeight: 500 }}>Assets Deployed</span>
+              <span style={{ color: '#888', fontSize: isMobile ? '12px' : '14px', fontWeight: 500 }}>Industries Served</span>
               <h3 style={{
                 color: 'white',
                 fontSize: isMobile ? '40px' : '56px',
@@ -247,10 +247,10 @@ const ImpactAtScale = () => {
                 letterSpacing: '-2px',
                 margin: '8px 0 0 0',
               }}>
-                100+
+                3+
               </h3>
               <p style={{ color: '#777', fontSize: isMobile ? '12px' : '14px', lineHeight: 1.7, marginTop: '12px', maxWidth: '280px' }}>
-                <span style={{ color: 'white', fontWeight: 600 }}>Production-ready</span> assets for every channel. Ship campaigns and launches with <span style={{ color: 'white', fontWeight: 600 }}>confidence</span>.
+                <span style={{ color: 'white', fontWeight: 600 }}>Healthcare, E-commerce &amp; Travel</span> — niche-agnostic, <span style={{ color: 'white', fontWeight: 600 }}>results-focused</span>.
               </p>
             </div>
             {/* Floating White Card - hidden on mobile */}
@@ -294,7 +294,7 @@ const ImpactAtScale = () => {
             )}
           </div>
 
-          {/* Card 3 - $2.65B Enterprise DNA */}
+          {/* Card 3 - Full Growth Stack */}
           <div style={{
             ...cardBaseStyle,
             height: isMobile ? 'auto' : '340px',
@@ -329,19 +329,19 @@ const ImpactAtScale = () => {
 
             {/* Left Text */}
             <div style={{ position: 'relative', zIndex: 1 }}>
-              <span style={{ color: '#9ca3af', fontSize: isMobile ? '12px' : '14px', fontWeight: 500 }}>Enterprise DNA</span>
+              <span style={{ color: '#9ca3af', fontSize: isMobile ? '12px' : '14px', fontWeight: 500 }}>Full Growth Stack</span>
               <h3 style={{
                 color: 'white',
-                fontSize: isMobile ? '48px' : '72px',
+                fontSize: isMobile ? '40px' : '64px',
                 fontWeight: 800,
-                letterSpacing: '-3px',
+                letterSpacing: '-2px',
                 margin: '8px 0 0 0',
                 textShadow: '0 0 40px rgba(255,255,255,0.15)',
               }}>
-                $2.65B
+                End-to-End
               </h3>
-              <p style={{ color: '#9ca3af', fontSize: isMobile ? '13px' : '15px', lineHeight: 1.6, marginTop: '14px', maxWidth: '320px', fontStyle: 'italic' }}>
-                Applying the architectural standards of a multi-billion dollar valuation to your brand.
+              <p style={{ color: '#9ca3af', fontSize: isMobile ? '13px' : '15px', lineHeight: 1.6, marginTop: '14px', maxWidth: '380px', fontStyle: 'italic' }}>
+                Websites, apps, social &amp; paid ads — one partner for your complete digital presence.
               </p>
             </div>
 
