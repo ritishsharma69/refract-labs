@@ -41,7 +41,7 @@ const WorksManagement = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const payload: Partial<WorkItem> = {
+    const payload: Omit<WorkItem, 'id'> = {
       title: formData.title || '',
       type: formData.type || '',
       image: formData.image || '',
