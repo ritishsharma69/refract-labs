@@ -118,6 +118,8 @@ const OrbitingSkill = memo(({ config, angle }: OrbitingSkillProps) => {
 
   const x = Math.cos(angle) * orbitRadius;
   const y = Math.sin(angle) * orbitRadius;
+  // Flip label to top when icon is in bottom half to avoid clipping
+  const labelAbove = y > 0;
 
   return (
     <div
@@ -146,7 +148,9 @@ const OrbitingSkill = memo(({ config, angle }: OrbitingSkillProps) => {
       >
         <SkillIcon type={iconType} />
         {isHovered && (
-          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900/95 backdrop-blur-sm rounded text-xs text-white whitespace-nowrap pointer-events-none">
+          <div
+            className={`absolute left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900/95 backdrop-blur-sm rounded text-xs text-white whitespace-nowrap pointer-events-none ${labelAbove ? '-top-8' : '-bottom-8'}`}
+          >
             {label}
           </div>
         )}
@@ -232,17 +236,7 @@ export default function OrbitingSkills() {
   ];
 
   return (
-    <main className="w-full flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 opacity-10">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `radial-gradient(circle at 25% 25%, #374151 0%, transparent 50%),
-                             radial-gradient(circle at 75% 75%, #4B5563 0%, transparent 50%)`,
-          }}
-        />
-      </div>
-
+    <main className="w-full flex items-center justify-center overflow-x-clip">
       <div
         className="relative w-[calc(100vw-40px)] h-[calc(100vw-40px)] md:w-[450px] md:h-[450px] flex items-center justify-center"
         onMouseEnter={() => setIsPaused(true)}

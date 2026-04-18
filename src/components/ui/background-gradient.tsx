@@ -1,0 +1,11 @@
+export const BackgroundGradient = () => {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 h-full w-full [background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)]"
+      style={{ zIndex: 0 }}
+    />
+  );
+};
+
+export default BackgroundGradient;

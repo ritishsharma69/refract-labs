@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -6,6 +6,7 @@ import ExploreServicesButton from '../components/ExploreServicesButton';
 import Navbar from '../components/Navbar';
 import { TestimonialCarousel } from '../components/ui/profile-card-testimonial-carousel';
 import VerticalTabs from '../components/ui/vertical-tabs';
+import ConfettiBackground from '../components/ui/confetti-background';
 import CTASection from '../components/CTASection';
 import Footer from '../components/Footer';
 import SEO from '../components/SEO';
@@ -90,20 +91,6 @@ const About = () => {
     return () => clearTimeout(timeout);
   }, []);
 
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 78 }, (_, i) => ({
-        id: i,
-        left: `${(i * 37) % 100}%`,
-        top: `${(i * 53) % 100}%`,
-        size: 1.5 + ((i * 11) % 4),
-        opacity: 0.24 + (((i * 7) % 32) / 100),
-        duration: 10 + ((i * 13) % 15),
-        delay: -((i * 17) % 12) / 1.5,
-      })),
-    []
-  );
-
   const scrollToCapabilities = () => {
     scrollToCapabilitiesSection(capabilitiesRef.current);
   };
@@ -143,26 +130,8 @@ const About = () => {
           inLanguage: 'en-US',
         }}
       />
-      {/* Particle Layer */}
-      <div aria-hidden style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0, opacity: 0.58 }}>
-        {particles.map((p) => (
-          <span
-            key={p.id}
-            style={{
-              position: 'absolute',
-              left: p.left,
-              top: p.top,
-              width: p.size,
-              height: p.size,
-              borderRadius: '9999px',
-              background: 'rgba(255,255,255,0.92)',
-              boxShadow: '0 0 12px rgba(255,255,255,0.26)',
-              opacity: p.opacity,
-              animation: `testimonialDrift ${p.duration}s ease-in-out ${p.delay}s infinite alternate, testimonialPulse ${Math.max(3.6, p.duration * 0.4)}s ease-in-out ${p.delay / 1.5}s infinite alternate`,
-            }}
-          />
-        ))}
-      </div>
+      {/* Confetti Background */}
+      <ConfettiBackground />
 
       <Navbar />
 

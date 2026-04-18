@@ -6,7 +6,7 @@ import Navbar from '../components/Navbar';
 import ExploreServicesButton from '../components/ExploreServicesButton';
 import CTASection from '../components/CTASection';
 import Footer from '../components/Footer';
-import NeuralBackground from '../components/ui/flow-field-background';
+import { SpiralAnimation } from '../components/ui/spiral-animation';
 import SEO from '../components/SEO';
 import useSmoothScroll from '../hooks/useSmoothScroll';
 import { fetchWorkItems, subscribeToContentUpdates, type WorkItem } from '../lib/content-store';
@@ -280,14 +280,9 @@ const Works = () => {
           overflow: 'hidden',
         }}
       >
-        {/* Flow Field Background */}
-        <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-          <NeuralBackground
-            color="#818cf8"
-            trailOpacity={0.1}
-            speed={0.8}
-            particleCount={500}
-          />
+        {/* Spiral Animation Background */}
+        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0 }}>
+          <SpiralAnimation />
         </div>
         <h1 style={{
           fontFamily: 'Space Grotesk, sans-serif',
