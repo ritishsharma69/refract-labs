@@ -260,7 +260,7 @@ const Services = () => {
             }} />
           </div>
 
-          {/* Card 2 - Branding (col 3, rows 1-2) - Combined with Design Tools */}
+          {/* Card 2 - Social Media Management (col 3, rows 1-2) - Combined with Design Tools */}
           <div style={{ background: '#111113', borderRadius: '20px', padding: isMobile ? '24px' : '32px 36px', border: '1px solid rgba(255,255,255,0.055)', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative', gridArea: isMobile ? 'auto' : '1 / 3 / 3 / 4' }}>
             {/* Top Section - Text Content */}
             <div>
@@ -268,10 +268,10 @@ const Services = () => {
                 <path strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
               </svg>
               <h3 style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: isMobile ? '22px' : '26px', fontWeight: 700, color: 'white', marginTop: '18px' }}>
-                Branding
+                Social Media Management
               </h3>
               <p style={{ fontSize: '14px', color: '#888', lineHeight: 1.75, marginTop: '12px' }}>
-                We build <span style={{ fontWeight: 600, color: 'white' }}>strategic</span> identities designed to secure a <span style={{ fontWeight: 600, color: 'white' }}>premium market position</span>.
+                We craft <span style={{ fontWeight: 600, color: 'white' }}>content</span>, run campaigns and grow communities across <span style={{ fontWeight: 600, color: 'white' }}>every platform that matters</span>.
               </p>
             </div>
             <div style={{ marginTop: '24px' }}><SeeMoreLink /></div>

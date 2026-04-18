@@ -18,6 +18,8 @@ const Works = () => {
   const heroRef = useRef<HTMLDivElement>(null);
   const marqueeRef1 = useRef<HTMLDivElement>(null);
   const marqueeRef2 = useRef<HTMLDivElement>(null);
+  const tween1Ref = useRef<gsap.core.Tween | null>(null);
+  const tween2Ref = useRef<gsap.core.Tween | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [workItems, setWorkItems] = useState<WorkItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,7 +65,7 @@ const Works = () => {
         if (marquee1) {
           const width = marquee1.scrollWidth / 2;
           gsap.set(marquee1, { x: 0 });
-          gsap.to(marquee1, {
+          tween1Ref.current = gsap.to(marquee1, {
             x: -width,
             duration: 25,
             ease: 'none',
@@ -74,7 +76,7 @@ const Works = () => {
         if (marquee2) {
           const width = marquee2.scrollWidth / 2;
           gsap.set(marquee2, { x: -width });
-          gsap.to(marquee2, {
+          tween2Ref.current = gsap.to(marquee2, {
             x: 0,
             duration: 25,
             ease: 'none',
@@ -87,21 +89,18 @@ const Works = () => {
     return () => ctx.revert();
   }, [workItems]);
 
-  const renderWorkCard = (item: WorkItem, index: number) => (
-    <div
-      key={`${item.id}-${index}`}
-      style={{
-        flex: '0 0 auto',
-        width: isMobile ? '280px' : '380px',
-        height: isMobile ? '320px' : '420px',
-        background: 'linear-gradient(135deg, #0f1420 0%, #151a28 50%, #0f1420 100%)',
-        borderRadius: '20px',
-        overflow: 'hidden',
-        position: 'relative',
-        border: '1px solid rgba(255,255,255,0.05)',
-        marginRight: '20px',
-      }}
-    >
+  const pauseMarquees = () => {
+    tween1Ref.current?.pause();
+    tween2Ref.current?.pause();
+  };
+  const resumeMarquees = () => {
+    tween1Ref.current?.resume();
+    tween2Ref.current?.resume();
+  };
+
+  const renderWorkCard = (item: WorkItem, index: number) => {
+    const cardInner = (
+      <>
       {/* Image */}
       <div style={{
         width: '100%',
@@ -172,14 +171,65 @@ const Works = () => {
           {item.title}
         </h3>
       </div>
-    </div>
-  );
+      </>
+    );
+
+    const sharedStyle: React.CSSProperties = {
+      flex: '0 0 auto',
+      width: isMobile ? '280px' : '380px',
+      height: isMobile ? '320px' : '420px',
+      background: 'linear-gradient(135deg, #0f1420 0%, #151a28 50%, #0f1420 100%)',
+      borderRadius: '20px',
+      overflow: 'hidden',
+      position: 'relative',
+      border: '1px solid rgba(255,255,255,0.05)',
+      marginRight: '20px',
+      display: 'block',
+      textDecoration: 'none',
+      color: 'inherit',
+      cursor: item.link ? 'pointer' : 'default',
+      transition: 'transform 0.3s ease, border-color 0.3s ease',
+    };
+
+    const onEnter = (e: React.MouseEvent<HTMLElement>) => {
+      if (item.link) {
+        (e.currentTarget as HTMLElement).style.transform = 'translateY(-6px)';
+        (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.15)';
+      }
+    };
+    const onLeave = (e: React.MouseEvent<HTMLElement>) => {
+      (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+      (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.05)';
+    };
+
+    if (item.link) {
+      return (
+        <a
+          key={`${item.id}-${index}`}
+          href={item.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={sharedStyle}
+          onMouseEnter={onEnter}
+          onMouseLeave={onLeave}
+        >
+          {cardInner}
+        </a>
+      );
+    }
+
+    return (
+      <div key={`${item.id}-${index}`} style={sharedStyle}>
+        {cardInner}
+      </div>
+    );
+  };
 
   return (
     <div style={{ width: '100%', minHeight: '100vh', background: '#080808' }}>
       <SEO
         title="Our Works"
-        description="Explore RefractLabs portfolio — web applications, UI/UX designs, branding projects and digital products we've built for clients worldwide."
+        description="Explore RefractLabs portfolio — web applications, UI/UX designs, social media management projects and digital products we've built for clients worldwide."
         keywords="web development portfolio, UI UX design projects, React projects, digital agency portfolio, RefractLabs works"
         url="/works"
       />
@@ -238,7 +288,11 @@ const Works = () => {
       </div>
 
       {/* Marquee Section - Row 1 */}
-      <div style={{ overflow: 'hidden', padding: isMobile ? '20px 0' : '40px 0' }}>
+      <div
+        onMouseEnter={pauseMarquees}
+        onMouseLeave={resumeMarquees}
+        style={{ overflow: 'hidden', padding: isMobile ? '20px 0' : '40px 0' }}
+      >
         {loading ? (
           <div style={{ display: 'flex', gap: isMobile ? '12px' : '24px', padding: '0 24px' }}>
             {[1,2,3,4].map((i) => (
@@ -260,7 +314,11 @@ const Works = () => {
       </div>
 
       {/* Marquee Section - Row 2 */}
-      <div style={{ overflow: 'hidden', padding: isMobile ? '20px 0' : '40px 0' }}>
+      <div
+        onMouseEnter={pauseMarquees}
+        onMouseLeave={resumeMarquees}
+        style={{ overflow: 'hidden', padding: isMobile ? '20px 0' : '40px 0' }}
+      >
         {loading ? (
           <div style={{ display: 'flex', gap: isMobile ? '12px' : '24px', padding: '0 24px' }}>
             {[1,2,3,4].map((i) => (

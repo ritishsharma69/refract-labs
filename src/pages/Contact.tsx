@@ -66,7 +66,7 @@ const Contact = () => {
     <div style={{ width: '100%', minHeight: '100vh', background: '#080808' }}>
       <SEO
         title="Contact Us"
-        description="Get in touch with RefractLabs. Let's discuss your web development, UI/UX design or branding project. Fill out the form or reach us directly."
+        description="Get in touch with RefractLabs. Let's discuss your web development, UI/UX design or social media management project. Fill out the form or reach us directly."
         keywords="contact RefractLabs, hire web developer, get quote, web development inquiry, UI UX design consultation"
         url="/contact"
       />

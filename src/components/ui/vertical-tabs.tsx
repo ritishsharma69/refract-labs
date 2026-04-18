@@ -94,9 +94,9 @@ const SERVICES = [
   },
   {
     id: '02',
-    title: 'Branding',
+    title: 'Social Media Management',
     description:
-      'We build strategic identities designed to secure a premium market position. Visual systems that scale across platforms.',
+      'We craft content, run campaigns and grow communities across every platform that matters. Consistent visuals, data-driven strategy.',
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />

@@ -125,7 +125,7 @@ const About = () => {
     <div style={{ width: '100%', minHeight: '100vh', background: '#080808', position: 'relative', overflow: 'hidden' }}>
       <SEO
         title="About Us"
-        description="Learn about RefractLabs — our mission, team, and capabilities. We specialize in web development, UI/UX design, branding and digital transformation."
+        description="Learn about RefractLabs — our mission, team, and capabilities. We specialize in web development, UI/UX design, social media management and digital transformation."
         keywords="about RefractLabs, web development team, UI UX design agency, digital transformation, company culture"
         url="/about"
       />

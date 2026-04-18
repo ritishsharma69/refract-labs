@@ -17,7 +17,7 @@ const BASE_URL = 'https://refractlabs.com';
 const SEO = ({
   title,
   description = DEFAULT_DESC,
-  keywords = 'web development, UI UX design, digital agency, React, Next.js, branding, software development, RefractLabs',
+  keywords = 'web development, UI UX design, digital agency, React, Next.js, social media management, software development, RefractLabs',
   url,
   image = DEFAULT_IMAGE,
   type = 'website',

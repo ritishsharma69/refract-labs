@@ -8,7 +8,7 @@ import PageHeader from '../../components/admin/PageHeader';
 import EmptyState from '../../components/admin/EmptyState';
 import Modal from '../../components/admin/Modal';
 
-const WORK_TYPES = ['Branding', 'Web Design', 'Web Development', 'Identity', 'Software', '3D Animation', 'UI/UX'];
+const WORK_TYPES = ['Social Media Management', 'Web Design', 'Web Development', 'Identity', 'Software', '3D Animation', 'UI/UX'];
 
 const defaultFormData = (): Partial<WorkItem> => ({
   title: '', type: '', image: '', description: '', link: '', featuredOnHome: false,

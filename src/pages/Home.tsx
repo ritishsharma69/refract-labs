@@ -41,7 +41,7 @@ const Home = () => {
       <SEO
         title="Home"
         description="RefractLabs — Premium Web Development, UI/UX Design & Digital Identity Agency. We bend ideas into reality with cutting-edge React, Next.js & modern web technologies."
-        keywords="web development agency, UI UX design, React development, Next.js, digital agency India, branding, RefractLabs"
+        keywords="web development agency, UI UX design, React development, Next.js, digital agency India, social media management, RefractLabs"
         url="/"
       />
       <Navbar />
