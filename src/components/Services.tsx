@@ -366,6 +366,30 @@ const Services = () => {
 
           {/* Card 5 - Everything in One Place (col 2, row 2) */}
           <div style={{ background: 'linear-gradient(145deg, #1a1025 0%, #2a1d3d 40%, #1f1530 70%, #160f24 100%)', borderRadius: '20px', padding: isMobile ? '48px 24px' : 0, border: '1px solid rgba(255,255,255,0.055)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', gridArea: isMobile ? 'auto' : '2 / 2 / 3 / 3', minHeight: isMobile ? '200px' : 'auto' }}>
+            {/* Brand logo watermark — barely-there texture */}
+            <img
+              src="/refractlogo.png"
+              aria-hidden="true"
+              alt=""
+              style={{
+                position: 'absolute',
+                left: isMobile ? '-22%' : '-12%',
+                top: '50%',
+                transform: 'translateY(-50%) rotate(-6deg)',
+                width: isMobile ? '70%' : '55%',
+                height: 'auto',
+                opacity: isMobile ? 0.04 : 0.055,
+                filter: 'brightness(0) invert(1) blur(0.3px)',
+                maskImage: 'linear-gradient(120deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 30%, rgba(0,0,0,0) 65%)',
+                WebkitMaskImage: 'linear-gradient(120deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 30%, rgba(0,0,0,0) 65%)',
+                pointerEvents: 'none',
+                zIndex: 0,
+                userSelect: 'none',
+              }}
+              draggable={false}
+            />
+            {/* Warm highlight sweep — upper-left light source */}
+            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 15% 20%, rgba(255,180,220,0.10) 0%, transparent 55%)', pointerEvents: 'none', zIndex: 0 }} />
             {/* Subtle glow behind shape */}
             <div style={{ position: 'absolute', width: isMobile ? '200px' : '300px', height: isMobile ? '200px' : '300px', background: 'radial-gradient(circle, rgba(120,60,200,0.3) 0%, transparent 70%)', right: '10%', top: '50%', transform: 'translateY(-50%)' }} />
             {/* 3D Geometric Arrow Shape - hidden on mobile */}

@@ -21,41 +21,47 @@ const Footer = () => {
   useEffect(() => {
     const ctx = gsap.context(() => {
       // Giant brand text animation
-      gsap.from(brandRef.current, {
-        opacity: 0,
-        scale: 0.97,
-        duration: 1.2,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: brandRef.current,
-          start: 'top 85%',
-        },
-      });
+      gsap.fromTo(
+        brandRef.current,
+        { opacity: 0, scale: 0.97 },
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 1.2,
+          ease: 'power3.out',
+          immediateRender: false,
+          scrollTrigger: { trigger: brandRef.current, start: 'top 85%' },
+        }
+      );
 
       // Nav links stagger animation
-      gsap.from('.footer-nav-item', {
-        opacity: 0,
-        y: 20,
-        duration: 0.5,
-        stagger: 0.08,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: linksRowRef.current,
-          start: 'top 85%',
-        },
-      });
+      gsap.fromTo(
+        '.footer-nav-item',
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          stagger: 0.08,
+          ease: 'power2.out',
+          immediateRender: false,
+          scrollTrigger: { trigger: linksRowRef.current, start: 'top 90%' },
+        }
+      );
 
       // Bottom bar animation
-      gsap.from(bottomRef.current, {
-        opacity: 0,
-        duration: 0.6,
-        delay: 0.3,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: bottomRef.current,
-          start: 'top 95%',
-        },
-      });
+      gsap.fromTo(
+        bottomRef.current,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 0.6,
+          delay: 0.3,
+          ease: 'power2.out',
+          immediateRender: false,
+          scrollTrigger: { trigger: bottomRef.current, start: 'top 95%' },
+        }
+      );
     }, footerRef);
 
     return () => ctx.revert();

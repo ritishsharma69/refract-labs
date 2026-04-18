@@ -88,7 +88,9 @@ const Contact = () => {
             contactPoint: {
               '@type': 'ContactPoint',
               contactType: 'customer service',
-              email: 'project@refractlabs.com',
+              telephone: '+91-76819-09401',
+              email: 'hello.refractlabs@gmail.com',
+              areaServed: 'IN',
               availableLanguage: ['English', 'Hindi'],
             },
           },
@@ -136,17 +138,17 @@ const Contact = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <ContactCard
                 label="PHONE"
-                value="+91 98765 43210"
-                href="tel:+919876543210"
+                value="+91 76819 09401"
+                href="tel:+917681909401"
               />
               <ContactCard
                 label="EMAIL"
-                value="project@refractlabs.com"
-                href="mailto:project@refractlabs.com"
+                value="hello.refractlabs@gmail.com"
+                href="mailto:hello.refractlabs@gmail.com"
               />
               <ContactCard
                 label="ADDRESS"
-                value="4545 La Jolla Village Dr, San Diego, CA 92122"
+                value="Patiala, Punjab, India"
               />
             </div>
           </div>
